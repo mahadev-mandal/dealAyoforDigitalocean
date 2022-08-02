@@ -6,7 +6,7 @@ import { baseURL } from '../../helpers/constants';
 
 const tableHeading = ['model','title', 'vendor', 'category', 'MRP', 'SP', 'status',];
 
-function Products() {
+function Tasks() {
     const fetchData = async (url) => {
         return await axios.get(url)
             .then((res) => res.data)
@@ -14,7 +14,7 @@ function Products() {
                 throw new Error(err)
             })
     }
-    const { data: products, error } = useSWR(`${baseURL}/api/products`, fetchData);
+    const { data: products, error } = useSWR(`${baseURL}/api/tasks`, fetchData);
     console.log(products)
     console.log(error)
     if (error) {
@@ -29,4 +29,4 @@ function Products() {
     )
 }
 
-export default Products
+export default Tasks

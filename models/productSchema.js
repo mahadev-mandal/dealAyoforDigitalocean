@@ -4,6 +4,10 @@ const productSchema = new mongoose.Schema({
     code: {
         type: String,
     },
+    title: {
+        type:String,
+        required: true
+    },
     model: {
         type: String,
     },
@@ -51,10 +55,17 @@ const productSchema = new mongoose.Schema({
     status: {
         type: Boolean,
         required: true,
+        default: true,
     },
     entryStatus: {
         type: Boolean,
         required: true,
+        default: false
     },
+    assignStatus: {
+        type: Boolean,
+        required: true,
+        default: false,
+    }
 })
 export default mongoose.models.product || mongoose.model('product', productSchema);

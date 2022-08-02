@@ -17,7 +17,7 @@ export default function products(req, res) {
 }
 
 const getProducts = async (req, res) => {
-    await productModel.find().limit(5)
+    await productModel.find()
         .then((data) => {
             res.status(200).json(data);
         }).catch(() => {
