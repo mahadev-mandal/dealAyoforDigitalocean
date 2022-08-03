@@ -1,23 +1,40 @@
 import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema'
+import categoryModel from '../../../models/categorySchema'
 
 db_conn();
 
 export default function Tasks(req, res) {
     switch (req.method) {
         case 'GET':
-            return getAllAssignedTasks(req, res);
+            return getAssignedTasks(req, res);
         default:
             res.status(500).send('Use proper methods')
     }
 }
 
-const getAllAssignedTasks = async(req, res) => {
-    const {empid} = req.query;
-    await productModel.find()  //sort assigned is true & empId: empid
-    .then((products)=>{
-        res.status(200).json(products)
-    }).catch(()=>{
-        res.status(500).send('Error occured while fetching assigned tasks')
-    })
+const getAssignedTasks = async (req, res) => {
+    // const { empid } = req.query;
+
+    const workingMins = 8 * 60;  //in mins
+    let catgMins = 0;
+    const categories = await categoryModel.find()
+        .then((categories) => categories)
+        .catch(() => { res.status(500).send('Error occured while fetching tasks') })
+
+    await productModel.find({ assignStatus: false }).limit(100)
+        .then(async (products) => {
+            const tasks = [];
+            //assign task according to category time
+            for (let product of products) {
+                catgMins += categories.find(e => e.category === product.category).time
+                tasks.push(product)
+                if (catgMins >= workingMins) {
+                    break;
+                }
+            }
+            res.status(200).json(tasks)
+        }).catch(() => {
+            res.status(500).send('Error occured while fetching tasks')
+        })
 }

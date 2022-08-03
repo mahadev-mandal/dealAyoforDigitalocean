@@ -14,7 +14,7 @@ function Tasks() {
                 throw new Error(err)
             })
     }
-    const { data: products, error } = useSWR(`${baseURL}/api/tasks`, fetchData);
+    const { data: products, error } = useSWR(`${baseURL}/api/tasks/abc`, fetchData);
     console.log(products)
     console.log(error)
     if (error) {

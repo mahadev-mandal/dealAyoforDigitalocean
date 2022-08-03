@@ -13,7 +13,7 @@ export default function Tasks(req, res) {
 }
 
 const getAllAssignedTasks = async(req, res) => {
-    await productModel.find()  //sort assigned is true
+    await productModel.find({assignStatus:true})
     .then((products)=>{
         res.status(200).json(products)
     }).catch(()=>{
