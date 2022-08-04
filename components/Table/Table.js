@@ -8,7 +8,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
-
+import { Checkbox } from '@mui/material';
+import axios from 'axios';
+import { baseURL } from '../../helpers/constants';
+import { mutate } from 'swr';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -37,6 +40,31 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function CustomizedTables({ tableHeading, data }) {
+    console.log(new Date()== new Date().toLocaleDateString())
+    const handleChange = async (event, _id) => {
+        let date = null;
+        if (event.target.checked) {
+            date = new Date();
+
+        } else {
+            date = ''
+        }
+        await axios.put(`${baseURL}/api/products/${_id}`, { entryStatus: event.target.checked, date: date })
+            .then(() => {
+                mutate(`${baseURL}/api/tasks/abc`)
+            }).catch((err) => {
+                console.log(err)
+            })
+    }
+
+    const returnTime = (date)=>{
+        if(date){
+            return new Date(date).toLocaleTimeString();
+        }else {
+            return ''
+        }
+    }
+
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table" size="small">
@@ -56,7 +84,14 @@ export default function CustomizedTables({ tableHeading, data }) {
                             </StyledTableCell>
                             {tableHeading.map((head) => (
                                 <StyledTableCell key={head} >
-                                    {(row[head])}
+                                    {
+                                        typeof (row[head]) === 'boolean' ?
+                                            <Checkbox
+                                                checked={row[head]}
+                                                onChange={e => handleChange(e, row._id)}
+                                                sx={{ padding: 0, }}
+                                            /> : head === 'entryDate' ? returnTime(row[head]) : row[head]
+                                    }
                                 </StyledTableCell>
                             ))}
                         </StyledTableRow>

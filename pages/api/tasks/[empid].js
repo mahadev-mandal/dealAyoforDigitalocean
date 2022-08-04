@@ -18,11 +18,12 @@ const getAssignedTasks = async (req, res) => {
 
     const workingMins = 8 * 60;  //in mins
     let catgMins = 0;
+
     const categories = await categoryModel.find()
         .then((categories) => categories)
         .catch(() => { res.status(500).send('Error occured while fetching tasks') })
 
-    await productModel.find({ assignStatus: false }).limit(100)
+    await productModel.find({entryDate:''}).limit(100)
         .then(async (products) => {
             const tasks = [];
             //assign task according to category time
@@ -33,7 +34,7 @@ const getAssignedTasks = async (req, res) => {
                     break;
                 }
             }
-            res.status(200).json(tasks)
+            res.status(200).send(tasks)
         }).catch(() => {
             res.status(500).send('Error occured while fetching tasks')
         })

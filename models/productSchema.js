@@ -42,7 +42,7 @@ const productSchema = new mongoose.Schema({
         _id: false,
     },
     entryDate: {
-        type: String,
+        type: Date,
     },
     entryBy: {
         type: String,

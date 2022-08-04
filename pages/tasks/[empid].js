@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import CustomizedTables from '../../components/Table/Table'
 import { baseURL } from '../../helpers/constants';
 
-const tableHeading = ['model','title', 'vendor', 'category', 'MRP', 'SP', 'status',];
+const tableHeading = ['model','title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'entryDate'];
 
 function Tasks() {
     const fetchData = async (url) => {
@@ -15,8 +15,7 @@ function Tasks() {
             })
     }
     const { data: products, error } = useSWR(`${baseURL}/api/tasks/abc`, fetchData);
-    console.log(products)
-    console.log(error)
+
     if (error) {
         return <div>Failed to load products</div>
     } else if (!products) {
