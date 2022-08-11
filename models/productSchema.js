@@ -41,12 +41,6 @@ const productSchema = new mongoose.Schema({
         type: Object,
         _id: false,
     },
-    entryDate: {
-        type: Date,
-    },
-    entryBy: {
-        type: String,
-    },
     lastUpdateDetails: {
         //date, name, updated fields like MRP:500 etc
         type: Object,  
@@ -62,10 +56,17 @@ const productSchema = new mongoose.Schema({
         required: true,
         default: false
     },
-    assignStatus: {
-        type: Boolean,
-        required: true,
-        default: false,
+    entryDate: {
+        type: Date,
+    },
+    entryBy: {
+        type: String,
+    },
+    assignDate: {
+        type: Date,
+    },
+    assignTo:{
+        type: String,
     }
 })
-export default mongoose.models.product || mongoose.model('product', productSchema);
+export default mongoose.models.product || mongoose.model('product', productSchema); 

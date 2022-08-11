@@ -15,7 +15,7 @@ export default function attendance(req, res) {
 const saveAttendance = async (req, res) => {
     // const { empid } = req.query;
     const date = new Date()
-    res.json(Date.parse("12:00 AM"))
+    res.json(date.toLocaleTimeString())
     
     // const year = 2022;
     // const month = 8;

@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
-import { Checkbox } from '@mui/material';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -36,16 +36,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-export default function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange }) {
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+export default function AttendanceTable({ tableHeading, data, dataHeading, }) {
     const returnTime = (date) => {
         if (date) {
-            return new Date(date).toLocaleTimeString();
+            return new Date(date).toLocaleTimeString()
         } else {
             return ''
         }
     }
-
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table" size="small">
@@ -58,24 +58,29 @@ export default function CustomizedTables({ tableHeading, data, dataHeading, onSt
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row, index) => (
-                        <StyledTableRow key={index}>
-                            <StyledTableCell component="th" scope="row">
-                                {index}
-                            </StyledTableCell>
-                            {dataHeading.map((head) => (
-                                <StyledTableCell key={head} >
-                                    {
-                                        typeof (row[head]) === 'boolean' ?
-                                            <Checkbox
-                                                checked={row[head]}
-                                                onChange={e => onStatusChange(e, row._id)}
-                                                sx={{ padding: 0, }}
-                                            /> : head === 'entryDate' ? returnTime(row[head]) : row[head]
-                                    }
+                    {data.map((attendances, index1) => (
+                        attendances.employees.map((attendance) => (
+                            <StyledTableRow key={attendance.dealAyoId}>
+                                <StyledTableCell component="th" scope="row">
+                                    {index1}
                                 </StyledTableCell>
-                            ))}
-                        </StyledTableRow>
+                                <StyledTableCell component="th" scope="row">
+                                    {new Date(attendances.date).toLocaleDateString()}
+                                </StyledTableCell>
+                                <StyledTableCell component="th" scope="row">
+                                    {/* new Date(attendances.date).toLocaleDateString('en-us', { weekday: 'long' }) */}
+                                    {days[new Date(attendances.date).getDay()]}
+                                </StyledTableCell>
+                                {dataHeading.map((head) => (
+                                    <StyledTableCell key={head}>
+                                        {
+                                            (head === 'entryTime' || head === 'exitTime') ? returnTime(attendance[head])
+                                                : attendance[head]
+                                        }
+                                    </StyledTableCell>
+                                ))}
+                            </StyledTableRow>
+                        ))
                     ))}
                 </TableBody>
             </Table>
@@ -83,10 +88,11 @@ export default function CustomizedTables({ tableHeading, data, dataHeading, onSt
     );
 }
 
-CustomizedTables.propTypes = {
+AttendanceTable.propTypes = {
     tableHeading: PropTypes.array,
     data: PropTypes.array,
     dataHeading: PropTypes.array,
-    onStatusChange: PropTypes.array,
+    onEntryChange: PropTypes.array,
+    onExitChange: PropTypes.array,
 }
 

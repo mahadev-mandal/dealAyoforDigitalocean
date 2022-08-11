@@ -1,32 +1,34 @@
+import axios from 'axios';
 import React from 'react'
-import CustomizedTables from '../../components/Table/Table'
+import useSWR from 'swr';
+import AddEmployee from '../../components/AddEmployeeModal';
+import Table from '../../components/Table/Table'
+import { baseURL } from '../../helpers/constants';
 
-const tableHeading = ['id', 'mobile', 'email', 'start_time', 'end_time', 'tasks_decr'];
-const data = [
-    {
-        id: 'DA11',
-        mobile: '9816876852',
-        email: 'mandalmahadev5@gmail.com',
-        start_time: '10:00 am',
-        end_time: '6:00 am',
-        tasks_decr: 0,
-    },
-    {
-        id: 'DA11',
-        mobile: '9816876852',
-        email: 'mandalmahadev5@gmail.com',
-        start_time: '10:00 am',
-        end_time: '6:00 am',
-        tasks_decr: 0,
-    }
-]
+const tableHeading = ['DealAyoId', 'mobile', 'email', 'start time', 'end time', 'tasks decr',];
+const dataHeading = ['dealAyoId', 'mobile', 'email', 'startTime', 'endTime', 'decreaseTask']
 
-function Employees() {
+
+export default function Employees() {
+  const fetchData = async (url) => {
+    return await axios.get(url)
+      .then((res) => res.data).catch((err)=>{throw new Error(err)})
+  }
+  const { data: employees, error } = useSWR(`${baseURL}/api/employees`, fetchData)
+  if(error){
+    return <div>Failed to load Employees details</div>
+  }else if(!employees){
+    return <div>Please wait Loading...</div>
+  }
+  console.log(employees)
   return (
     <div>
-        <CustomizedTables tableHeading={tableHeading} data={data} />
+      <AddEmployee />
+      <Table
+        tableHeading={tableHeading}
+        dataHeading={dataHeading}
+        data={employees}
+      />
     </div>
   )
 }
-
-export default Employees

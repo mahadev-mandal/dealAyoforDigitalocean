@@ -2,30 +2,42 @@ import mongoose from "mongoose";
 
 const attendanceSchema = new mongoose.Schema({
     date: {
-        type: Number,
+        type: Date,
         required: true,
-        unique:true,
-        // index:true,
+        unique: true,
+        index:true,
     },
-    name:String,
+    name: String,
     employees: [
         {
-            _id:false,
-            empId: {
+            _id: false,
+            dealAyoId: {
                 type: String,
                 required: true,
             },
-            name:{
+            name: {
                 type: String,
                 required: true
             },
             entryTime: {
-                type: String,
+                type: Date,
             },
             exitTime: {
-                type:String,
+                type: Date,
             },
-            comment: String,   
+            tasksAssigned: {
+                type: Number,
+                default: 0
+            },
+            tasksCompleted: {
+                type: Number,
+                default: 0,
+            },
+            extraTasksCompleted: {
+                type: Number,
+                default: 0
+            },
+            comment: String,
         }
     ]
 })

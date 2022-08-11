@@ -1,10 +1,11 @@
 import axios from 'axios';
 import React from 'react'
 import useSWR from 'swr';
-import CustomizedTables from '../../components/Table/Table'
+import Table from '../../components/Table/Table'
 import { baseURL } from '../../helpers/constants';
 
-const tableHeading = ['model','title', 'vendor', 'category', 'MRP', 'SP', 'status',];
+const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entry status',];
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus']
 
 function Products() {
     const fetchData = async (url) => {
@@ -24,7 +25,11 @@ function Products() {
     }
     return (
         <div>
-            <CustomizedTables tableHeading={tableHeading} data={products} />
+            <Table
+                tableHeading={tableHeading}
+                dataHeading={dataHeading}
+                data={products}
+            />
         </div>
     )
 }

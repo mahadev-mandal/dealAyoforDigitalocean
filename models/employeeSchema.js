@@ -28,11 +28,11 @@ const employeeSchema = new mongoose.Schema({
         required: true,
     },
     startTime: {
-        type: Date,
-        require: true,
+        type: String,
+        required: true,
     },
     endTime: {
-        type: Date,
+        type: String,
         required: true,
     },
     decreaseTask: {
@@ -44,6 +44,5 @@ const employeeSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-
 });
 export default mongoose.models.employees || mongoose.model('employees', employeeSchema);

@@ -15,7 +15,7 @@ export default function SwitchMethod(req, res) {
 }
 
 const getEmployees = async (req, res) => {
-    await employeeModel.find()
+    await employeeModel.find() //dont send password
         .then((employees) => {
             res.status(200).json(employees);
         }).catch(() => {
@@ -25,7 +25,7 @@ const getEmployees = async (req, res) => {
 
 const addEmployee = async (req, res) => {
     const employee = new employeeModel({
-        dealAyoId: req.body.daId,
+        dealAyoId: req.body.dealAyoId,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         mobile: req.body.mobile,
@@ -38,7 +38,6 @@ const addEmployee = async (req, res) => {
     })
     await employee.save()
         .then(() => {
-            console.log('jkdjf')
             res.status(200).send('Employee added successfully');
         }).catch((err) => {
             if (err.keyPattern.dealAyoId === 1) {

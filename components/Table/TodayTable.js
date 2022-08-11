@@ -9,6 +9,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
 import { Checkbox } from '@mui/material';
+import axios from 'axios';
+import { baseURL } from '../../helpers/constants';
+import { mutate } from 'swr';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -36,7 +40,38 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-export default function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange }) {
+export default function TodayTable({ tableHeading, data, dataHeading, }) {
+
+    const handleEntryChange = async (e, dealAyoId, firstName, type) => {
+        var entryTime;
+        var exitTime;
+        if (type === 'entryTime') {
+            if (e.target.checked) {
+                entryTime = new Date();
+            } else {
+                entryTime = null
+            }
+        }
+        if (type === 'exitTime') {
+            if (e.target.checked) {
+                exitTime = new Date();
+            } else {
+                exitTime = null;
+            }
+        }
+        console.log(Number('10:00'))
+        const body = {
+            dealAyoId: dealAyoId,
+            date: new Date(),
+            entryTime: entryTime,
+            exitTime: exitTime,
+            name: firstName
+        }
+        await axios.put(`${baseURL}/api/attendance`, body)
+            .then(() => {
+                mutate(`${baseURL}/api/attendance`)
+            })
+    }
 
     const returnTime = (date) => {
         if (date) {
@@ -58,7 +93,7 @@ export default function CustomizedTables({ tableHeading, data, dataHeading, onSt
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row, index) => (
+                    {data.map((attendance, index) => (
                         <StyledTableRow key={index}>
                             <StyledTableCell component="th" scope="row">
                                 {index}
@@ -66,12 +101,15 @@ export default function CustomizedTables({ tableHeading, data, dataHeading, onSt
                             {dataHeading.map((head) => (
                                 <StyledTableCell key={head} >
                                     {
-                                        typeof (row[head]) === 'boolean' ?
-                                            <Checkbox
-                                                checked={row[head]}
-                                                onChange={e => onStatusChange(e, row._id)}
-                                                sx={{ padding: 0, }}
-                                            /> : head === 'entryDate' ? returnTime(row[head]) : row[head]
+                                        (head === 'entryTime' || head === 'exitTime') ?
+                                            <div>
+                                                <Checkbox
+                                                    checked={attendance[head] ? true : false}
+                                                    onChange={e => handleEntryChange(e, attendance.dealAyoId, attendance.firstName, head)}
+                                                    sx={{ padding: 0, }}
+                                                />
+                                                {returnTime(attendance[head])}
+                                            </div> : head === 'workingHrs' ? `${attendance.startTime} - ${attendance.endTime}` : attendance[head]
                                     }
                                 </StyledTableCell>
                             ))}
@@ -83,10 +121,11 @@ export default function CustomizedTables({ tableHeading, data, dataHeading, onSt
     );
 }
 
-CustomizedTables.propTypes = {
+TodayTable.propTypes = {
     tableHeading: PropTypes.array,
     data: PropTypes.array,
     dataHeading: PropTypes.array,
-    onStatusChange: PropTypes.array,
+    onEntryChange: PropTypes.array,
+    onExitChange: PropTypes.array,
 }
 
