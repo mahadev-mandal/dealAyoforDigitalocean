@@ -10,6 +10,7 @@ import { employeeValidationSchema } from '../../utils/validationSchema';
 import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
 import { mutate } from 'swr';
+import { useState } from 'react';
 
 
 const arr = [
@@ -27,6 +28,7 @@ const arr = [
 export default function AddEmployee() {
     const [open, setOpen] = React.useState(false);
     const [msg, setMsg] = React.useState('');
+    const [role, setRole] = useState('data-entry')
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -41,7 +43,6 @@ export default function AddEmployee() {
             lastName: '',
             mobile: '',
             email: '',
-            role: 'data-entry',
             startTime: '',
             endTime: '',
             password: '',
@@ -49,7 +50,7 @@ export default function AddEmployee() {
         },
         validationSchema: employeeValidationSchema,
         async onSubmit() {
-            await axios.post(`${baseURL}/api/employees`, values)
+            await axios.post(`${baseURL}/api/employees`, { ...values, role: role })
                 .then(() => {
                     setOpen(false);
                     setMsg('');
@@ -62,7 +63,7 @@ export default function AddEmployee() {
 
     return (
         <div>
-            <Button variant="outlined" onClick={handleClickOpen} sx={{ m: 1 }}>
+            <Button variant="outlined" onClick={handleClickOpen} sx={{ mb: 0.5 }}>
                 Add Employee
             </Button>
             <Dialog
@@ -79,9 +80,8 @@ export default function AddEmployee() {
                     <Select
                         fullWidth
                         id='role'
-                        value={values.role}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
                     >
                         <MenuItem value="data-entry">Data entry</MenuItem>
                         <MenuItem value="other">Other</MenuItem>

@@ -1,42 +1,62 @@
-import { Divider, Grid, IconButton, InputBase, Paper, Stack } from "@mui/material";
+import { Avatar, Button, Divider, Grid, IconButton, InputBase, Paper, Stack, Tooltip } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import logo from "../../assets/images/header-logo.png";
 import SearchIcon from "@mui/icons-material/Search";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import MenuIcon from "@mui/icons-material/Menu";
-import { Box } from "@mui/system";
+import { baseURL, containerPadding } from "../../helpers/constants";
+import Cookies from "js-cookie";
+import parseJwt from "../../controllers/parseJwt";
+import { useRouter } from "next/router";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useState, useEffect } from "react";
+
+function Logout() {
+  const router = useRouter()
+  const handleLogout = () => {
+    Cookies.remove('token')
+    router.push(`${baseURL}`)
+  }
+  return (
+    <Button onClick={handleLogout} variant="text" sx={{ height: 20, fontSize: 12 }}>
+      Logout
+    </Button>
+  )
+}
 
 function TopNav() {
+  const [avatarLetter, setAvatarLetter] = useState('')
+  const token = Cookies.get('token')
+  
+  const returnFirstLetter = () => {
+    if (token) {
+      let name = parseJwt(Cookies.get('token')).name;
+      name = name.replace(/\s+/g, '');
+      setAvatarLetter(name.charAt(0));
+    } else {
+      setAvatarLetter('')
+    }
+  }
+  useEffect(() => {
+    returnFirstLetter()
+  }, [token])
   return (
     <Grid container
       alignItems="center"
-      columnGap={4}
+      columnGap={10}
       sx={{
-        background:'#E1304C',
+        background: '#E1304C',
         height: 70,
-        px:4,
+        p: containerPadding,
       }}
     >
-      <Grid item xs={12} md={2}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <IconButton aria-label="menu" size="large" sx={{ display: { md: 'none', xs: 'inline',  }, color:'white'}}>
-            <MenuIcon />
-          </IconButton>
+      <Grid item>
+        <Stack>
           <Link href="/">
             <a>
               <Image width={200} height={50} src={logo} alt="room finder logo" />
             </a>
           </Link>
-          <Box sx={{ display: { md: 'none', xs: 'inline' } }}>
-            <Link href="#">
-              <a>
-                <FavoriteBorderIcon />
-              </a>
-            </Link>
-          </Box>
         </Stack>
       </Grid>
       <Grid item xs={true}>
@@ -61,25 +81,48 @@ function TopNav() {
           </IconButton>
         </Paper>
       </Grid>
-      <Grid item display={{ md: "inline-block", xs: "none" }}>
-        <Link href="#">
-          <a>
-            <Stack alignItems="center" >
-              <PersonOutlineIcon fontSize="medium" />
-              Account
+      <Grid item >
+        <Stack alignItems="center" >
+          <Tooltip
+            title={<Logout />}
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  background: '#fff',
+                  color: '#222',
+                  borderRadius: 0,
+                  mt: 0,
+                  fontSize: 15,
+                  boxShadow: '0 0 10px gray',
+                  height: '100%',
+                },
+              },
+            }}
+            PopperProps={{
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, -10],
+                  },
+                },
+              ],
+            }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              sx={{ color: 'white' }}
+            >
+              <Avatar sx={{ textTransform: 'uppercase', width: 35, height: 35 }}>
+                {avatarLetter}
+              </Avatar>
+              <ArrowDropDownIcon />
             </Stack>
-          </a>
-        </Link>
-      </Grid>
-      <Grid item display={{ md: "inline-block", xs: "none" }}>
-        <Link href="#">
-          <a>
-            <Stack alignItems="center">
-              <FavoriteBorderIcon />
-              Saved
-            </Stack>
-          </a>
-        </Link>
+          </Tooltip>
+
+
+        </Stack>
       </Grid>
     </Grid>
   );

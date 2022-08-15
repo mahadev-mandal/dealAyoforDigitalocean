@@ -1,5 +1,6 @@
-import { Button } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import AttendanceTable from '../../components/Table/AttendanceTable';
@@ -12,9 +13,10 @@ const dataHeading = ['dealAyoId', 'name', 'entryTime', 'exitTime', 'tasksAssigne
 function Attendance() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
     // const [dateTo, setDateTo] = useState(new Date().setHours(24))
+    const token = Cookies.get('token');
     const dateTo = new Date().setHours(24);
     const fetchData = async (url) => {
-        return await axios.post(url, { dateFrom, dateTo })
+        return await axios.post(url, { dateFrom, dateTo, token })
             .then((res) => res.data).catch((err) => { throw new Error(err) })
     }
 
@@ -22,20 +24,20 @@ function Attendance() {
 
     const handleToday = () => {
         setDateFrom(new Date().setHours(0, 0, 0, 0));
-        handleDateChange(dateFrom, dateTo, mutate);
+        handleDateChange(dateFrom, dateTo, token, mutate);
     }
 
     const handleThisWeek = () => {
         const date = new Date();
         const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
         setDateFrom(lastSun);
-        handleDateChange(dateFrom, dateTo, mutate);
+        handleDateChange(dateFrom, dateTo, token, mutate);
     }
     const handleThisMonth = () => {
         const thisYear = new Date().getFullYear();
         const thisMonth = new Date().getMonth(); //month starts from 0-11
         setDateFrom(new Date(thisYear, thisMonth, 1).toLocaleString());
-        handleDateChange(dateFrom, dateTo, mutate)
+        handleDateChange(dateFrom, dateTo, token, mutate)
     }
 
     if (error) {
@@ -43,18 +45,20 @@ function Attendance() {
     } else if (!attendance) {
         return <div>Please wait loading...</div>
     }
-    
+
     return (
         <div>
-            <Button
-                variant='outlined'
-                onClick={handleToday}
-            >
-                Today
-            </Button>
-            <Button variant='outlined' onClick={handleThisWeek}>This Week</Button>
-            <Button variant='outlined' onClick={handleThisMonth}>This Month</Button>
-            <Button variant='outlined' disabled>Custom Date</Button>
+            <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
+                <Button
+                    variant='outlined'
+                    onClick={handleToday}
+                >
+                    Today
+                </Button>
+                <Button variant='outlined' onClick={handleThisWeek}>This Week</Button>
+                <Button variant='outlined' onClick={handleThisMonth}>This Month</Button>
+                <Button variant='outlined' disabled>Custom Date</Button>
+            </Stack>
             <AttendanceTable
                 tableHeading={tableHeading}
                 data={attendance.length < 1 ? [] : attendance}

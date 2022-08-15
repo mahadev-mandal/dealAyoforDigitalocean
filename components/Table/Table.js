@@ -45,7 +45,7 @@ export default function CustomizedTables({ tableHeading, data, dataHeading, onSt
             return ''
         }
     }
-
+    
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table" size="small">
@@ -87,6 +87,6 @@ CustomizedTables.propTypes = {
     tableHeading: PropTypes.array,
     data: PropTypes.array,
     dataHeading: PropTypes.array,
-    onStatusChange: PropTypes.array,
+    onStatusChange: PropTypes.func,
 }
 

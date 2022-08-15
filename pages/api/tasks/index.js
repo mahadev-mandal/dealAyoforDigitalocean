@@ -12,11 +12,17 @@ export default function Tasks(req, res) {
     }
 }
 
-const getAllAssignedTasks = async(req, res) => {
-    await productModel.find({assignStatus:true})
-    .then((products)=>{
-        res.status(200).json(products)
-    }).catch(()=>{
-        res.status(500).send('Error occured while fetching assigned tasks')
+const getAllAssignedTasks = async (req, res) => {
+    await productModel.find({
+        assignStatus: true,
+        assignDate: {
+            "$gte": new Date().setHours(0, 0, 0, 0),
+            "$lt": new Date().setHours(24)
+        }
     })
+        .then((products) => {
+            res.status(200).json(products)
+        }).catch(() => {
+            res.status(500).send('Error occured while fetching assigned tasks')
+        })
 }

@@ -59,7 +59,6 @@ export default function TodayTable({ tableHeading, data, dataHeading, }) {
                 exitTime = null;
             }
         }
-        console.log(Number('10:00'))
         const body = {
             dealAyoId: dealAyoId,
             date: new Date(),
@@ -67,9 +66,9 @@ export default function TodayTable({ tableHeading, data, dataHeading, }) {
             exitTime: exitTime,
             name: firstName
         }
-        await axios.put(`${baseURL}/api/attendance`, body)
+        await axios.put(`${baseURL}/api/mark-attendance`, body)
             .then(() => {
-                mutate(`${baseURL}/api/attendance`)
+                mutate(`${baseURL}/api/mark-attendance`)
             })
     }
 
@@ -125,7 +124,5 @@ TodayTable.propTypes = {
     tableHeading: PropTypes.array,
     data: PropTypes.array,
     dataHeading: PropTypes.array,
-    onEntryChange: PropTypes.array,
-    onExitChange: PropTypes.array,
 }
 

@@ -1,9 +1,9 @@
-import { Button } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react'
 import useSWR, { mutate } from 'swr';
-import CustomizedTables from '../../components/Table/Table'
+import Table from '../../components/Table/Table'
 import { baseURL } from '../../helpers/constants';
 
 const tableHeading = ['ISBN', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'Entry Date'];
@@ -39,23 +39,25 @@ function Tasks() {
         })
     }
 
-    // if (error) {
-    //     return <div>Failed to load products</div>
-    // } else if (!products) {
-    //     return <div>Please wait loading...</div>
-    // }
+    if (error) {
+        return <div>Failed to load products</div>
+    } else if (shouldFetchDailyTasks) {
+        if (!products) {
+            return <div>Please wait loading...</div>
+        }
+    }
     return (
         <div>
-            <Button
-                variant="outlined"
-                onClick={() => setShouldFetchDailyTasks(true)}
-                sx={{ m: 2 }}
-            >
-                Get Daily Tasks
-            </Button>
-            <Button variant="outlined" sx={{ m: 2 }}>Get Extra 5 Tasks</Button>
-            <Button variant="outlined">Show Attendance</Button>
-            <CustomizedTables
+            <Stack spacing={2} sx={{ mb: 0.5 }} direction="row">
+                <Button
+                    variant="outlined"
+                    onClick={() => setShouldFetchDailyTasks(true)}
+                >
+                    Get Daily Tasks
+                </Button>
+                <Button variant="outlined">Get Extra 5 Tasks</Button>
+            </Stack>
+            <Table
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}
                 data={products ? products : []}
@@ -65,4 +67,4 @@ function Tasks() {
     )
 }
 
-export default Tasks
+export default (Tasks)

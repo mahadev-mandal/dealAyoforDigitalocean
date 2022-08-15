@@ -16,8 +16,7 @@ function Products() {
             })
     }
     const { data: products, error } = useSWR(`${baseURL}/api/products`, fetchData);
-    console.log(products)
-    console.log(error)
+    
     if (error) {
         return <div>Failed to load products</div>
     } else if (!products) {

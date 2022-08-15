@@ -24,6 +24,7 @@ const getEmployees = async (req, res) => {
 }
 
 const addEmployee = async (req, res) => {
+console.log(req.body)
     const employee = new employeeModel({
         dealAyoId: req.body.dealAyoId,
         firstName: req.body.firstName,
@@ -34,12 +35,13 @@ const addEmployee = async (req, res) => {
         startTime: req.body.startTime,
         endTime: req.body.endTime,
         decreaseTask: req.body.decreaseTask,
-        password: req.body.password,
+        password: req.body.password, 
     })
     await employee.save()
         .then(() => {
             res.status(200).send('Employee added successfully');
         }).catch((err) => {
+            console.log(err)
             if (err.keyPattern.dealAyoId === 1) {
                 res.status(403).send('Deal ayo Id is already present')
             } else if (err.keyPattern.mobile === 1) {

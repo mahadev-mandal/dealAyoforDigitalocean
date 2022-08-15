@@ -3,23 +3,40 @@ import {
     Stack,
     Typography
 } from "@mui/material"
-import { baseURL } from '../../helpers/constants'
+import { baseURL, containerPadding } from '../../helpers/constants'
+import { useRouter } from 'next/router'
+import Cookies from 'js-cookie'
+import { useEffect } from 'react'
+import { useState } from 'react'
 
 const categories = ['attendance', 'tasks', 'employees', 'mark-attendance', 'products']
 
 function Menu() {
-    return (
-        <Stack
-            direction="row"
-            alignItems="center"
-            height={35}
-            sx={{
-                background: '#E1304C',
-                p: 1,
-                display: { xs: "none", md: "flex" }
-            }}
-        >
-            {categories.map((item) => (
+    const router = useRouter();
+    const [loggedIn, setLoggedIn] = useState(false)
+    const checkLoggedIn = () => {
+        if (Cookies.get('token')) {
+            setLoggedIn(true)
+        } else {
+            setLoggedIn(false)
+        }
+    }
+    useEffect(() => {
+        checkLoggedIn();
+    })
+
+    if (loggedIn) {
+        return (
+            <Stack
+                direction="row"
+                alignItems="center"
+                height={35}
+                sx={{
+                    background: '#E1304C',
+                    p: containerPadding,
+                }}
+            >
+                {categories.map((item) => (
                     <Stack
                         key={item}
                         height="100%"
@@ -29,10 +46,15 @@ function Menu() {
                         sx={{
                             p: '0 25px',
                             textTransform: 'uppercase',
+                            height: 35,
+                            ml: 0.2,
+                            borderRadius: "0 0 -5px -5px",
+                            background: router.pathname === `/${item}` ? 'white' : 'inherit',
+                            color: router.pathname === `/${item}` ? 'black' : 'white',
                             '&:hover': {
                                 background: 'white',
-                                height:30,
-                                color:'black'
+                                height: 35,
+                                color: 'black'
                             }
                         }}
                     >
@@ -43,9 +65,13 @@ function Menu() {
                         </Link>
                     </Stack>
                 ))
-            }
-        </Stack >
-    )
+                }
+            </Stack >
+        )
+
+    } else {
+        return null
+    }
 }
 
 export default Menu

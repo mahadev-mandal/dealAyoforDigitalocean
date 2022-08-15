@@ -43,6 +43,6 @@ const employeeSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
+    },
 });
 export default mongoose.models.employees || mongoose.model('employees', employeeSchema);

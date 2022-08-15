@@ -11,5 +11,4 @@ export const employeeValidationSchema = yup.object().shape({
     endTime:yup.string().required(),
     password:yup.string().required(),
     decreaseTask:yup.number().required(),
-    role:yup.string().required()
 })

@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
+import { mongoDbUri } from './constants';
 
 export default function db_conn() {
     if (mongoose.connections[0].readyState) {
         console.log("Alrady connected")
     } else {
-        mongoose.connect('mongodb://localhost:27017/dealAyo', {
+        mongoose.connect(mongoDbUri, {
             useNewUrlParser: true
         })
         mongoose.connection.on("connected", () => {
