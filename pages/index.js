@@ -53,6 +53,7 @@ export default function Home() {
             fullWidth
             variant='outlined'
             label="Password"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           /><br /><br />

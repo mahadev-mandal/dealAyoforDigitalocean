@@ -21,7 +21,7 @@ const arr = [
     { label: 'email', type: 'email' },
     { label: 'startTime', type: 'text' },
     { label: 'endTime', type: 'text' },
-    { label: 'password', type: 'password' },
+    { label: 'password', type: 'text' },
     { label: 'decreaseTask', type: 'number' }
 ]
 

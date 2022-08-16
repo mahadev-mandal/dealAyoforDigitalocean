@@ -25,6 +25,21 @@ function Menu() {
         checkLoggedIn();
     })
 
+    const matchUrl = (item) => {
+        const pathName = router.pathname;
+        let rmvSlash
+        if (pathName.indexOf('/', 1) > 1) {
+            rmvSlash = pathName.substring(pathName.indexOf('/') + 1, pathName.indexOf('/', 1))
+        } else {
+            rmvSlash = pathName.replace(/\//g, "")
+        }
+        if (rmvSlash == item) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     if (loggedIn) {
         return (
             <Stack
@@ -49,8 +64,8 @@ function Menu() {
                             height: 35,
                             ml: 0.2,
                             borderRadius: "0 0 -5px -5px",
-                            background: router.pathname === `/${item}` ? 'white' : 'inherit',
-                            color: router.pathname === `/${item}` ? 'black' : 'white',
+                            background: matchUrl(item) ? 'white' : 'inherit',
+                            color: matchUrl(item) ? 'black' : 'white',
                             '&:hover': {
                                 background: 'white',
                                 height: 35,
