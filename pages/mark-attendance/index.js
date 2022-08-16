@@ -27,20 +27,21 @@ function Today() {
 
   let data;
   let d;
-  // MERGE emp details and attendance data
-  if (attendance) {
-    if (attendance.length > 0) {
-      d = empDetails.map(emp => ({ ...emp, ...attendance[0].employees.find(attend => attend.dealAyoId === emp.dealAyoId) }));
-      if (parseJwt(Cookies.get('token')).role === 'admin' || parseJwt(Cookies.get('token')).role === 'super-admin') {
-        data = d
-      }
-      // Only make able to mark his/her attendance if he/she is not admin or super-admin
-      else {
-        data = d.filter(e => e.dealAyoId === parseJwt(Cookies.get('token')).dealAyoId)
-      }
-    }
-  }
 
+  // MERGE emp details and attendance data
+  if (attendance.length > 0) {
+    d = empDetails.map(emp => ({ ...emp, ...attendance[0].employees.find(attend => attend.dealAyoId === emp.dealAyoId) }));
+    if (parseJwt(Cookies.get('token')).role === 'admin' || parseJwt(Cookies.get('token')).role === 'super-admin') {
+      data = d
+    }
+    // Only make able to mark his/her attendance if he/she is not admin or super-admin
+    else {
+      data = d.filter(e => e.dealAyoId === parseJwt(Cookies.get('token')).dealAyoId)
+    }
+  } else {
+    data = empDetails
+  }
+  console.log(attendance)
   if (error1 || error2) {
     return <div>Failed to load employees details</div>
   } else if ((!data)) {
