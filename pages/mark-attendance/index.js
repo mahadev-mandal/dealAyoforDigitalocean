@@ -41,7 +41,7 @@ function Today() {
   } else {
     data = empDetails
   }
-  console.log(attendance)
+  
   if (error1 || error2) {
     return <div>Failed to load employees details</div>
   } else if ((!data)) {
