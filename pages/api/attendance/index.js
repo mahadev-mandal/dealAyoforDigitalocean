@@ -27,10 +27,15 @@ async function getAttendance(req, res) {
             date: {
                 "$gte": new Date(req.body.dateFrom),
                 "$lt": new Date(req.body.dateTo)
-            }
+            },
+            "employees.dealAyoId": 'e11'
         }).sort({ date: -1 })
-            .then((attendences) => {
-                res.status(200).json(attendences)
+            .then((attendances) => {
+                const data = attendances.map((attendance) => {
+                    const employees = attendance.employees.filter(emp => emp.entryTime !== null);
+                    return { date: attendance.date, employees }
+                })
+                res.status(200).json(data)
             }).catch(() => {
                 res.status(500).send('Something went wrong')
             })

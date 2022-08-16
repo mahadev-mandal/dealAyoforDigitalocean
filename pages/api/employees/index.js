@@ -24,7 +24,6 @@ const getEmployees = async (req, res) => {
 }
 
 const addEmployee = async (req, res) => {
-console.log(req.body)
     const employee = new employeeModel({
         dealAyoId: req.body.dealAyoId,
         firstName: req.body.firstName,

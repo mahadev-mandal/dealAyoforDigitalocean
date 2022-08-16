@@ -2,6 +2,7 @@ import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema';
 import categoryModel from '../../../models/categorySchema';
 import attendanceModel from '../../../models/attendanceSchema';
+import jwt from "jsonwebtoken";
 
 db_conn();
 
@@ -15,13 +16,20 @@ export default function Tasks(req, res) {
 }
 
 const getAssignedTasks = async (req, res) => {
+    const tokenDecoded = jwt.verify(req.body.token, process.env.SECRET_KEY, function (err, decoded) {
+        if (err) {
+            res.status(500).send('Error in token')
+        } else {
+            return decoded
+        }
+    });
     //use for time calculation
     const categories = await categoryModel.find()
         .then((categories) => categories)
         .catch(() => { res.status(500).send('Error occured while fetching tasks') })
     //checks if task assigned today
     await productModel.find({
-        assignTo: req.body.dealAyoId,
+        assignTo: tokenDecoded.dealAyoId,
         assignDate: {
             "$gte": new Date().setHours(0, 0, 0, 0),
             "$lt": new Date().setHours(24)
@@ -52,7 +60,7 @@ const getAssignedTasks = async (req, res) => {
                         await productModel.updateOne({ _id: product._id.toString() }, {
                             $set: {
                                 assignDate: new Date(),
-                                assignTo: req.body.dealAyoId
+                                assignTo: tokenDecoded.dealAyoId
                             }
                         }, { upsert: true })
                         if (catgMins >= workingMins) {
@@ -65,7 +73,7 @@ const getAssignedTasks = async (req, res) => {
                         "$gte": new Date().setHours(0, 0, 0, 0),
                         "$lt": new Date().setHours(24)
                     },
-                    "employees.dealAyoId": req.body.dealAyoId
+                    "employees.dealAyoId": tokenDecoded.dealAyoId
                 }, {
                     $set: {
                         "employees.$.tasksAssigned": tasks.length

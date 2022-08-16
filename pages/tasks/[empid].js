@@ -13,7 +13,7 @@ function Tasks() {
     const [shouldFetchDailyTasks, setShouldFetchDailyTasks] = useState(false);
     const fetchData = async (url) => {
         return await axios.post(url, {
-            dealAyoId: Cookies.get('empId'),
+            token: Cookies.get('token'),
         }).then((res) => res.data
         ).catch((err) => {
             throw new Error(err)
@@ -31,7 +31,7 @@ function Tasks() {
         await axios.put(`${baseURL}/api/products/${_id}`, {
             entryStatus: event.target.checked,
             date: date,
-            dealAyoId: Cookies.get('empId')
+            token: Cookies.get('token')
         }).then(() => {
             mutate(`${baseURL}/api/tasks/${Cookies.get('empId')}`)
         }).catch((err) => {

@@ -1,6 +1,7 @@
 import db_conn from '../../../helpers/db_conn';
 import attendanceModel from '../../../models/attendanceSchema';
 import productModel from '../../../models/productSchema';
+import jwt from 'jsonwebtoken'
 
 db_conn()
 
@@ -17,6 +18,13 @@ export default function products(req, res) {
 
 const updateProduct = async (req, res) => {
     const { pid } = req.query;
+    const tokenDecoded = jwt.verify(req.body.token, process.env.SECRET_KEY, function (err, decoded) {
+        if (err) {
+            res.status(500).send('Error in token')
+        } else {
+            return decoded
+        }
+    });
     await productModel.updateOne({ _id: pid }, {
         $set: {
             entryStatus: req.body.entryStatus,
@@ -30,7 +38,7 @@ const updateProduct = async (req, res) => {
                     "$gte": new Date().setHours(0, 0, 0, 0),
                     "$lt": new Date().setHours(24)
                 },
-                "employees.dealAyoId": req.body.dealAyoId
+                "employees.dealAyoId": tokenDecoded.dealAyoId
             }, {
                 $inc: {
                     "employees.$.tasksCompleted": 1
@@ -45,7 +53,7 @@ const updateProduct = async (req, res) => {
                     "$gte": new Date().setHours(0, 0, 0, 0),
                     "$lt": new Date().setHours(24)
                 },
-                "employees.dealAyoId": req.body.dealAyoId
+                "employees.dealAyoId": tokenDecoded.dealAyoId
             }, {
                 $inc: {
                     "employees.$.tasksCompleted": -1
