@@ -40,8 +40,7 @@ export default function Home() {
           padding: 5,
           background: 'rgb(240, 240, 240, 0.5)'
         }}>
-          {baseURL}
-          jkdkjfs
+          
           <AccountCircleIcon sx={{ fontSize: 80, m: 'auto', display: 'block' }} /> <br />
           <TextField
             fullWidth
