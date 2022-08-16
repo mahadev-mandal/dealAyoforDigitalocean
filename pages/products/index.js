@@ -4,8 +4,8 @@ import useSWR from 'swr';
 import Table from '../../components/Table/Table'
 import { baseURL } from '../../helpers/constants';
 
-const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entry status',];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus']
+const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entry status', 'Assign to'];
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'assignTo']
 
 function Products() {
     const fetchData = async (url) => {

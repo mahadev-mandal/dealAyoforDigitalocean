@@ -7,8 +7,8 @@ import CustomizedTables from '../../components/Table/Table'
 import parseJwt from '../../controllers/parseJwt';
 import { baseURL } from '../../helpers/constants';
 
-const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'status',];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'status'];
+const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'Entry status', 'assign to',];
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'assignTo'];
 
 function Tasks() {
     const router = useRouter();
