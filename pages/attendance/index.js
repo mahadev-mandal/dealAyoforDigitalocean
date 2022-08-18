@@ -69,7 +69,7 @@ function Attendance() {
                         id='role'
                         size='small'
                         value={'admin'}
-                        onChange={(e) => setRole(e.target.value)}
+                        // onChange={(e) => setRole(e.target.value)}
                     >
                         <MenuItem value="data-entry">Data entry</MenuItem>
                         <MenuItem value="other">Other</MenuItem>
