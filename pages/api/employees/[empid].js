@@ -18,7 +18,6 @@ const updateEmployee = async (req, res) => {
     const { empid } = req.query;
     await employeeModel.findByIdAndUpdate(empid, {
         $set: {
-            // dealAyoId: req.body.daId,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             // mobile: req.body.mobile,
@@ -28,6 +27,7 @@ const updateEmployee = async (req, res) => {
             endTime: req.body.endTime,
             decreaseTask: req.body.decreaseTask,
             password: req.body.password,
+            // staus:req.body.status,
         }
     }).then(() => {
         res.send('Employee updated sucessfully')

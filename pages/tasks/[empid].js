@@ -11,6 +11,9 @@ const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entry
 
 function Tasks() {
     const [shouldFetchDailyTasks, setShouldFetchDailyTasks] = useState(false);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(20);
+
     const fetchData = async (url) => {
         return await axios.post(url, {
             token: Cookies.get('token'),
@@ -19,6 +22,13 @@ function Tasks() {
             throw new Error(err)
         })
     }
+    const handleChangePage = (event, newPage) => {
+        setPage(parseInt(newPage))
+    }
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10))
+    }
+
     const { data: products, error } = useSWR(shouldFetchDailyTasks ? `${baseURL}/api/tasks/${Cookies.get('empId')}` : null, fetchData);
 
     const handleStatusChange = async (event, _id) => {
@@ -41,11 +51,12 @@ function Tasks() {
 
     if (error) {
         return <div>Failed to load products</div>
-    } else if (shouldFetchDailyTasks) {
-        if (!products) {
+    } else if (!products) {
+        if (shouldFetchDailyTasks) {
             return <div>Please wait loading...</div>
         }
     }
+    
     return (
         <div>
             <Stack spacing={2} sx={{ mb: 0.5 }} direction="row">
@@ -60,8 +71,13 @@ function Tasks() {
             <Table
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}
-                data={products ? products : []}
+                data={shouldFetchDailyTasks ? products : []}
                 onStatusChange={handleStatusChange}
+                page={page}
+                totalCount={shouldFetchDailyTasks ? products.length : 0}
+                rowsPerPage={rowsPerPage}
+                handleChangePage={handleChangePage}
+                handleChangeRowsPerPage={handleChangeRowsPerPage}
             />
         </div>
     )

@@ -20,6 +20,6 @@ module.exports = withPWA({
 // Only run ESLint on the 'pages' and 'utils' directories during production builds (next build)
 module.exports = {
   eslint: {
-    dirs: ['pages', 'utils'], 
+    dirs: ['pages', 'utils'],
   },
 }

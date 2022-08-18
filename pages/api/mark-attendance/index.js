@@ -1,4 +1,3 @@
-// import jwt from "jsonwebtoken";
 import db_conn from "../../../helpers/db_conn";
 import attendaceModel from '../../../models/attendanceSchema';
 
@@ -6,7 +5,7 @@ db_conn();
 
 export default function attend(req, res) {
     switch (req.method) {
-        case "POST":
+        case "GET":
             return getAttendance(req, res);
         case "PUT":
             return saveOrUpdateAttendance(req, res);
@@ -17,17 +16,11 @@ export default function attend(req, res) {
 }
 
 async function getAttendance(req, res) {
-    // const tokenDecoded = jwt.verify(req.body.token, process.env.SECRET_KEY, function (err, decoded) {
-    //     if (err) {
-    //         res.status(500).send('Error in token')
-    //     } else {
-    //         return decoded
-    //     }
-    // });
+    const { dateFrom, dateTo } = req.query;
     await attendaceModel.find({
         date: {
-            "$gte": new Date(req.body.dateFrom),
-            "$lt": new Date(req.body.dateTo)
+            "$gte": new Date(dateFrom),
+            "$lt": new Date(dateTo)
         },
     }).sort({ date: -1 })
         .then((attendences) => {
@@ -36,7 +29,6 @@ async function getAttendance(req, res) {
             res.status(500).send('Something went wrong')
         })
 }
-// { upsert: true, new: true, setDefaultsOnInsert: true }
 
 //Attendance will be saved if no date found or will be updated if date found
 const saveOrUpdateAttendance = async (req, res) => {
@@ -51,13 +43,13 @@ const saveOrUpdateAttendance = async (req, res) => {
         } else {
             return saveAttendance(req, res);
         }
-    }).catch((err) => {
-        res.json(err)
+    }).catch(() => {
+        res.status(500).send('error occured while saving or updating attendance')
     })
 
 }
 
-//attence will be saved no date found
+//attence will be saved if no date found
 const saveAttendance = async (req, res) => {
 
     const attendance = new attendaceModel({
@@ -81,7 +73,7 @@ const saveAttendance = async (req, res) => {
         })
 }
 
-//attendance will be updated (date found)
+//attendance will be updated if fournd (date found)
 async function updateAttendance(req, res, data) {
     if (data[0].employees.find(e => e.dealAyoId === req.body.dealAyoId)) {
         //if empId found in date then attendance of emp is updated in object

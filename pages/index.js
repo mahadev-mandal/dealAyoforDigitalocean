@@ -47,6 +47,7 @@ export default function Home() {
             variant='outlined'
             label="Your id"
             value={empId}
+            autoComplete="off"
             onChange={(e) => setEmpId(e.target.value)}
           /> <br /><br />
           <TextField
@@ -54,6 +55,7 @@ export default function Home() {
             variant='outlined'
             label="Password"
             type="password"
+            autoComplete="off"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           /><br /><br />

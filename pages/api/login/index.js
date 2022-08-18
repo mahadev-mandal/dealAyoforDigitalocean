@@ -15,9 +15,8 @@ export default async function login(req, res) {
 }
 
 const loginUser = async (req, res) => {
-    await employeeModel.findOne({ dealAyoId: req.body.dealAyoId, })
-
-        .then((emp) => {
+    await employeeModel.findOne({ dealAyoId: req.body.dealAyoId, 
+    }).then((emp) => {
             if (emp) {
                 if (emp.password === req.body.password) {
                     const token = jwt.sign(

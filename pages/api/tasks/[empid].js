@@ -2,7 +2,7 @@ import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema';
 import categoryModel from '../../../models/categorySchema';
 import attendanceModel from '../../../models/attendanceSchema';
-import jwt from "jsonwebtoken";
+import tokenPayload from "../../../controllers/tokenPayload";
 
 db_conn();
 
@@ -11,31 +11,25 @@ export default function Tasks(req, res) {
         case 'POST':
             return getAssignedTasks(req, res);
         default:
-            res.status(500).send(req.method)
+            res.status(404).send('use proper method')
     }
 }
 
 const getAssignedTasks = async (req, res) => {
-    const tokenDecoded = jwt.verify(req.body.token, process.env.SECRET_KEY, function (err, decoded) {
-        if (err) {
-            res.status(500).send('Error in token')
-        } else {
-            return decoded
-        }
-    });
+
     //use for time calculation
     const categories = await categoryModel.find()
         .then((categories) => categories)
         .catch(() => { res.status(500).send('Error occured while fetching tasks') })
     //checks if task assigned today
     await productModel.find({
-        assignTo: tokenDecoded.dealAyoId,
+        assignTo: tokenPayload(req.cookies.token).dealAyoId,
         assignDate: {
             "$gte": new Date().setHours(0, 0, 0, 0),
             "$lt": new Date().setHours(24)
         }
     }).then(async (products) => {
-        // if lenth is greater than 1 it means tasks is assigned send same tasks to frontend
+        // if lenth is greater than 1 it means tasks is assigned so send same tasks to frontend
         if (products.length > 1) {
             res.status(200).json(products);
         } else {
@@ -56,11 +50,11 @@ const getAssignedTasks = async (req, res) => {
                     catgMins += categories.find(e => e.category === product.category).time;
                     if (catgMins <= workingMins) {
                         tasks.push(product);
-                        // set assign date to products
+                        // set assign date and assignedTo to products
                         await productModel.updateOne({ _id: product._id.toString() }, {
                             $set: {
                                 assignDate: new Date(),
-                                assignTo: tokenDecoded.dealAyoId
+                                assignTo: tokenPayload(req.cookies.token).dealAyoId
                             }
                         }, { upsert: true })
                         if (catgMins >= workingMins) {
@@ -69,16 +63,17 @@ const getAssignedTasks = async (req, res) => {
                     }
                 }
                 await attendanceModel.findOneAndUpdate({
-                    assignDate: {
+                    date: {
                         "$gte": new Date().setHours(0, 0, 0, 0),
                         "$lt": new Date().setHours(24)
                     },
-                    "employees.dealAyoId": tokenDecoded.dealAyoId
+                    "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
                 }, {
                     $set: {
                         "employees.$.tasksAssigned": tasks.length
                     }
-                }, { new: true }).then(() => {
+                }, { new: true }).then((r) => {
+                    console.log(r)
                     res.status(200).json(tasks)
                 })
             })
@@ -89,3 +84,17 @@ const getAssignedTasks = async (req, res) => {
         console.log(err)
     })
 }
+
+// const getAssignedTasks = async (req, res) => {
+//     await attendanceModel.find({
+//         date: {
+//             "$gte": new Date().setHours(0, 0, 0, 0),
+//             "$lt": new Date().setHours(23)
+//         },
+//         "employees.dealAyoId":'e12'
+//     }).then((r) => {
+//         res.status(200).json(r)
+//     }).catch((err) => {
+//         console.log(err)
+//     })
+// }

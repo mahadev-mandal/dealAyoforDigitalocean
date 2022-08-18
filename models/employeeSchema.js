@@ -44,5 +44,10 @@ const employeeSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    // status: {
+    //     type: boolean,
+    //     required: true,
+    //     default: true
+    // }
 });
 export default mongoose.models.employees || mongoose.model('employees', employeeSchema);

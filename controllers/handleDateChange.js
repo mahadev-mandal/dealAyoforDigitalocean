@@ -1,8 +1,8 @@
 import axios from "axios";
 import { baseURL } from "../helpers/constants";
 
-const handleDateChange = async (from, to, token, mutate) => {
-    await axios.post(`${baseURL}/api/attendance`, { dateFrom: from, dateTo: to, token: token })
+const handleDateChange = async (params, mutate) => {
+    await axios.get(`${baseURL}/api/attendance`, { params })
         .then(() => {
             mutate();
         }).catch((err) => {

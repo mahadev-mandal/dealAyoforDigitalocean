@@ -7,7 +7,7 @@ export default function categories(req, res) {
         case 'POST':
             return saveCategories(req, res);
         default:
-            res.status(500).send('please use proper method');
+            res.status(404).send('please use proper method');
     }
 }
 

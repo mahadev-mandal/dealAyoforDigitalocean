@@ -7,7 +7,7 @@ export default function category(req, res) {
         case 'DELETE':
             return deleteCategory(req, res);
         default:
-            res.status(500).send('Use proper methods');
+            res.status(405).send('Use proper methods');
     }
 }
 

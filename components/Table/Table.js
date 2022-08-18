@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
-import { Checkbox } from '@mui/material';
+import { Checkbox, TablePagination } from '@mui/material';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -36,7 +36,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-export default function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange }) {
+export default function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, totalCount }) {
+
 
     const returnTime = (date) => {
         if (date) {
@@ -45,41 +46,53 @@ export default function CustomizedTables({ tableHeading, data, dataHeading, onSt
             return ''
         }
     }
-    
+
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="customized table" size="small">
-                <TableHead>
-                    <TableRow>
-                        <StyledTableCell>S.N</StyledTableCell>
-                        {tableHeading.map((heading) => (
-                            <StyledTableCell key={heading}>{heading}</StyledTableCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {data.map((row, index) => (
-                        <StyledTableRow key={index}>
-                            <StyledTableCell component="th" scope="row">
-                                {index}
-                            </StyledTableCell>
-                            {dataHeading.map((head) => (
-                                <StyledTableCell key={head} >
-                                    {
-                                        typeof (row[head]) === 'boolean' ?
-                                            <Checkbox
-                                                checked={row[head]}
-                                                onChange={e => onStatusChange(e, row._id)}
-                                                sx={{ padding: 0, }}
-                                            /> : head === 'entryDate' ? returnTime(row[head]) : row[head]
-                                    }
-                                </StyledTableCell>
+        <Paper>
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 700 }} aria-label="customized table" size="small">
+                    <TableHead>
+                        <TableRow>
+                            <StyledTableCell>S.N</StyledTableCell>
+                            {tableHeading.map((heading) => (
+                                <StyledTableCell key={heading}>{heading}</StyledTableCell>
                             ))}
-                        </StyledTableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {data.map((row, index) => (
+                            <StyledTableRow key={index}>
+                                <StyledTableCell component="th" scope="row">
+                                    {(page * rowsPerPage) + (index + 1)}
+                                </StyledTableCell>
+                                {dataHeading.map((head) => (
+                                    <StyledTableCell key={head} >
+                                        {
+                                            typeof (row[head]) === 'boolean' ?
+                                                <Checkbox
+                                                    checked={row[head]}
+                                                    onChange={e => onStatusChange(e, row._id)}
+                                                    sx={{ padding: 0, }}
+                                                /> : head === 'entryDate' ? returnTime(row[head]) : row[head]
+                                        }
+                                    </StyledTableCell>
+                                ))}
+                            </StyledTableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <TablePagination
+                sx={{ mb: 5 }}
+                rowsPerPageOptions={[20, 30, 50]}
+                component="div"
+                count={totalCount}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+        </Paper>
     );
 }
 
@@ -88,5 +101,10 @@ CustomizedTables.propTypes = {
     data: PropTypes.array,
     dataHeading: PropTypes.array,
     onStatusChange: PropTypes.func,
+    page: PropTypes.number,
+    totalCount: PropTypes.number,
+    rowsPerPage: PropTypes.number,
+    handleChangePage: PropTypes.func,
+    handleChangeRowsPerPage: PropTypes.func
 }
 

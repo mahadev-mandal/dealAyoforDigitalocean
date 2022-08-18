@@ -17,7 +17,10 @@ export default function products(req, res) {
 }
 
 const getProducts = async (req, res) => {
+    const { page, rowsPerPage } = req.query;
     await productModel.find()
+        .skip((parseInt(page)) * parseInt(rowsPerPage))
+        .limit(parseInt(rowsPerPage))
         .then((data) => {
             res.status(200).json(data);
         }).catch(() => {

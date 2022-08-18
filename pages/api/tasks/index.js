@@ -13,6 +13,7 @@ export default function Tasks(req, res) {
 }
 
 const getAllAssignedTasks = async (req, res) => {
+    const { page, rowsPerPage } = req.query;
     await productModel.find({
         assignStatus: true,
         assignDate: {
@@ -20,6 +21,8 @@ const getAllAssignedTasks = async (req, res) => {
             "$lt": new Date().setHours(24)
         }
     })
+        .skip(parseInt(rowsPerPage) * parseInt(page))
+        .limit(parseInt(rowsPerPage))
         .then((products) => {
             res.status(200).json(products)
         }).catch(() => {

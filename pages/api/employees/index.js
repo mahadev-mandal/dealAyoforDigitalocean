@@ -15,7 +15,11 @@ export default function SwitchMethod(req, res) {
 }
 
 const getEmployees = async (req, res) => {
-    await employeeModel.find() //dont send password
+    const { page, rowsPerPage } = req.query;
+    
+    await employeeModel.find({}, { password: 0 })
+        .skip(parseInt(rowsPerPage) * parseInt(page))
+        .limit(parseInt(rowsPerPage))
         .then((employees) => {
             res.status(200).json(employees);
         }).catch(() => {
@@ -34,7 +38,7 @@ const addEmployee = async (req, res) => {
         startTime: req.body.startTime,
         endTime: req.body.endTime,
         decreaseTask: req.body.decreaseTask,
-        password: req.body.password, 
+        password: req.body.password,
     })
     await employee.save()
         .then(() => {
