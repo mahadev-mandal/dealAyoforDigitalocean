@@ -8,6 +8,8 @@ export default function attend(req, res) {
     switch (req.method) {
         case "GET":
             return getAttendance(req, res);
+        case "POST":
+            return checkWorkEnded(req, res);
         default:
             res.status(405).send('Use proper method')
     }
@@ -35,9 +37,28 @@ async function getAttendance(req, res) {
                 return { date: attendance.date, employees }
             })
         }
-        
+
         res.status(200).json(data)
     }).catch(() => {
         res.status(500).send('Error occured while fetching attendance details')
+    })
+}
+
+const checkWorkEnded = async (req, res) => {
+    await attendaceModel.findOne({
+        date: {
+            "$gte": new Date().setHours(0, 0, 0, 0),
+            "$lt": new Date().setHours(24)
+        },
+        "employees.dealAyoId": req.body.dealAyoId,
+    }).then((attendances) => {
+        const attendance = attendances.employees.find(e => e.dealAyoId === req.body.dealAyoId)
+        if (attendance.exitTime) {
+            res.send(true)
+        } else {
+            res.send(false)
+        }
+    }).catch(() => {
+        res.status(500).send("Error in checking work ended")
     })
 }

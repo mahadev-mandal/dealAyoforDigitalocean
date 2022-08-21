@@ -11,6 +11,7 @@ import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
 import { mutate } from 'swr';
 import { useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
 
 
 const arr = [
@@ -63,8 +64,8 @@ export default function AddEmployee() {
 
     return (
         <div>
-            <Button variant="outlined" onClick={handleClickOpen} sx={{ mb: 0.5 }}>
-                Add Employee
+            <Button variant="contained" color="success" onClick={handleClickOpen}>
+                <AddIcon /> Add
             </Button>
             <Dialog
                 open={open}

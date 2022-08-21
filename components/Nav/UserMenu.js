@@ -9,9 +9,9 @@ import Cookies from 'js-cookie'
 import { useEffect } from 'react'
 import { useState } from 'react'
 
-const categories = ['attendance', 'tasks', 'employees', 'mark-attendance', 'products']
+const categories = ['tasks', 'attendance']
 
-function Menu() {
+function UserMenu() {
     const router = useRouter();
     const [loggedIn, setLoggedIn] = useState(false)
     const checkLoggedIn = () => {
@@ -86,4 +86,4 @@ function Menu() {
     }
 }
 
-export default Menu
+export default UserMenu

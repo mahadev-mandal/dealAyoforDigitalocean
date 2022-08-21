@@ -51,7 +51,6 @@ const saveOrUpdateAttendance = async (req, res) => {
 
 //attence will be saved if no date found
 const saveAttendance = async (req, res) => {
-
     const attendance = new attendaceModel({
         date: new Date(req.body.date),
         employees: [

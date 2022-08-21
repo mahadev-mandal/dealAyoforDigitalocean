@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 import React from 'react'
 import { useState } from 'react';
 import useSWR from 'swr';
-import AddEmployee from '../../components/AddEmployeeModal';
 import Table from '../../components/Table/Table'
 import countTotalData from '../../controllers/countTotalData';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
@@ -50,7 +49,6 @@ function Employees() {
   if (parseJwt(Cookies.get('token')).role === 'admin' || parseJwt(Cookies.get('token')).role === 'super-admin') {
     return (
       <div>
-        <AddEmployee />
         <Table
           tableHeading={tableHeading}
           dataHeading={dataHeading}
@@ -60,6 +58,7 @@ function Employees() {
           totalCount={totalCount}
           handleChangePage={handleChangePage}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
+          collectionName="employees"
         />
       </div>
     )

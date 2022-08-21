@@ -9,8 +9,8 @@ import { baseURL } from '../../helpers/constants';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import countTotalData from '../../controllers/countTotalData';
 
-const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'Entry status', 'assign to',];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'assignTo'];
+const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP','assign to', 'Entry status',];
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignTo','entryStatus', ];
 
 function Tasks() {
     const router = useRouter();

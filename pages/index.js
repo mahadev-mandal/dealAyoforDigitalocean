@@ -18,14 +18,14 @@ export default function Home() {
     await axios.post(`${baseURL}/api/login`, { dealAyoId: empId, password: password })
       .then((res) => {
         Cookies.set('token', res.data);
-        router.push(`${baseURL}/attendance`)
+        router.push(`${baseURL}/tasks`)
         setMsg('');
       }).catch((err) => {
         setMsg(err.response.data)
       })
   }
   if (Cookies.get('token')) {
-    router.push(`${baseURL}/attendance`)
+    router.push(`${baseURL}/tasks`)
   }
   return (
     <div className={styles.container}>

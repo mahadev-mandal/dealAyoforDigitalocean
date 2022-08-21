@@ -11,6 +11,8 @@ export default function products(req, res) {
             return saveProducts(req, res);
         case 'PUT':
             return updateProduct(req, res);
+        case 'DELETE':
+            return deleteProducts(req, res);
         default:
             res.status(500).send('Use proper methods');
     }
@@ -49,4 +51,13 @@ const updateProduct = async (req, res) => {
     }).catch(() => {
         res.status(500).send('Product updation failed');
     })
+}
+
+const deleteProducts = async (req, res) => {
+    await productModel.deleteMany({ _id: { $in: req.body._ids } })
+        .then(() => {
+            res.send('deleted sucessfully')
+        }).catch(() => {
+            res.status(500).send('Error occured while deleting')
+        })
 }

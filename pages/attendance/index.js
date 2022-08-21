@@ -1,4 +1,4 @@
-import { Button, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react'
 import useSWR from 'swr';
@@ -13,7 +13,7 @@ function Attendance() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
     // const [dateTo, setDateTo] = useState(new Date().setHours(24))
     const dateTo = new Date().setHours(24);
-    const params = { dateFrom:new Date(dateFrom), dateTo:new Date(dateTo) };
+    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo) };
 
     const fetchData = async (url) => {
         return await axios.get(url, { params })
@@ -51,7 +51,7 @@ function Attendance() {
     return (
         <div>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
-            <Stack direction="row">
+                <Stack direction="row" spacing={1}>
                     <Button
                         variant='outlined'
                         onClick={handleToday}
@@ -61,21 +61,6 @@ function Attendance() {
                     <Button variant='outlined' onClick={handleThisWeek}>This Week</Button>
                     <Button variant='outlined' onClick={handleThisMonth}>This Month</Button>
                     <Button variant='outlined' disabled>Custom Date</Button>
-                </Stack>
-                <Stack direction="row">
-                    <Typography>SortBy</Typography>
-                    <Select
-                        fullWidth
-                        id='role'
-                        size='small'
-                        value={'admin'}
-                        // onChange={(e) => setRole(e.target.value)}
-                    >
-                        <MenuItem value="data-entry">Data entry</MenuItem>
-                        <MenuItem value="other">Other</MenuItem>
-                        <MenuItem value="admin">admin</MenuItem>
-                        <MenuItem value="super-admin">Super admin</MenuItem>
-                    </Select>
                 </Stack>
             </Stack>
             <AttendanceTable
