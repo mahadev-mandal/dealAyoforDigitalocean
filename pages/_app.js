@@ -5,7 +5,7 @@ import Menu from '../components/Nav/Menu'
 import { Box } from '@mui/material'
 import parseJwt from '../controllers/parseJwt'
 import Cookies from 'js-cookie'
-import UserMenu from '../components/Nav/userMenu'
+import UserMenu from '../components/Nav/UserMenu'
 
 function MyApp({ Component, pageProps }) {
   return (
