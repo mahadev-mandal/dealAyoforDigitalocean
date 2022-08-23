@@ -2,11 +2,12 @@ import { Button, Stack } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react'
 import useSWR from 'swr';
+import Efficiency from '../../components/Efficiency/Efficiency';
 import AttendanceTable from '../../components/Table/AttendanceTable';
 import handleDateChange from '../../controllers/handleDateChange';
 import { baseURL } from '../../helpers/constants';
 
-const tableHeading = ['Date', 'Day', 'Emp Id', 'Name', 'Entry Time', 'Exit Time', 'Tasks Assigned', 'Tasks Completed', 'Extra Tasks'];
+const tableHeading = ['Date', 'Day', 'Emp Id', 'Name', 'Entry Time', 'Exit Time', 'Assigned', 'Completed', 'Extra', 'Edit'];
 const dataHeading = ['dealAyoId', 'name', 'entryTime', 'exitTime', 'tasksAssigned', 'tasksCompleted', 'extraTasksCompleted'];
 
 function Attendance() {
@@ -46,8 +47,20 @@ function Attendance() {
     } else if (!attendance) {
         return <div>Please wait loading...</div>
     }
-    // var timeStart = new Date("01/01/2007 " + '10:5:6')
+    const returnTotal = () => {
+        let assigned = 0;
+        let completed = 0;
+        attendance.forEach((date) => {
+            date.employees.forEach((emp) => {
+                assigned += emp.tasksAssigned;
+                completed += emp.tasksCompleted;
+            })
+        })
+        return { assigned, completed };
+    }
+    // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
+
     return (
         <div>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
@@ -67,6 +80,10 @@ function Attendance() {
                 tableHeading={tableHeading}
                 data={attendance.length < 1 ? [] : attendance}
                 dataHeading={dataHeading}
+            />
+            <Efficiency
+                assigned={returnTotal().assigned}
+                completed={returnTotal().completed}
             />
         </div>
     )

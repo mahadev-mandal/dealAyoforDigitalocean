@@ -37,6 +37,20 @@ function Products() {
         handleRowsPageChange(`${baseURL}/api/products`, params, mutateProducts)
     }
 
+    const handleStatusChange = async (event, _id) => {
+        //only allow to tick check box if work in not ended
+
+        let date = null;
+        await axios.put(`${baseURL}/api/products/${_id}`, {
+            entryStatus: event.target.checked,
+            date: date,
+        }).then(() => {
+            mutateProducts()
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
     if (error1 || error2) {
         return <div>Failed to load products</div>
     } else if (!products || !totalCount) {
@@ -60,6 +74,7 @@ function Products() {
                 collectionName="products"
                 mutateData={mutateProducts}
                 mutateCounts={mutateCounts}
+                onStatusChange={handleStatusChange}
             />
         </div>
     )

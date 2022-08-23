@@ -9,17 +9,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
 import { Checkbox, TablePagination } from '@mui/material';
-import { useState } from 'react';
-import axios from 'axios';
-import { baseURL } from '../../helpers/constants';
-import FullScreenDialog from '../FullScreenDialog/FullScreenDialog';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import BlockIcon from '@mui/icons-material/Block';
-import { Button, Stack } from '@mui/material';
-import AddEmployee from '../AddEmployeeModal';
-import AddCategory from '../AddCategoryModal/AddCategoryModal';
-
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -47,22 +36,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, totalCount, collectionName, mutateData, mutateCounts }) {
-    const [selected, setSelected] = useState([]);
-    const handleSelect = (event, _id) => {
-        if (event.target.checked) {
-            setSelected([...selected, _id])
-        } else {
-            setSelected(selected.filter(id => id !== _id))
-        }
-    }
-    const handleAllSelect = (event, data) => {
-        if (event.target.checked) {
-            setSelected(data.map((p) => p._id))
-        } else {
-            setSelected([])
-        }
-    }
+function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, totalCount, }) {
     const returnTime = (date) => {
         if (date) {
             return new Date(date).toLocaleTimeString();
@@ -71,65 +45,14 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
         }
     }
 
-    const handleDelete = async () => {
-        axios.delete(`${baseURL}/api/${collectionName}`, { data: { _ids: selected } })
-            .then(() => {
-                mutateData();
-                mutateCounts()
-                setSelected([])
-            })
-    }
-    const handleEdit = async () => {
-        if (selected.length === 1) {
-            axios.put(`${baseURL}/api/${collectionName}/${selected[0]}`);
-        }
-    }
-
     return (
         <>
-            <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
-                <Button
-                    size="small"
-                    variant="contained"
-                    color="warning"
-                    disabled={selected.length >= 1 ? false : true}
-                >
-                    <BlockIcon />Disable {selected.length}
-                </Button>
-                <Button
-                    variant="contained"
-                    size="small"
-                    color="error"
-                    disabled={selected.length >= 1 ? false : true}
-                    onClick={handleDelete}
-                >
-                    <DeleteForeverIcon />Delete {selected.length}
-                </Button>
-                <Button
-                    variant="contained"
-                    size="small"
-                    color="primary"
-                    disabled={selected.length === 1 ? false : true}
-                    onClick={handleEdit}
-                >
-                    <EditIcon />Edit
-                </Button>
-                {collectionName === 'employees' ? <AddEmployee />
-                    : collectionName === 'categories' ? <AddCategory /> : <FullScreenDialog />
-                }
-            </Stack>
             <Paper>
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 700 }} aria-label="customized table" size="small">
                         <TableHead>
                             <TableRow>
                                 <StyledTableCell>S.N</StyledTableCell>
-                                <StyledTableCell>
-                                    <Checkbox
-                                        sx={{ color: 'white', padding: 0 }}
-                                        onChange={e => handleAllSelect(e, data)}
-                                    />
-                                </StyledTableCell>
                                 {tableHeading.map((heading) => (
                                     <StyledTableCell key={heading}>{heading}</StyledTableCell>
                                 ))}
@@ -140,13 +63,6 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                                 <StyledTableRow key={index}>
                                     <StyledTableCell component="th" scope="row">
                                         {(page * rowsPerPage) + (index + 1)}
-                                    </StyledTableCell>
-                                    <StyledTableCell component="th" scope="row">
-                                        <Checkbox
-                                            checked={selected.includes(row._id)}
-                                            onChange={(e) => handleSelect(e, row._id)}
-                                            sx={{ padding: 0, }}
-                                        />
                                     </StyledTableCell>
                                     {dataHeading.map((head) => (
                                         <StyledTableCell key={head} >
@@ -179,7 +95,7 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
     );
 }
 
-CustomizedTables.propTypes = {
+TasksTable.propTypes = {
     tableHeading: PropTypes.array,
     data: PropTypes.array,
     dataHeading: PropTypes.array,
@@ -194,4 +110,4 @@ CustomizedTables.propTypes = {
     mutateCounts: PropTypes.func,
 }
 
-export default CustomizedTables;
+export default TasksTable;

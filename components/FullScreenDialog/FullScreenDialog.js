@@ -13,6 +13,11 @@ import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
 import SimpleTable from '../Table/SimpleTable';
 
+const reqFieldsArr = ['title', 'model', 'vendor', 'category'];
+
+const checkReqFields = (dataArr, reqArr) => {
+    return reqArr.every(field => dataArr.includes(field))
+}
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -80,12 +85,18 @@ export default function FullScreenDialog() {
             const workbook = XLSX.read(data)
             const worksheet = workbook.Sheets[workbook.SheetNames[0]]
             const jsonData = XLSX.utils.sheet_to_json(worksheet)
-            setData(jsonData)
-            setTableHeading(Object.keys(jsonData[0]))
-            setdataHeading(Object.keys(jsonData[0]))
-            setLoading(false);
+            const dataKeysArr = Object.keys(jsonData[0])
+            if(checkReqFields(dataKeysArr, reqFieldsArr)){
+                setTableHeading(Object.keys(jsonData[0]));
+                setdataHeading(Object.keys(jsonData[0]));
+                setData((jsonData));
+                setLoading(false);
+            }else{
+                alert('title, model, vendor, category are required fields')
+            }
+
         } else {
-            alert('Please select file')
+            alert('Please select file to verify')
         }
     }
     const handleSave = async () => {

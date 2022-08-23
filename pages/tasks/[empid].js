@@ -1,12 +1,12 @@
-import { Button, Checkbox, FormControlLabel, Stack, } from '@mui/material';
+import { Button, Checkbox, FormControlLabel, Stack, TextareaAutosize, } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react'
 import useSWR from 'swr';
-import Table from '../../components/Table/Table'
 import { baseURL } from '../../helpers/constants';
 import parsejwt from '../../controllers/parseJwt';
 import { useEffect } from 'react';
+import TasksTable from '../../components/Table/TasksTable';
 
 const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'Entry Date'];
 const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'entryDate']
@@ -15,6 +15,7 @@ function Tasks() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [endWork, setEndWork] = useState(false);
+    const [comment, setComment] = useState('');
 
     const checkEndWork = async () => {
         await axios.post(`${baseURL}/api/attendance`, {
@@ -75,7 +76,7 @@ function Tasks() {
                 date: new Date(),
                 dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
                 exitTime: new Date(),
-                comment: ''
+                comment: comment
             }).then(() => {
                 setEndWork(true)
             })
@@ -84,7 +85,7 @@ function Tasks() {
 
     const handleStatusChange = async (event, _id) => {
         //only allow to tick check box if work in not ended
-        if (!endWork) { 
+        if (!endWork) {
             let date = null;
             if (event.target.checked) {
                 date = new Date();
@@ -99,7 +100,7 @@ function Tasks() {
             }).catch((err) => {
                 console.log(err)
             })
-        }else{
+        } else {
             alert("After Work Ended You are not allow to edit. Please contact admin")
         }
     }
@@ -109,7 +110,7 @@ function Tasks() {
     } else if (!products) {
         return <div>Please wait loading...</div>
     }
-
+    
     return (
         <div>
             <Stack justifyContent="space-between" sx={{ mb: 0.5 }} direction="row">
@@ -124,7 +125,7 @@ function Tasks() {
                                 onChange={assignTasks}
                             />
                         }
-                        label="Start"
+                        label="Start Work"
                     />
                     <FormControlLabel
                         control={
@@ -133,11 +134,11 @@ function Tasks() {
                                 onChange={handleEndWork}
                             />
                         }
-                        label="End"
+                        label="End Work"
                     />
                 </Stack>
             </Stack>
-            <Table
+            <TasksTable
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}
                 data={products}
@@ -147,6 +148,14 @@ function Tasks() {
                 rowsPerPage={rowsPerPage}
                 handleChangePage={handleChangePage}
                 handleChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+            <TextareaAutosize
+                minRows={3}
+                placeholder="Write comment"
+                style={{ width: '100%', margin: '20px 0', }}
+                value={comment}
+                onChange={e => setComment(e.target.value)}
+                onClick={() => alert('After work ended not allowed to comment')}
             />
         </div>
     )
