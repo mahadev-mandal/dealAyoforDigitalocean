@@ -59,8 +59,9 @@ export default function SimpleTable({ tableHeading, data, dataHeading, page, row
                                 </StyledTableCell>
                                 {dataHeading.map((head) => (
                                     <StyledTableCell key={head}>
-                                        {row[head]}
+                                        {head != 'additionalDetails' ? row[head] : JSON.stringify(row[head])}
                                     </StyledTableCell>
+
                                 ))}
                             </StyledTableRow>
                         ))}
@@ -84,8 +85,8 @@ SimpleTable.propTypes = {
     tableHeading: PropTypes.array,
     data: PropTypes.array,
     dataHeading: PropTypes.array,
-    page: PropTypes.string,
-    rowsPerPage: PropTypes.string,
+    page: PropTypes.number,
+    rowsPerPage: PropTypes.number,
     totalCount: PropTypes.number,
     handleChangePage: PropTypes.func,
     handleChangeRowsPerPage: PropTypes.func,

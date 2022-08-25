@@ -33,8 +33,8 @@ const getProducts = async (req, res) => {
 const saveProducts = async (req, res) => {
     const products = req.body;
     await productModel.insertMany(products)
-        .then(() => {
-            res.status(200).send('products saved')
+        .then((r) => {
+            res.status(200).send(`${r.length} products saved`)
         }).catch(() => {
             res.status(500).send('Error occured while saving products')
         })

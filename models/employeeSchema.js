@@ -48,6 +48,11 @@ const employeeSchema = new mongoose.Schema({
     //     type: boolean,
     //     required: true,
     //     default: true
+    // },
+    // level: {
+    //     type: Number,
+    //     required: true,
+    //     default: 1
     // }
 });
 export default mongoose.models.employees || mongoose.model('employees', employeeSchema);

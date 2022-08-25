@@ -7,8 +7,9 @@ import { baseURL } from '../../helpers/constants';
 import parsejwt from '../../controllers/parseJwt';
 import { useEffect } from 'react';
 import TasksTable from '../../components/Table/TasksTable';
+import CommentModal from '../../components/CommentModal/CommentModal';
 
-const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'Entry Date'];
+const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'Entry Date', 'additional'];
 const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'entryDate']
 
 function Tasks() {
@@ -135,6 +136,12 @@ function Tasks() {
                             />
                         }
                         label="End Work"
+                    />
+                </Stack>
+                <Stack>
+                    <CommentModal
+                        onChange={e => setComment(e.target.value)}
+                        value={comment}
                     />
                 </Stack>
             </Stack>

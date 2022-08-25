@@ -1,11 +1,8 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
-    code: {
-        type: String,
-    },
     title: {
-        type:String,
+        type: String,
         required: true
     },
     model: {
@@ -27,9 +24,6 @@ const productSchema = new mongoose.Schema({
     SP: {
         type: Number,
     },
-    discount: {
-        type: Number,
-    },
     quantity: {
         type: Number,
     },
@@ -43,7 +37,7 @@ const productSchema = new mongoose.Schema({
     },
     lastUpdateDetails: {
         //date, name, updated fields like MRP:500 etc
-        type: Object,  
+        type: Object,
         _id: false,
     },
     status: {
@@ -65,8 +59,14 @@ const productSchema = new mongoose.Schema({
     assignDate: {
         type: Date,
     },
-    assignTo:{
+    assignTo: {
         type: String,
+    },
+    level: {
+        type: Number,
+        required: true,
+        default: 1
     }
+
 })
 export default mongoose.models.product || mongoose.model('product', productSchema); 

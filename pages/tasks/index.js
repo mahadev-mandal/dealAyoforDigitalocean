@@ -9,8 +9,8 @@ import { baseURL } from '../../helpers/constants';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import countTotalData from '../../controllers/countTotalData';
 
-const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP','assign to', 'Entry status',];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignTo','entryStatus', ];
+const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assign to', 'Entry status',];
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignTo', 'entryStatus',];
 
 function Tasks() {
     const router = useRouter();
@@ -34,7 +34,7 @@ function Tasks() {
     const { data: totalCount, error2 } = useSWR(`${baseURL}/api/count-data`,
         url => countTotalData(url, 'tasks')
     )
-   
+
     const handleChangePage = (event, newPage) => {
         setPage(parseInt(newPage))
         handleRowsPageChange(`${baseURL}/api/tasks`, params, mutate)
@@ -44,11 +44,27 @@ function Tasks() {
         setPage(0)
         handleRowsPageChange(`${baseURL}/api/tasks`, params, mutate)
     }
-console.log()
+    const handleStatusChange = async (event, _id) => {
+        //only allow to tick check box if work in not ended
+        let date = null;
+        if (event.target.checked) {
+            date = new Date();
+        } else {
+            date = ''
+        }
+        await axios.put(`${baseURL}/api/products/${_id}`, {
+            entryStatus: event.target.checked,
+            date: date,
+        }).then(() => {
+            mutate()
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
     if (error1 || error2) {
         return <div>Failed to load products</div>
     } else if (!products || !totalCount) {
-        if(totalCount<1){
+        if (totalCount < 1) {
             return <div>No tasks assigned today</div>
         }
         return <div>Please wait loading...</div>
@@ -65,6 +81,7 @@ console.log()
                 handleChangePage={handleChangePage}
                 handleChangeRowsPerPage={handleChangeRowsPerPage}
                 totalCount={totalCount}
+                onStatusChange={handleStatusChange}
             />
         </div>
     )

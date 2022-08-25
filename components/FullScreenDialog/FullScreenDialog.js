@@ -7,17 +7,37 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import AddIcon from '@mui/icons-material/Add';
-import { Stack, Typography } from '@mui/material';
+import { CircularProgress, Stack, Typography } from '@mui/material';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
 import SimpleTable from '../Table/SimpleTable';
+import { mutate } from 'swr';
 
+const allFieldsArr = ['title', 'model', 'vendor', 'category', 'brand', 'weight', 'MRP', 'SP', 'quantity', 'status', 'entryStatus', 'entryDate', 'entryBy', 'assignDate', 'assignTo', 'level']
 const reqFieldsArr = ['title', 'model', 'vendor', 'category'];
 
 const checkReqFields = (dataArr, reqArr) => {
     return reqArr.every(field => dataArr.includes(field))
 }
+//put other details except allfieldsArr to additional details
+const finalDataArr = (dataArr, allFieldsArr) => {
+    return dataArr.map((d) => {
+        let data = {};
+        let additionalDetails = {};
+        for (const key in d) {
+            if (allFieldsArr.includes(key)) {
+                data = { ...data, [key]: d[key] }
+            } else {
+                additionalDetails = { ...additionalDetails, [key]: d[key] }
+            }
+        }
+        data = { ...data, additionalDetails }
+        return data;
+
+    })
+}
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -32,12 +52,17 @@ export default function FullScreenDialog() {
     const [rowsPerPage, setRowsPerPage] = React.useState(20);
     const [tableHeading, setTableHeading] = React.useState([])
     const [dataHeading, setdataHeading] = React.useState([])
+    const [msg, setMsg] = React.useState(null);
+    const [saving, setSaving] = React.useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
+        mutate(`${baseURL}/api/products`)
+        mutate(`${baseURL}/api/count-data`)
+        setMsg(null)
         setOpen(false);
         setData([])
         setRowsPerPage(20);
@@ -86,13 +111,17 @@ export default function FullScreenDialog() {
             const worksheet = workbook.Sheets[workbook.SheetNames[0]]
             const jsonData = XLSX.utils.sheet_to_json(worksheet)
             const dataKeysArr = Object.keys(jsonData[0])
-            if(checkReqFields(dataKeysArr, reqFieldsArr)){
-                setTableHeading(Object.keys(jsonData[0]));
-                setdataHeading(Object.keys(jsonData[0]));
-                setData((jsonData));
+            //checks if all required fields are presents or not
+            if (checkReqFields(dataKeysArr, reqFieldsArr)) {
+                const finalData = finalDataArr(jsonData, allFieldsArr);
+                setTableHeading(Object.keys(finalData[0]));
+                setdataHeading(Object.keys(finalData[0]));
+                setData((finalData));
                 setLoading(false);
-            }else{
-                alert('title, model, vendor, category are required fields')
+            } else {
+                alert('title, model, vendor, & category are required fields')
+                setLoading(false)
+                setSaving(false)
             }
 
         } else {
@@ -100,9 +129,16 @@ export default function FullScreenDialog() {
         }
     }
     const handleSave = async () => {
+        setSaving(true)
+        setData([])
         await axios.post(`${baseURL}/api/products`, data)
-            .then(() => {
-                setOpen(false);
+            .then((res) => {
+                setSaving(false)
+                setMsg(res.data)
+                // setOpen(false);
+            }).catch((err) => {
+                console.log(err)
+                setSaving(false);
             })
     }
     // const obj = {
@@ -152,18 +188,22 @@ export default function FullScreenDialog() {
                                 onChange={e => handleFileChange(e)}
                             />
                             <Stack spacing={1} direction="row">
-                                <Button autoFocus color="inherit" onClick={handleVerify}>
+                                <Button color="inherit" onClick={handleVerify}>
                                     Verify
                                 </Button>
-                                <Button autoFocus color="inherit" onClick={handleSave}>
+                                <Button
+                                    color="inherit"
+                                    onClick={handleSave}
+                                    disabled={data.length < 1}
+                                >
                                     save
                                 </Button>
                             </Stack>
                         </Stack>
                     </Toolbar>
                 </AppBar>
-                {!loading ?
-                    data.length >= 1 ? <SimpleTable
+                {!loading ? data.length >= 1 ?
+                    <SimpleTable
                         data={data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
                         tableHeading={tableHeading}
                         dataHeading={dataHeading}
@@ -172,8 +212,17 @@ export default function FullScreenDialog() {
                         totalCount={data.length}
                         handleChangePage={handleChangePage}
                         handleChangeRowsPerPage={handleChangeRowsPerPage}
-                    /> : null : <Typography variant="h6" textAlign="center">Please wait generating data...</Typography>}
+                    /> : saving ?
+                        <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
+                            <CircularProgress color="secondary" />
+                            Saving...
+                        </Stack> : <Typography variant="h6" textAlign="center" sx={{ mt: 3 }}>{msg}</Typography>
+                    : <Typography variant="h6" textAlign="center" sx={{ mt: 3 }}>Please wait generating data...</Typography>
+                }
             </Dialog>
         </div>
     );
 }
+
+
+

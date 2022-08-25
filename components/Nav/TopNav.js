@@ -73,7 +73,8 @@ function TopNav() {
           <InputBase
             sx={{ ml: 1, flex: 1 }}
             placeholder="What are you looking for?"
-            inputProps={{ "aria-label": "search rooms or flats" }}
+            inputProps={{ "aria-label": "search items" }}
+            
           />
           <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
           <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">

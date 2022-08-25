@@ -50,10 +50,9 @@ const checkWorkEnded = async (req, res) => {
             "$gte": new Date().setHours(0, 0, 0, 0),
             "$lt": new Date().setHours(24)
         },
-        "employees.dealAyoId": req.body.dealAyoId,
-    }).then((attendances) => {
-        const attendance = attendances.employees.find(e => e.dealAyoId === req.body.dealAyoId)
-        if (attendance.exitTime) {
+        "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId,
+    }, { date: 1, "employees.$": 1 }).then((attendance) => {
+        if (attendance.employees[0].exitTime) {
             res.send(true)
         } else {
             res.send(false)

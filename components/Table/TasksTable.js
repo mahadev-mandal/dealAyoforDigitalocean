@@ -9,6 +9,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
 import { Checkbox, TablePagination } from '@mui/material';
+import copyToClipboard from '../../controllers/copyToClipboard';
+import AdditionalDetailsModal from '../AdditionalDetailsModal/AdditionalDetailsModal';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -22,6 +24,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        userSelect: 'all'
     },
 }));
 
@@ -65,7 +68,7 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                                         {(page * rowsPerPage) + (index + 1)}
                                     </StyledTableCell>
                                     {dataHeading.map((head) => (
-                                        <StyledTableCell key={head} >
+                                        <StyledTableCell key={head} onClick={(e) => copyToClipboard(e.target.innerText)}>
                                             {
                                                 typeof (row[head]) === 'boolean' ?
                                                     <Checkbox
@@ -76,6 +79,14 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                                             }
                                         </StyledTableCell>
                                     ))}
+                                    <StyledTableCell sx={{ textAlign: 'center' }}>
+                                        {Object.keys(row.additionalDetails ? row.additionalDetails : {}).length >= 1 ?
+                                            <AdditionalDetailsModal
+                                                title={row.title}
+                                                additionalDetails={row.additionalDetails ? row.additionalDetails : {}}
+                                            /> : null
+                                        }
+                                    </StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>
