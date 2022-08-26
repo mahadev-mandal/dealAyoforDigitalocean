@@ -5,7 +5,7 @@ const effColor = (eff) => {
     if (eff >= 90) {
         return 'green'
     } else if (eff >= 80) {
-        return 'pink'
+        return 'olive'
     } else {
         return 'red'
     }

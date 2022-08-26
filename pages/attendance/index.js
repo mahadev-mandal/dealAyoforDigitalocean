@@ -6,6 +6,7 @@ import Efficiency from '../../components/Efficiency/Efficiency';
 import AttendanceTable from '../../components/Table/AttendanceTable';
 import handleDateChange from '../../controllers/handleDateChange';
 import { baseURL } from '../../helpers/constants';
+import { withAuth } from '../../HOC/withAuth';
 
 const tableHeading = ['Date', 'Day', 'Emp Id', 'Name', 'Entry Time', 'Exit Time', 'Assigned', 'Completed', 'Extra', 'Edit'];
 const dataHeading = ['dealAyoId', 'name', 'entryTime', 'exitTime', 'tasksAssigned', 'tasksCompleted', 'extraTasksCompleted'];
@@ -89,4 +90,4 @@ function Attendance() {
     )
 }
 
-export default Attendance
+export default withAuth(Attendance)

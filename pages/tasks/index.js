@@ -1,27 +1,19 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import CustomizedTables from '../../components/Table/Table'
-import parseJwt from '../../controllers/parseJwt';
 import { baseURL } from '../../helpers/constants';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import countTotalData from '../../controllers/countTotalData';
+import { withAuth } from '../../HOC/withAuth';
 
 const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assign to', 'Entry status',];
 const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignTo', 'entryStatus',];
 
 function Tasks() {
-    const router = useRouter();
-
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const params = { page, rowsPerPage };
-
-    if (parseJwt(Cookies.get('token')).role === 'data-entry') {
-        router.push(`${baseURL}/tasks/${parseJwt(Cookies.get('token'))._id}`)
-    }
 
     const fetchData = async (url) => {
         return await axios.get(url)
@@ -87,4 +79,4 @@ function Tasks() {
     )
 }
 
-export default Tasks
+export default withAuth(Tasks)

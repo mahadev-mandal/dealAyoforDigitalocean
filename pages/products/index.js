@@ -5,6 +5,7 @@ import Table from '../../components/Table/Table'
 import countTotalData from '../../controllers/countTotalData';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import { baseURL } from '../../helpers/constants';
+import { withAuth } from '../../HOC/withAuth';
 
 
 const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'Assign to', 'entry status',];
@@ -80,4 +81,4 @@ function Products() {
     )
 }
 
-export default Products
+export default withAuth(Products)

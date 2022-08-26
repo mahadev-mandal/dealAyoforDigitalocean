@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import TodayTable from '../../components/Table/TodayTable';
 import parseJwt from '../../controllers/parseJwt';
 import { baseURL } from '../../helpers/constants';
+import { withAuth } from '../../HOC/withAuth';
 
 const tableHeading = ['Emp Id', 'Name', 'Working hrs', 'Entry', 'Exit', 'Tasks Assigned', 'Tasks Completed', 'Extra Tasks'];
 const dataHeading = ['dealAyoId', 'firstName', 'workingHrs', 'entryTime', 'exitTime', 'tasksAssigned', 'tasksCompleted', 'extraTasksCompleted'];
@@ -63,4 +64,4 @@ function Today() {
   )
 }
 
-export default Today
+export default withAuth(Today)

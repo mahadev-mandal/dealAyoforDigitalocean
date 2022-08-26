@@ -8,6 +8,7 @@ import countTotalData from '../../controllers/countTotalData';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import parseJwt from '../../controllers/parseJwt';
 import { baseURL } from '../../helpers/constants';
+import { withAuth } from '../../HOC/withAuth';
 
 const tableHeading = ['Category Name', 'Time'];
 const dataHeading = ['category', 'time',]
@@ -22,11 +23,11 @@ function Categories() {
         return await axios.get(url, { params })
             .then((res) => res.data).catch((err) => { throw new Error(err) })
     }
-    const { data: categories, error: error1, mutate:mutateCategories } = useSWR(`${baseURL}/api/categories`, fetchData)
-    const { data: totalCount, error: error2, mutate:mutateTotalCount } = useSWR(`${baseURL}/api/count-data`,
+    const { data: categories, error: error1, mutate: mutateCategories } = useSWR(`${baseURL}/api/categories`, fetchData)
+    const { data: totalCount, error: error2, mutate: mutateTotalCount } = useSWR(`${baseURL}/api/count-data`,
         url => countTotalData(url, 'categories')
     )
-    
+
     const handleChangePage = (event, newPage) => {
         setPage(parseInt(newPage));
         handleRowsPageChange(`${baseURL}/api/categories`, params, mutateCategories)
@@ -69,4 +70,4 @@ function Categories() {
     }
 }
 
-export default Categories
+export default withAuth(Categories)

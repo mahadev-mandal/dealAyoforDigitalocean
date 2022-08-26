@@ -7,6 +7,7 @@ import { baseURL } from '../helpers/constants';
 import { useState } from 'react';
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router';
+import parseJwt from '../controllers/parseJwt';
 
 export default function Home() {
   const router = useRouter();
@@ -18,7 +19,11 @@ export default function Home() {
     await axios.post(`${baseURL}/api/login`, { dealAyoId: empId, password: password })
       .then((res) => {
         Cookies.set('token', res.data);
-        router.push(`${baseURL}/tasks`)
+        if (parseJwt(Cookies.get('token')).role === 'data-entry') {
+          router.push(`${baseURL}/tasks/${parseJwt(Cookies.get('token'))._id}`)
+        } else {
+          router.push(`${baseURL}/tasks`)
+        }
         setMsg('');
       }).catch((err) => {
         setMsg(err.response.data)
@@ -40,7 +45,7 @@ export default function Home() {
           padding: 5,
           background: 'rgb(240, 240, 240, 0.5)'
         }}>
-          
+
           <AccountCircleIcon sx={{ fontSize: 80, m: 'auto', display: 'block' }} /> <br />
           <TextField
             fullWidth
@@ -62,7 +67,7 @@ export default function Home() {
           <Button fullWidth variant="outlined" onClick={login}>Login</Button><br /><br />
           <Typography color="red">{Msg}</Typography>
         </Paper>
-        
+
       </main>
     </div >
   )

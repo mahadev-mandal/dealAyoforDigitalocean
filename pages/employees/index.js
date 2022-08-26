@@ -8,6 +8,7 @@ import countTotalData from '../../controllers/countTotalData';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import parseJwt from '../../controllers/parseJwt';
 import { baseURL } from '../../helpers/constants';
+import { withAuth } from '../../HOC/withAuth';
 
 const tableHeading = ['DealAyoId', 'mobile', 'email', 'start time', 'end time', 'tasks decr',];
 const dataHeading = ['dealAyoId', 'mobile', 'email', 'startTime', 'endTime', 'decreaseTask']
@@ -67,4 +68,4 @@ function Employees() {
   }
 }
 
-export default Employees
+export default withAuth(Employees)

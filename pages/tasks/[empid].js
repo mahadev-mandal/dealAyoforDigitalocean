@@ -8,6 +8,7 @@ import parsejwt from '../../controllers/parseJwt';
 import { useEffect } from 'react';
 import TasksTable from '../../components/Table/TasksTable';
 import CommentModal from '../../components/CommentModal/CommentModal';
+import { withAuth } from '../../HOC/withAuth';
 
 const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'Entry Date', 'additional'];
 const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'entryDate']
@@ -142,6 +143,7 @@ function Tasks() {
                     <CommentModal
                         onChange={e => setComment(e.target.value)}
                         value={comment}
+                        endWork={endWork}
                     />
                 </Stack>
             </Stack>
@@ -158,14 +160,15 @@ function Tasks() {
             />
             <TextareaAutosize
                 minRows={3}
-                placeholder="Write comment"
+                placeholder="your comment"
                 style={{ width: '100%', margin: '20px 0', }}
                 value={comment}
                 onChange={e => setComment(e.target.value)}
                 onClick={() => alert('After work ended not allowed to comment')}
+                disabled
             />
         </div>
     )
 }
 
-export default (Tasks)
+export default withAuth(Tasks)
