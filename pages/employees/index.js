@@ -23,19 +23,19 @@ function Employees() {
     return await axios.get(url, { params })
       .then((res) => res.data).catch((err) => { throw new Error(err) })
   }
-  const { data: employees, error: error1, mutate } = useSWR(`${baseURL}/api/employees`, fetchData)
-  const { data: totalCount, error: error2 } = useSWR(`${baseURL}/api/count-data`,
+  const { data: employees, error: error1, mutate:mutateEmployees } = useSWR(`${baseURL}/api/employees`, fetchData)
+  const { data: totalCount, error: error2, mutate:mutateCount } = useSWR(`${baseURL}/api/count-data`,
     url => countTotalData(url, 'employees')
   )
 
   const handleChangePage = (event, newPage) => {
     setPage(parseInt(newPage));
-    handleRowsPageChange(`${baseURL}/api/employees`, params, mutate)
+    handleRowsPageChange(`${baseURL}/api/employees`, params, mutateEmployees)
   }
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(parseInt(0))
-    handleRowsPageChange(`${baseURL}/api/employees`, params, mutate)
+    handleRowsPageChange(`${baseURL}/api/employees`, params, mutateEmployees)
   }
 
   if (error1 || error2) {
@@ -60,6 +60,8 @@ function Employees() {
           handleChangePage={handleChangePage}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
           collectionName="employees"
+          mutateData={mutateEmployees}
+          mutateCounts={mutateCount}
         />
       </div>
     )

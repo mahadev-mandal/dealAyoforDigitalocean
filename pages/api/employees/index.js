@@ -9,6 +9,8 @@ export default function SwitchMethod(req, res) {
             return getEmployees(req, res);
         case "POST":
             return addEmployee(req, res)
+        case "DELETE":
+            return deleteEmployees(req, res)
         default:
             res.status(404).send('Use proper method')
     }
@@ -16,7 +18,7 @@ export default function SwitchMethod(req, res) {
 
 const getEmployees = async (req, res) => {
     const { page, rowsPerPage } = req.query;
-    
+
     await employeeModel.find({}, { password: 0 })
         .skip(parseInt(rowsPerPage) * parseInt(page))
         .limit(parseInt(rowsPerPage))
@@ -45,14 +47,27 @@ const addEmployee = async (req, res) => {
             res.status(200).send('Employee added successfully');
         }).catch((err) => {
             console.log(err)
-            if (err.keyPattern.dealAyoId === 1) {
-                res.status(403).send('Deal ayo Id is already present')
-            } else if (err.keyPattern.mobile === 1) {
-                res.status(403).send('Mobile no. is already present')
-            } else if (err.keyPattern.email === 1) {
-                res.status(403).send('Email is already present')
+            if (err.keyPattern) {
+                if (err.keyPattern.dealAyoId === 1) {
+                    res.status(403).send('Deal ayo Id is already present')
+                } else if (err.keyPattern.mobile === 1) {
+                    res.status(403).send('Mobile no. is already present')
+                } else if (err.keyPattern.email === 1) {
+                    res.status(403).send('Email is already present')
+                } else {
+                    res.status(500).send('Internal server Error');
+                }
             } else {
                 res.status(500).send('Internal server Error');
             }
         });
+}
+
+const deleteEmployees = async (req, res) => {
+    await employeeModel.deleteMany({ _id: { $in: req.body._ids } })
+        .then(() => {
+            res.send('deleted sucessfully')
+        }).catch(() => {
+            res.status(500).send('Error occured while deleting')
+        })
 }

@@ -8,8 +8,18 @@ import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 import { useEffect } from 'react'
 import { useState } from 'react'
+import parseJwt from '../../controllers/parseJwt'
 
-const categories = ['tasks', 'attendance']
+const categories = [
+    {
+        title: 'tasks',
+        url: `${baseURL}/tasks/${parseJwt(Cookies.get('token'))._id}`
+    },
+    {
+        title: 'attendance',
+        url: `${baseURL}/attendance`
+    }
+]
 
 function UserMenu() {
     const router = useRouter();
@@ -52,30 +62,30 @@ function UserMenu() {
                     p: containerPadding,
                 }}
             >
-                {categories.map((item) => (
-                    <Stack
-                        key={item}
-                        height="100%"
-                        alignItems="center"
-                        direction="row"
-                        color="white"
-                        
-                        sx={{
-                            textTransform: 'uppercase',
-                            background: matchUrl(item) ? 'white' : 'inherit',
-                            color: matchUrl(item) ? 'black' : 'white',
-                            '&:hover': {
-                                background: 'white',
-                                color: 'black'
-                            }
-                        }}
-                    >
-                        <Link href={`${baseURL}/${item}`}>
-                            <a style={{ textDecoration: 'none', padding: '0 25px', }}>
-                                <Typography variant="subtitle2">{item}</Typography>
-                            </a>
-                        </Link>
-                    </Stack>
+                {categories.map((category) => (
+                <Stack
+                    key={category.title}
+                    height="100%"
+                    alignItems="center"
+                    direction="row"
+                    color="white"
+
+                    sx={{
+                        textTransform: 'uppercase',
+                        background: matchUrl(category.title) ? 'white' : 'inherit',
+                        color: matchUrl(category.title) ? 'black' : 'white',
+                        '&:hover': {
+                            background: 'white',
+                            color: 'black'
+                        }
+                    }}
+                >
+                    <Link href={category.url}>
+                        <a style={{ textDecoration: 'none', padding: '0 25px', }}>
+                            <Typography variant="subtitle2">{category.title}</Typography>
+                        </a>
+                    </Link>
+                </Stack>
                 ))
                 }
             </Stack >

@@ -10,12 +10,20 @@ import parseJwt from "../../controllers/parseJwt";
 import { useRouter } from "next/router";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useState, useEffect } from "react";
+import axios from 'axios';
 
 function Logout() {
   const router = useRouter()
-  const handleLogout = () => {
-    Cookies.remove('token')
-    router.push(`${baseURL}`)
+  const handleLogout = async () => {
+    await axios.post(`${baseURL}/api/logout`)
+      .then((res) => {
+        if (res.data) {
+          Cookies.remove('token')
+          router.push(`${baseURL}`)
+        }
+      }).catch((err) => {
+        throw new Error(err);
+      })
   }
   return (
     <Button onClick={handleLogout} variant="text" sx={{ height: 20, fontSize: 12 }}>
@@ -27,7 +35,7 @@ function Logout() {
 function TopNav() {
   const [avatarLetter, setAvatarLetter] = useState('')
   const token = Cookies.get('token')
-  
+
   const returnFirstLetter = () => {
     if (token) {
       let name = parseJwt(Cookies.get('token')).name;
@@ -74,7 +82,7 @@ function TopNav() {
             sx={{ ml: 1, flex: 1 }}
             placeholder="What are you looking for?"
             inputProps={{ "aria-label": "search items" }}
-            
+
           />
           <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
           <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">

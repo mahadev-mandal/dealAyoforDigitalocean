@@ -52,12 +52,17 @@ const checkWorkEnded = async (req, res) => {
         },
         "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId,
     }, { date: 1, "employees.$": 1 }).then((attendance) => {
-        if (attendance.employees[0].exitTime) {
-            res.send(true)
+        if (attendance) {
+            if (attendance.employees[0].exitTime) {
+                res.send(true)
+            } else {
+                res.send(false)
+            }
         } else {
             res.send(false)
         }
     }).catch(() => {
+        console.log('jkdjf')
         res.status(500).send("Error in checking work ended")
     })
 }

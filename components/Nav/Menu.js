@@ -50,6 +50,9 @@ function Menu() {
                 sx={{
                     background: '#E1304C',
                     p: containerPadding,
+                    position:'sticky',
+                    top:0,
+                    zIndex:100,
                 }}
             >
                 {categories.map((item) => (

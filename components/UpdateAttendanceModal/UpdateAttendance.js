@@ -120,7 +120,7 @@ export default function UpdateAttendance({ date, dealAyoId, entryTime, exitTime 
 }
 
 UpdateAttendance.propTypes = {
-    date: PropTypes.instanceOf(Date),
+    date: PropTypes.string,
     dealAyoId: PropTypes.string,
     entryTime: PropTypes.string,
     exitTime: PropTypes.string,

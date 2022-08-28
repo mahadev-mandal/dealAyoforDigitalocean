@@ -1,10 +1,10 @@
 import db_conn from "../../../helpers/db_conn";
 import employeeModel from '../../../models/employeeSchema';
-import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 db_conn();
 
-export default async function login(req, res) {
+export default function login(req, res) {
     switch (req.method) {
         case 'POST':
             return loginUser(req, res);
@@ -15,27 +15,21 @@ export default async function login(req, res) {
 }
 
 const loginUser = async (req, res) => {
-    await employeeModel.findOne({ dealAyoId: req.body.dealAyoId, 
-    }).then((emp) => {
-            if (emp) {
-                if (emp.password === req.body.password) {
-                    const token = jwt.sign(
-                        {
-                            _id: emp._id, 
-                            dealAyoId: emp.dealAyoId, 
-                            name: emp.firstName, 
-                            role: emp.role
-                        },
-                        process.env.SECRET_KEY
-                    )
-                    res.status(200).send(token)
-                } else {
-                    res.status(401).send('Password not matching')
-                }
+    await employeeModel.findOne({
+        dealAyoId: req.body.dealAyoId,
+    }).then(async (emp) => {
+        if (emp) {
+            const passwordMatch = await bcrypt.compare(req.body.password, emp.password);
+            if (passwordMatch) {
+                const token = await emp.generateAuthToken(req, res);
+                res.status(200).send(token)
             } else {
-                res.status(401).send('you are not registered user')
+                res.status(401).send('Password not matching')
             }
-        }).catch(() => {
-            res.status(500).send('something went wrong')
-        })
+        } else {
+            res.status(401).send('you are not registered user')
+        }
+    }).catch(() => {
+        res.status(500).send('something went wrong')
+    })
 }
