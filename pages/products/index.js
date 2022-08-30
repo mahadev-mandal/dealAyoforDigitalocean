@@ -54,7 +54,7 @@ function Products() {
 
     if (error1 || error2) {
         return <div>Failed to load products</div>
-    } else if (!products || !totalCount) {
+    } else if (!products) {
         return <div>Please wait loading...</div>
     }
     return (
