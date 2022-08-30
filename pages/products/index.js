@@ -55,9 +55,6 @@ function Products() {
     if (error1 || error2) {
         return <div>Failed to load products</div>
     } else if (!products || !totalCount) {
-        if (totalCount < 1) {
-            return <div>Products not found</div>
-        }
         return <div>Please wait loading...</div>
     }
     return (
