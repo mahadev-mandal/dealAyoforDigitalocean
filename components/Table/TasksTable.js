@@ -11,6 +11,7 @@ import PropTypes from 'prop-types'
 import { Checkbox, TablePagination } from '@mui/material';
 import copyToClipboard from '../../controllers/copyToClipboard';
 import AdditionalDetailsModal from '../AdditionalDetailsModal/AdditionalDetailsModal';
+import Remarks from '../Remarks/Remarks';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -73,7 +74,7 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                                                 typeof (row[head]) === 'boolean' ?
                                                     <Checkbox
                                                         checked={row[head]}
-                                                        onChange={e => onStatusChange(e, row._id)}
+                                                        onChange={e => onStatusChange(e, row._id, head)}
                                                         sx={{ padding: 0, }}
                                                     /> : head === 'entryDate' ? returnTime(row[head]) : row[head]
                                             }
@@ -86,6 +87,13 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                                                 additionalDetails={row.additionalDetails ? row.additionalDetails : {}}
                                             /> : null
                                         }
+                                    </StyledTableCell>
+                                    <StyledTableCell sx={{ textAlign: 'center' }}>
+                                        <Remarks
+                                            title={row.title}
+                                            _id={row._id}
+                                            remarks={row.remarks}
+                                        />
                                     </StyledTableCell>
                                 </StyledTableRow>
                             ))}

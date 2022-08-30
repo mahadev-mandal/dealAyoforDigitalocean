@@ -5,12 +5,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import PropTypes from 'prop-types';
-import { IconButton, Typography } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import copyToClipboard from '../../controllers/copyToClipboard';
+import { IconButton, TextareaAutosize, } from '@mui/material';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import { baseURL } from '../../helpers/constants';
+import axios from 'axios';
 
-export default function AdditionalDetailsModal({ title, additionalDetails }) {
+
+export default function Remarks({ title, _id, remarks }) {
     const [open, setOpen] = React.useState(false);
+    const [newRemarks, setNewRemarks] = React.useState(remarks)
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -20,10 +23,16 @@ export default function AdditionalDetailsModal({ title, additionalDetails }) {
         setOpen(false);
     };
 
+    const handleRemarksSave = async () => {
+        await axios.put(`${baseURL}/api/products/${_id}`, { remarks: newRemarks })
+            .then(() => setOpen(false))
+            .catch((err) => { throw new Error(err) })
+    }
+
     return (
         <div>
             <IconButton variant="outlined" onClick={handleClickOpen} size="small" sx={{ padding: 0 }}>
-                <VisibilityIcon />
+                <RateReviewIcon />
             </IconButton>
             <Dialog
                 open={open}
@@ -41,22 +50,17 @@ export default function AdditionalDetailsModal({ title, additionalDetails }) {
                     {title}
                 </DialogTitle>
                 <DialogContent>
-                    <ul >
-                        {Object.keys(additionalDetails).map((objKey) => (
-                            <li key={objKey}>
-                                <Typography component="span" >{[objKey]}</Typography>: &nbsp;
-                                <Typography
-                                    component="span"
-                                    sx={{ fontWeight: 'bold',userSelect: 'all' }}
-                                    onClick={(e) => copyToClipboard(e.target.innerText)}>
-                                    {additionalDetails[objKey]}
-                                </Typography>
-                            </li>
-                        ))}
-                    </ul>
-
+                    <TextareaAutosize
+                        aria-label="empty textarea"
+                        minRows={4}
+                        placeholder="Write remarks"
+                        value={newRemarks}
+                        onChange={e => setNewRemarks(e.target.value)}
+                        style={{ width: '100%' }}
+                    />
                 </DialogContent>
                 <DialogActions>
+                    <Button onClick={handleRemarksSave}>Save</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </DialogActions>
             </Dialog>
@@ -64,7 +68,8 @@ export default function AdditionalDetailsModal({ title, additionalDetails }) {
     );
 }
 
-AdditionalDetailsModal.propTypes = {
-    additionalDetails: PropTypes.object,
+Remarks.propTypes = {
+    _id: PropTypes.string,
     title: PropTypes.string,
+    remarks: PropTypes.string,
 }

@@ -5,7 +5,7 @@ const attendanceSchema = new mongoose.Schema({
         type: Date,
         required: true,
         unique: true,
-        index:true,
+        index: true,
     },
     name: String,
     employees: [
@@ -36,6 +36,10 @@ const attendanceSchema = new mongoose.Schema({
             extraTasksCompleted: {
                 type: Number,
                 default: 0
+            },
+            errors: {
+                type: Number,
+                default: 0,
             },
             comment: String,
         }

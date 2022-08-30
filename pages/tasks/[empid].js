@@ -10,8 +10,8 @@ import TasksTable from '../../components/Table/TasksTable';
 import CommentModal from '../../components/CommentModal/CommentModal';
 import { withAuth } from '../../HOC/withAuth';
 
-const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'Entry Time', 'additional'];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'entryDate']
+const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks'];
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'error', 'entryDate',]
 
 function Tasks() {
     const [page, setPage] = useState(0);
@@ -85,7 +85,7 @@ function Tasks() {
         }
     }
 
-    const handleStatusChange = async (event, _id) => {
+    const handleStatusChange = async (event, _id, updateField) => {
         //only allow to tick check box if work in not ended
         if (!endWork) {
             let date = null;
@@ -94,14 +94,24 @@ function Tasks() {
             } else {
                 date = ''
             }
-            await axios.put(`${baseURL}/api/products/${_id}`, {
-                entryStatus: event.target.checked,
-                date: date,
-            }).then(() => {
-                mutate()
-            }).catch((err) => {
-                console.log(err)
-            })
+            let update;
+            
+            if (updateField === 'entryStatus') {
+                update = {
+                    entryStatus: event.target.checked,
+                    date: date,
+                }
+            } else {
+                update = {
+                    error: event.target.checked,
+                }
+            }
+            await axios.put(`${baseURL}/api/products/${_id}`, update)
+                .then(() => {
+                    mutate()
+                }).catch((err) => {
+                    console.log(err)
+                })
         } else {
             alert("After Work Ended You are not allow to edit. Please contact admin")
         }
@@ -112,7 +122,7 @@ function Tasks() {
     } else if (!products) {
         return <div>Please wait loading...</div>
     }
-    
+
     return (
         <div>
             <Stack justifyContent="space-between" sx={{ mb: 0.5 }} direction="row">

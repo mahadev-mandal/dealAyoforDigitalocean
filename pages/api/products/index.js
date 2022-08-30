@@ -13,8 +13,11 @@ export default function products(req, res) {
             return updateProduct(req, res);
         case 'DELETE':
             return deleteProducts(req, res);
-        default:
+        default:{
             res.status(500).send('Use proper methods');
+            console.log('use proper method')
+
+        }
     }
 }
 
@@ -32,10 +35,13 @@ const getProducts = async (req, res) => {
 
 const saveProducts = async (req, res) => {
     const products = req.body;
+    console.log(req.body)
     await productModel.insertMany(products)
         .then((r) => {
+            console.log(r.length)
             res.status(200).send(`${r.length} products saved`)
-        }).catch(() => {
+        }).catch((err) => {
+            console.log(err)
             res.status(500).send('Error occured while saving products')
         })
 }
