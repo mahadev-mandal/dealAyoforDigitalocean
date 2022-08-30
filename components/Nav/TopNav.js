@@ -117,7 +117,7 @@ function TopNav() {
             onClose={() => setOpen(false)}
             // disabled={!router.pathname.startsWith('/products')}
             onChange={(e, v) => handleSelectedChange(e, v)}
-            options={products.length >= 1 ? products.map((option) => ({ _id: option._id, label: option.title })) : []}
+            options={products ? products.length >= 1 ? products.map((option) => ({ _id: option._id, label: option.title })) : [] : []}
             renderInput={(params) =>
               <Paper
                 sx={{
