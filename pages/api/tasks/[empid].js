@@ -44,7 +44,7 @@ const assignTasks = async (req, res) => {
                 "$lt": new Date().setHours(24)
             }
         }
-    }).limit(100).then(async (products1) => {
+    }).limit(200).then(async (products1) => {
         const workingMins = 8 * 60;  //in mins
         var catgMins = 0;
         const tasks = [];

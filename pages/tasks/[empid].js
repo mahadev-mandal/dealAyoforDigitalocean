@@ -10,7 +10,7 @@ import TasksTable from '../../components/Table/TasksTable';
 import CommentModal from '../../components/CommentModal/CommentModal';
 import { withAuth } from '../../HOC/withAuth';
 
-const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'Entry Date', 'additional'];
+const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'Entry Time', 'additional'];
 const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'entryDate']
 
 function Tasks() {

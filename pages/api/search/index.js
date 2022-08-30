@@ -13,13 +13,22 @@ export default function search(req, res) {
 }
 
 const searchEmployees = async (req, res) => {
-    const { searchText } = req.query;
-    await productModel.find({ $text: { $search: searchText } })
-        .then((r) => {
-            console.log(r.length);
-            res.json(r)
-        }).catch((err) => {
-            console.log('err');
-            res.json(err);
-        })
+    const { searchText, pid } = req.query;
+    if (pid) {
+        await productModel.find({ _id: pid })
+            .then((r) => {
+                res.json(r)
+            }).catch((err) => {
+                console.log('err');
+                res.json(err);
+            })
+    } else {
+        await productModel.find({ $text: { $search: searchText } })
+            .then((r) => {
+                res.json(r)
+            }).catch((err) => {
+                console.log('err');
+                res.json(err);
+            })
+    }
 }

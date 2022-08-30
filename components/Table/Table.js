@@ -19,6 +19,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import { Button, Stack } from '@mui/material';
 import AddEmployee from '../AddEmployeeModal';
 import AddCategory from '../AddCategoryModal/AddCategoryModal';
+import { useRouter } from 'next/router';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -48,6 +49,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, totalCount, collectionName, mutateData, mutateCounts }) {
+    const router = useRouter();
     const [selected, setSelected] = useState([]);
     const handleSelect = (event, _id) => {
         if (event.target.checked) {
@@ -114,8 +116,10 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                 >
                     <EditIcon />Edit
                 </Button>
-                {collectionName === 'employees' ? <AddEmployee />
-                    : collectionName === 'categories' ? <AddCategory /> : <FullScreenDialog />
+                {!router.pathname.startsWith('/tasks') ?
+                    collectionName === 'employees' ? <AddEmployee />
+                        : collectionName === 'categories' ? <AddCategory /> : <FullScreenDialog /> : null
+
                 }
             </Stack>
             <Paper>
