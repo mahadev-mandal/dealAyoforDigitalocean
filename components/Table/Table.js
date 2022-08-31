@@ -51,6 +51,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, totalCount, collectionName, mutateData, mutateCounts }) {
     const router = useRouter();
     const [selected, setSelected] = useState([]);
+    const [editDetail, setEditDetail] = useState({});
+    const [open, setOpen] = useState(false);
     const handleSelect = (event, _id) => {
         if (event.target.checked) {
             setSelected([...selected, _id])
@@ -83,12 +85,31 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
     }
     const handleEdit = async () => {
         if (selected.length === 1) {
-            axios.put(`${baseURL}/api/${collectionName}/${selected[0]}`);
+            setEditDetail(data.filter(emp => emp._id === selected))
+            setOpen(true)
         }
     }
-
+    
     return (
         <>
+            {Object.keys(editDetail).length > 0 ?
+                <AddEmployee
+                    initialValues={
+                        {
+                            dealAyoId: editDetail.dealAyoId,
+                            firstName: editDetail.firstName,
+                            lastName: editDetail.lastName,
+                            mobile: editDetail.mobile,
+                            email: editDetail.email,
+                            startTime: editDetail.startTime,
+                            endTime: editDetail.endTime,
+                            password: '',
+                            decreaseTask: editDetail.decreaseTasks
+                        }
+                    }
+                    openEmp={open}
+                /> : null
+            }
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
                 <Button
                     size="small"
@@ -117,7 +138,20 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                     <EditIcon />Edit
                 </Button>
                 {!router.pathname.startsWith('/tasks') ?
-                    collectionName === 'employees' ? <AddEmployee />
+                    collectionName === 'employees' ?
+                        <AddEmployee initialValues={
+                            {
+                                dealAyoId: '',
+                                firstName: '',
+                                lastName: '',
+                                mobile: '',
+                                email: '',
+                                startTime: '',
+                                endTime: '',
+                                password: '',
+                                decreaseTask: 0
+                            }
+                        } />
                         : collectionName === 'categories' ? <AddCategory /> : <FullScreenDialog /> : null
 
                 }

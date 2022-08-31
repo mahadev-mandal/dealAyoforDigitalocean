@@ -3,6 +3,7 @@ import productModel from '../../../models/productSchema';
 import categoryModel from '../../../models/categorySchema';
 import attendanceModel from '../../../models/attendanceSchema';
 import tokenPayload from "../../../controllers/tokenPayload";
+import employeeModel from '../../../models/employeeSchema';
 
 db_conn();
 
@@ -36,6 +37,14 @@ const assignTasks = async (req, res) => {
     const categories = await categoryModel.find()
         .then((categories) => categories)
         .catch(() => { res.status(500).send('Error occured while fetching tasks') })
+
+    const empDetails = await employeeModel.findOne({ dealAyoId: tokenPayload(req.cookies.token).dealAyoId })
+        .then((emp) => emp)
+        .catch(() => { res.status(500).send('Error occured while fetching emp') })
+    const startTime = new Date(`2011/02/07 ${empDetails.startTime}`);
+    const endTime = new Date(`2011/02/07 ${empDetails.endTime}`);
+
+
     await productModel.find({
         entryStatus: false,
         assignDate: {
@@ -45,7 +54,7 @@ const assignTasks = async (req, res) => {
             }
         }
     }).limit(200).then(async (products1) => {
-        const workingMins = 8 * 60;  //in mins
+        const workingMins = endTime.getHours() * 60 + endTime.getMinutes() - startTime.getHours() * 60 + startTime.getMinutes();  //in mins
         var catgMins = 0;
         const tasks = [];
         for (let product of products1) {

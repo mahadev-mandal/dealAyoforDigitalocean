@@ -11,7 +11,7 @@ import CommentModal from '../../components/CommentModal/CommentModal';
 import { withAuth } from '../../HOC/withAuth';
 
 const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks'];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'error', 'entryDate',]
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
 
 function Tasks() {
     const [page, setPage] = useState(0);
@@ -103,7 +103,7 @@ function Tasks() {
                 }
             } else {
                 update = {
-                    error: event.target.checked,
+                    errorTask: event.target.checked,
                 }
             }
             await axios.put(`${baseURL}/api/products/${_id}`, update)

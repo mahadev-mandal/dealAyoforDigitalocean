@@ -67,7 +67,7 @@ const productSchema = new mongoose.Schema({
         required: true,
         default: 1
     },
-    error: {
+    errorTask: {
         type: Boolean,
         required: true,
         default: false

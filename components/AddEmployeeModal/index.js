@@ -12,6 +12,7 @@ import { baseURL } from '../../helpers/constants';
 import { mutate } from 'swr';
 import { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
+import PropTypes from 'prop-types';
 
 
 const arr = [
@@ -26,7 +27,7 @@ const arr = [
     { label: 'decreaseTask', type: 'number' }
 ]
 
-export default function AddEmployee() {
+export default function AddEmployee({ initialValues,}) {
     const [open, setOpen] = React.useState(false);
     const [msg, setMsg] = React.useState('');
     const [role, setRole] = useState('data-entry')
@@ -38,17 +39,7 @@ export default function AddEmployee() {
     };
 
     const { handleSubmit, handleChange, handleBlur, touched, errors, values } = useFormik({
-        initialValues: {
-            dealAyoId: '',
-            firstName: '',
-            lastName: '',
-            mobile: '',
-            email: '',
-            startTime: '',
-            endTime: '',
-            password: '',
-            decreaseTask: 0
-        },
+        initialValues,
         validationSchema: employeeValidationSchema,
         async onSubmit() {
             await axios.post(`${baseURL}/api/employees`, { ...values, role: role })
@@ -117,4 +108,8 @@ export default function AddEmployee() {
             </Dialog>
         </div>
     );
+}
+
+AddEmployee.propTypes = {
+    initialValues:PropTypes.object
 }

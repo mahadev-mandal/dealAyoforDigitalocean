@@ -30,13 +30,13 @@ const getProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const { pid } = req.query;
-console.log(req.body)
+    console.log('errorTask' in req.body ? req.body.errorTask ? 1 : -1 : 0)
     await productModel.updateOne({ _id: pid }, {
         $set: {
             entryStatus: req.body.entryStatus,
             entryDate: req.body.date,
             remarks: req.body.remarks,
-            error: req.body.error
+            errorTask: req.body.errorTask
         }
     }).then(async () => {
         if ('remarks' in req.body) {
@@ -57,7 +57,7 @@ console.log(req.body)
             }, {
                 $inc: {
                     "employees.$.tasksCompleted": 'entryStatus' in req.body ? req.body.entryStatus ? 1 : -1 : 0,
-                    "employees.$.errors": 'error' in req.body ? req.body.error ? 1 : -1 : 0,
+                    "employees.$.errorTasks": 'errorTask' in req.body ? req.body.errorTask ? 1 : -1 : 0,
                 }
             }).then(() => {
                 res.status(200).send('product updated sucessfully')

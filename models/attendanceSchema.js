@@ -37,7 +37,7 @@ const attendanceSchema = new mongoose.Schema({
                 type: Number,
                 default: 0
             },
-            errors: {
+            errorTasks: {
                 type: Number,
                 default: 0,
             },
