@@ -9,7 +9,7 @@ import { withAuth } from '../../HOC/withAuth';
 
 
 const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'Assign to', 'entry status',];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignTo', 'entryStatus',]
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignToName', 'entryStatus',]
 
 function Products() {
     const [page, setPage] = useState(0);

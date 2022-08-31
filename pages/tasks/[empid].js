@@ -9,6 +9,8 @@ import { useEffect } from 'react';
 import TasksTable from '../../components/Table/TasksTable';
 import CommentModal from '../../components/CommentModal/CommentModal';
 import { withAuth } from '../../HOC/withAuth';
+import countTotalData from '../../controllers/countTotalData';
+import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 
 const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks'];
 const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
@@ -18,7 +20,8 @@ function Tasks() {
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [endWork, setEndWork] = useState(false);
     const [comment, setComment] = useState('');
-    const [assigning, setAssigning] = useState(false)
+    const [assigning, setAssigning] = useState(false);
+    const [allowClick, setAllowClick] = useState(true);
 
     const checkEndWork = async () => {
         await axios.post(`${baseURL}/api/attendance`, {
@@ -38,7 +41,7 @@ function Tasks() {
     })
 
     const fetchData = async (url) => {
-        return await axios.get(url)
+        return await axios.get(url, { params: { page, rowsPerPage } })
             .then((res) => {
                 if (res.data.length > 1) {
                     return res.data
@@ -50,31 +53,39 @@ function Tasks() {
             })
     }
 
+
+    const { data: products, error, mutate } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
+    const { data: totalCount } = useSWR(`${baseURL}/api/count-data`,
+        url => countTotalData(url, 'empTasks')
+    );
+
     const handleChangePage = (event, newPage) => {
         setPage(parseInt(newPage))
+        handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutate)
     }
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0)
+        handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutate)
     }
 
-    const { data: products, error, mutate } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
-
     const assignTasks = async () => {
-        setAssigning(true);
         if (products.length < 1) {
-            await axios.put(`${baseURL}/api/mark-attendance/`, {
-                date: new Date(),
-                dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
-                name: parsejwt(Cookies.get('token')).name,
-                entryTime: new Date(),
-            }).then(async () => {
-                await axios.post(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`)
-                    .then(() => {
-                        setAssigning(false);
-                        mutate();
-                    })
-            }).catch((err) => { throw new Error(err); })
+            setAssigning(true);
+            if (products.length < 1) {
+                await axios.put(`${baseURL}/api/mark-attendance/`, {
+                    date: new Date(),
+                    dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
+                    name: parsejwt(Cookies.get('token')).name,
+                    entryTime: new Date(),
+                }).then(async () => {
+                    await axios.post(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`)
+                        .then(() => {
+                            setAssigning(false);
+                            mutate();
+                        })
+                }).catch((err) => { throw new Error(err); })
+            }
         }
     }
     const handleEndWork = async () => {
@@ -91,6 +102,7 @@ function Tasks() {
     }
 
     const handleStatusChange = async (event, _id, updateField) => {
+        setAllowClick(false)
         //only allow to tick check box if work in not ended
         if (!endWork) {
             let date = null;
@@ -111,12 +123,15 @@ function Tasks() {
                     errorTask: event.target.checked,
                 }
             }
-            await axios.put(`${baseURL}/api/products/${_id}`, update)
-                .then(() => {
-                    mutate()
-                }).catch((err) => {
-                    console.log(err)
-                })
+            if (allowClick) {
+                await axios.put(`${baseURL}/api/products/${_id}`, update)
+                    .then(() => {
+                        setAllowClick(true)
+                        mutate()
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+            }
         } else {
             alert("After Work Ended You are not allow to edit. Please contact admin")
         }
@@ -162,7 +177,7 @@ function Tasks() {
                     />
                 </Stack>
             </Stack>
-            {assigning ?
+            {(assigning) ?
                 <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
                     <CircularProgress color="secondary" />
                     Assigning Tasks...
@@ -173,10 +188,11 @@ function Tasks() {
                     data={products}
                     onStatusChange={handleStatusChange}
                     page={page}
-                    totalCount={products.length}
+                    totalCount={totalCount}
                     rowsPerPage={rowsPerPage}
                     handleChangePage={handleChangePage}
                     handleChangeRowsPerPage={handleChangeRowsPerPage}
+                    allowClick={allowClick}
                 />
             }
             <TextareaAutosize

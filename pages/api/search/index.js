@@ -19,7 +19,6 @@ const searchEmployees = async (req, res) => {
             .then((r) => {
                 res.json(r)
             }).catch((err) => {
-                console.log('err');
                 res.json(err);
             })
     } else {

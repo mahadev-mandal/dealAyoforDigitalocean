@@ -59,9 +59,10 @@ const productSchema = new mongoose.Schema({
     assignDate: {
         type: Date,
     },
-    assignTo: {
+    assignToDealAyoId: {
         type: String,
     },
+    assignToName: String,
     level: {
         type: Number,
         required: true,

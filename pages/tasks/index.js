@@ -8,7 +8,7 @@ import countTotalData from '../../controllers/countTotalData';
 import { withAuth } from '../../HOC/withAuth';
 
 const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assign to', 'Entry status',];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignTo', 'entryStatus',];
+const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignToName', 'entryStatus',];
 
 function Tasks() {
     const [page, setPage] = useState(0);

@@ -30,7 +30,7 @@ const getProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const { pid } = req.query;
-    console.log('errorTask' in req.body ? req.body.errorTask ? 1 : -1 : 0)
+    
     await productModel.updateOne({ _id: pid }, {
         $set: {
             entryStatus: req.body.entryStatus,
