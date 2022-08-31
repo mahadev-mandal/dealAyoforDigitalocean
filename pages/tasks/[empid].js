@@ -1,4 +1,4 @@
-import { Button, Checkbox, FormControlLabel, Stack, TextareaAutosize, } from '@mui/material';
+import { Button, Checkbox, CircularProgress, FormControlLabel, Stack, TextareaAutosize, } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react'
@@ -18,6 +18,7 @@ function Tasks() {
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [endWork, setEndWork] = useState(false);
     const [comment, setComment] = useState('');
+    const [assigning, setAssigning] = useState(false)
 
     const checkEndWork = async () => {
         await axios.post(`${baseURL}/api/attendance`, {
@@ -60,6 +61,7 @@ function Tasks() {
     const { data: products, error, mutate } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
 
     const assignTasks = async () => {
+        setAssigning(true);
         if (products.length < 1) {
             await axios.put(`${baseURL}/api/mark-attendance/`, {
                 date: new Date(),
@@ -68,8 +70,11 @@ function Tasks() {
                 entryTime: new Date(),
             }).then(async () => {
                 await axios.post(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`)
-                    .then(() => mutate())
-            }).catch((err) => { throw new Error(err) })
+                    .then(() => {
+                        setAssigning(false);
+                        mutate();
+                    })
+            }).catch((err) => { throw new Error(err); })
         }
     }
     const handleEndWork = async () => {
@@ -95,7 +100,7 @@ function Tasks() {
                 date = ''
             }
             let update;
-            
+
             if (updateField === 'entryStatus') {
                 update = {
                     entryStatus: event.target.checked,
@@ -118,9 +123,9 @@ function Tasks() {
     }
 
     if (error) {
-        return <div>Failed to load products</div>
+        return <div>Failed to load Tasks</div>
     } else if (!products) {
-        return <div>Please wait loading...</div>
+        return <div>Please wait getting Tasks...</div>
     }
 
     return (
@@ -157,17 +162,23 @@ function Tasks() {
                     />
                 </Stack>
             </Stack>
-            <TasksTable
-                tableHeading={tableHeading}
-                dataHeading={dataHeading}
-                data={products}
-                onStatusChange={handleStatusChange}
-                page={page}
-                totalCount={products.length}
-                rowsPerPage={rowsPerPage}
-                handleChangePage={handleChangePage}
-                handleChangeRowsPerPage={handleChangeRowsPerPage}
-            />
+            {assigning ?
+                <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
+                    <CircularProgress color="secondary" />
+                    Assigning Tasks...
+                </Stack> :
+                <TasksTable
+                    tableHeading={tableHeading}
+                    dataHeading={dataHeading}
+                    data={products}
+                    onStatusChange={handleStatusChange}
+                    page={page}
+                    totalCount={products.length}
+                    rowsPerPage={rowsPerPage}
+                    handleChangePage={handleChangePage}
+                    handleChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+            }
             <TextareaAutosize
                 minRows={3}
                 placeholder="your comment"
