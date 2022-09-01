@@ -21,7 +21,7 @@ function Tasks() {
     const [endWork, setEndWork] = useState(false);
     const [comment, setComment] = useState('');
     const [assigning, setAssigning] = useState(false);
-    const [disableClick, setDisableClick] = useState(true);
+    const [disableClick, setDisableClick] = useState(false);
 
     const checkEndWork = async () => {
         await axios.post(`${baseURL}/api/attendance`, {
