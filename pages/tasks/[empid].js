@@ -53,8 +53,8 @@ function Tasks() {
     }
 
 
-    const { data: products, error, mutate } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
-    const { data: totalCount } = useSWR(`${baseURL}/api/count-data`,
+    const { data: products, error1, mutate } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
+    const { data: totalCount, error2 } = useSWR(`${baseURL}/api/count-data`,
         url => countTotalData(url, 'empTasks')
     );
 
@@ -132,9 +132,9 @@ function Tasks() {
         }
     }
 
-    if (error) {
+    if (error1 || error2) {
         return <div>Failed to load Tasks</div>
-    } else if (!products) {
+    } else if (!products || !totalCount) {
         return <div>Please wait getting Tasks...</div>
     }
 

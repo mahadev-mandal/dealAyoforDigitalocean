@@ -19,8 +19,8 @@ export default function Home() {
     await axios.post(`${baseURL}/api/login`, { dealAyoId: empId, password: password })
       .then((res) => {
         Cookies.set('token', res.data);
-        if (parseJwt(Cookies.get('token')).role === 'data-entry') {
-          router.push(`${baseURL}/tasks/${parseJwt(Cookies.get('token'))._id}`)
+        if (parseJwt(res.data).role === 'data-entry') {
+          router.push(`${baseURL}/tasks/${parseJwt(res.data)._id}`)
         } else {
           router.push(`${baseURL}/tasks`)
         }

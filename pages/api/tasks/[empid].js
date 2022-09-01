@@ -93,9 +93,10 @@ const assignTasks = async (req, res) => {
                 "employees.$.tasksAssigned": updateMany.modifiedCount
             }
         })
-        res.status(200).json(assignTasks);
+        
+        res.status(200).json(assignedTasks);
     } catch (err) {
-        console.log(err)
+        // console.log(err)
         res.status(500).send('Error while assigning Tasks')
     }
 }
