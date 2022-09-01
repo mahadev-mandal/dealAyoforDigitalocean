@@ -27,6 +27,7 @@ const getAssinedTasks = async (req, res) => {
             "$lt": new Date().setHours(24)
         }
     }).skip(parseInt(rowsPerPage) * parseInt(page)).limit(parseInt(rowsPerPage)).then((product) => {
+        console.log(product)
         res.status(200).json(product)
     }).catch(() => {
         res.status(500).send('Error occured in checking assigned tasks')

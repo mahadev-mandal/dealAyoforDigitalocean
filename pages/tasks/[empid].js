@@ -131,10 +131,10 @@ function Tasks() {
             alert("After Work Ended You are not allow to edit. Please contact admin")
         }
     }
-
+console.log(totalCount)
     if (error1 || error2) {
         return <div>Failed to load Tasks</div>
-    } else if (!products || !totalCount) {
+    } else if (!products || totalCount===undefined) {
         return <div>Please wait getting Tasks...</div>
     }
 
