@@ -40,7 +40,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, totalCount, }) {
+function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage,disableClick, handleChangeRowsPerPage, totalCount, }) {
     const returnTime = (date) => {
         if (date) {
             return new Date(date).toLocaleTimeString();
@@ -74,6 +74,7 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                                                 typeof (row[head]) === 'boolean' ?
                                                     <Checkbox
                                                         checked={row[head]}
+                                                        disabled={disableClick}
                                                         onChange={e => onStatusChange(e, row._id, head)}
                                                         sx={{ padding: 0, }}
                                                     /> : head === 'entryDate' ? returnTime(row[head]) : row[head]
@@ -130,6 +131,7 @@ TasksTable.propTypes = {
     collectionName: PropTypes.string,
     mutateData: PropTypes.func,
     mutateCounts: PropTypes.func,
+    disableClick:PropTypes.bool,
     // sku: PropTypes.string,
     // handleSkuChange:PropTypes.func,
 }

@@ -21,6 +21,7 @@ function Tasks() {
     const [endWork, setEndWork] = useState(false);
     const [comment, setComment] = useState('');
     const [assigning, setAssigning] = useState(false);
+    const [disableClick, setDisableClick] = useState(true);
 
     const checkEndWork = async () => {
         await axios.post(`${baseURL}/api/attendance`, {
@@ -103,6 +104,7 @@ function Tasks() {
     const handleStatusChange = async (event, _id, updateField) => {
         //only allow to tick check box if work in not ended
         if (!endWork) {
+            setDisableClick(true);
             let date = null;
             if (event.target.checked) {
                 date = new Date();
@@ -124,6 +126,7 @@ function Tasks() {
             await axios.put(`${baseURL}/api/products/${_id}`, update)
                 .then(() => {
                     mutate()
+                    setDisableClick(false);
                 }).catch((err) => {
                     console.log(err)
                 })
@@ -131,10 +134,10 @@ function Tasks() {
             alert("After Work Ended You are not allow to edit. Please contact admin")
         }
     }
-console.log(totalCount)
+    console.log(totalCount)
     if (error1 || error2) {
         return <div>Failed to load Tasks</div>
-    } else if (!products || totalCount===undefined) {
+    } else if (!products || totalCount === undefined) {
         return <div>Please wait getting Tasks...</div>
     }
 
@@ -187,8 +190,9 @@ console.log(totalCount)
                     rowsPerPage={rowsPerPage}
                     handleChangePage={handleChangePage}
                     handleChangeRowsPerPage={handleChangeRowsPerPage}
-                    // sku={sku}
-                    // handleSkuChange={handleSkuChange}
+                    disableClick={disableClick}
+                // sku={sku}
+                // handleSkuChange={handleSkuChange}
                 />
             }
             <TextareaAutosize
