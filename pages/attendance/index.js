@@ -8,8 +8,8 @@ import handleDateChange from '../../controllers/handleDateChange';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 
-const tableHeading = ['Date', 'Day', 'Emp Id', 'Name', 'Entry Time', 'Exit Time', 'Assigned', 'Completed', 'Extra', 'Edit'];
-const dataHeading = ['dealAyoId', 'name', 'entryTime', 'exitTime', 'tasksAssigned', 'tasksCompleted', 'extraTasksCompleted'];
+const tableHeading = ['Date', 'Day', 'Emp Id', 'Name', 'Entry Time', 'Exit Time', 'Assigned', 'Completed', 'Extra', 'Error Tasks', 'Edit'];
+const dataHeading = ['dealAyoId', 'name', 'entryTime', 'exitTime', 'tasksAssigned', 'tasksCompleted', 'extraTasksCompleted', 'errorTasks'];
 
 function Attendance() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
