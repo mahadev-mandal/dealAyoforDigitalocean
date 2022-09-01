@@ -13,7 +13,7 @@ export default function category(req, res) {
 
 const updateCategory = async (req, res) => {
     const { catid } = req.query;
-    await categoryModel.updateOne({ _id: catid }, {
+    await categoryModel.findByIdAndUpdate(catid, {
         $set: {
             time: req.body.time,
         }
@@ -24,12 +24,12 @@ const updateCategory = async (req, res) => {
     })
 }
 
-const deleteCategory = async(req, res) => {
+const deleteCategory = async (req, res) => {
     const { catid } = req.query;
-    await categoryModel.deleteOne({_id:catid})
-    .then(()=>{
-        res.status(200).send('Category deleted sucessfully')
-    }).catch(()=>{
-        res.status(500).send('Error occured while deleting category');
-    })
+    await categoryModel.deleteOne({ _id: catid })
+        .then(() => {
+            res.status(200).send('Category deleted sucessfully')
+        }).catch(() => {
+            res.status(500).send('Error occured while deleting category');
+        })
 }

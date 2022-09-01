@@ -13,14 +13,14 @@ import { useState } from 'react';
 import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
 import FullScreenDialog from '../FullScreenDialog/FullScreenDialog';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import BlockIcon from '@mui/icons-material/Block';
 import { Button, Stack } from '@mui/material';
 import AddEmployee from '../EmployeeModal/AddEmployee';
-import AddCategory from '../AddCategoryModal/AddCategoryModal';
+import AddCategory from '../CategoryModal/AddCategory';
 import { useRouter } from 'next/router';
 import EditEmployee from '../EmployeeModal/EditEmployee';
+import EditCategory from '../CategoryModal/EditCategory';
+import AreYouSureModal from '../SureModal';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -74,20 +74,20 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
             return ''
         }
     }
-    const a = data.filter(emp => emp._id === selected[0])[0]
 
-    const handleDelete = async () => {
-        axios.delete(`${baseURL}/api/${collectionName}`, { data: { _ids: selected } })
-            .then(() => {
-                mutateData();
-                mutateCounts()
-                setSelected([])
-            })
+
+    const handleClickYes = async (type) => {
+        if(type==='delete'){
+            axios.delete(`${baseURL}/api/${collectionName}`, { data: { _ids: selected } })
+                .then(() => {
+                    mutateData();
+                    mutateCounts()
+                    setSelected([])
+                })
+        }
     }
-    const handleEdit = async () => {
 
-    }
-
+    const details = data.filter(emp => emp._id === selected[0])[0]
     return (
         <>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
@@ -99,33 +99,43 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                 >
                     <BlockIcon />Disable {selected.length}
                 </Button>
-                <Button
-                    variant="contained"
-                    size="small"
-                    color="error"
-                    disabled={selected.length >= 1 ? false : true}
-                    onClick={handleDelete}
-                >
-                    <DeleteForeverIcon />Delete {selected.length}
-                </Button>
-                <EditEmployee
-                    empDetails={selected.length === 1 ? a : {}}
-                    disabled={selected.length != 1}
-                />
-                <Button
-                    variant="contained"
-                    size="small"
-                    color="primary"
-                    disabled={selected.length === 1 ? false : true}
-                    onClick={handleEdit}
-                >
-                    <EditIcon />Edit
-                </Button>
+
+
                 {!router.pathname.startsWith('/tasks') ?
                     collectionName === 'employees' ?
-                        <AddEmployee />
-                        : collectionName === 'categories' ? <AddCategory /> : <FullScreenDialog /> : null
-
+                        <>
+                            <AreYouSureModal
+                                title={`Are you sure want to delete ${selected.length} employees`}
+                                selected={selected}
+                                handleClickYes={()=>handleClickYes('delete')}
+                            />
+                            <EditEmployee
+                                empDetails={selected.length === 1 ? details : {}}
+                                disabled={selected.length != 1}
+                            />
+                            <AddEmployee />
+                        </>
+                        : collectionName === 'categories' ?
+                            <>
+                                <AreYouSureModal
+                                    title={`Are you sure want to delete ${selected.length} categories`}
+                                    selected={selected}
+                                    handleClickYes={()=>handleClickYes('delete')}
+                                />
+                                <EditCategory
+                                    categoryDetails={selected.length === 1 ? details : {}}
+                                    disabled={selected.length != 1}
+                                />
+                                <AddCategory />
+                            </>
+                            : <>
+                                <AreYouSureModal
+                                    title={`Are you sure want to delete ${selected.length} products`}
+                                    selected={selected}
+                                    handleClickYes={()=>handleClickYes('delete')}
+                                />
+                                <FullScreenDialog />
+                            </> : null
                 }
             </Stack>
             <Paper>

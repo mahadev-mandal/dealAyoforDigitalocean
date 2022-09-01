@@ -4,34 +4,24 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { MenuItem, Select, TextField, Typography } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
-import { employeeValidationEditSchema, } from '../../utils/validationSchema';
+import { categoryValidationSchema } from '../../utils/validationSchema';
 import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
 import { mutate } from 'swr';
-import { useState } from 'react';
-import EditIcon from '@mui/icons-material/Edit';
 import PropTypes from 'prop-types';
+import EditIcon from '@mui/icons-material/Edit';
 
 
 const arr = [
-    { label: 'dealAyoId', type: 'text' },
-    { label: 'firstName', type: 'text' },
-    { label: 'lastName', type: 'text' },
-    { label: 'mobile', type: 'text' },
-    { label: 'email', type: 'email' },
-    { label: 'startTime', type: 'time' },
-    { label: 'endTime', type: 'time' },
-    { label: 'password', type: 'text' },
-    { label: 'decreaseTask', type: 'number' }
+    { label: 'category', type: 'text' },
+    { label: 'time', type: 'text' },
 ]
 
-export default function EditEmployee({ empDetails, disabled }) {
-
+export default function EditCategory({ categoryDetails, disabled }) {
     const [open, setOpen] = React.useState(false);
     const [msg, setMsg] = React.useState('');
-    const [role, setRole] = useState('data-entry')
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -39,26 +29,19 @@ export default function EditEmployee({ empDetails, disabled }) {
         setOpen(false);
     };
 
-    let { handleSubmit, handleChange, handleBlur, touched, errors, values } = useFormik({
+    const { handleSubmit, handleChange, handleBlur, touched, errors, values } = useFormik({
         enableReinitialize: true,
         initialValues: {
-            dealAyoId: empDetails.dealAyoId,
-            firstName: empDetails.firstName,
-            lastName: empDetails.lastName,
-            mobile: empDetails.mobile,
-            email: empDetails.email,
-            startTime: empDetails.startTime,
-            endTime: empDetails.endTime,
-            password: '',
-            decreaseTask: empDetails.decreaseTask
+            category: categoryDetails.category,
+            time: categoryDetails.time,
         },
-        validationSchema: employeeValidationEditSchema,
+        validationSchema: categoryValidationSchema,
         async onSubmit() {
-            await axios.put(`${baseURL}/api/employees/${empDetails._id}`, { ...values, role: role })
+            await axios.put(`${baseURL}/api/categories/${categoryDetails._id}`, values)
                 .then(() => {
                     setOpen(false);
                     setMsg('');
-                    mutate(`${baseURL}/api/employees`)
+                    mutate(`${baseURL}/api/categories`)
                 }).catch((err) => {
                     setMsg(err.response.data)
                 })
@@ -83,20 +66,10 @@ export default function EditEmployee({ empDetails, disabled }) {
             >
                 <DialogTitle id="alert-dialog-title">
                     <Typography textAlign="center" color="red">{msg}</Typography>
-                    {"Update Employee"}
+                    {"Add Category"}
                 </DialogTitle>
                 <DialogContent>
-                    <Select
-                        fullWidth
-                        id='role'
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                    >
-                        <MenuItem value="data-entry">Data entry</MenuItem>
-                        <MenuItem value="other">Other</MenuItem>
-                        <MenuItem value="admin">admin</MenuItem>
-                        <MenuItem value="super-admin">Super admin</MenuItem>
-                    </Select>
+
                     {arr.map((item) => (
                         <TextField
                             key={item.label}
@@ -127,7 +100,7 @@ export default function EditEmployee({ empDetails, disabled }) {
     );
 }
 
-EditEmployee.propTypes = {
-    empDetails: PropTypes.object,
-    disabled: PropTypes.bool,
+EditCategory.propTypes = {
+    categoryDetails: PropTypes.object,
+    disabled: PropTypes.bool
 }

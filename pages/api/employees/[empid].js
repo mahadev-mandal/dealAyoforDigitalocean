@@ -20,14 +20,14 @@ const updateEmployee = async (req, res) => {
         $set: {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
-            // mobile: req.body.mobile,
-            // email: req.body.email,
+            mobile: req.body.mobile,
+            email: req.body.email,
             role: req.body.role,
             startTime: req.body.startTime,
             endTime: req.body.endTime,
             decreaseTask: req.body.decreaseTask,
             password: req.body.password,
-            // staus:req.body.status,
+            staus: req.body.status,
         }
     }).then(() => {
         res.send('Employee updated sucessfully')
