@@ -17,9 +17,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import BlockIcon from '@mui/icons-material/Block';
 import { Button, Stack } from '@mui/material';
-import AddEmployee from '../AddEmployeeModal';
+import AddEmployee from '../EmployeeModal/AddEmployee';
 import AddCategory from '../AddCategoryModal/AddCategoryModal';
 import { useRouter } from 'next/router';
+import EditEmployee from '../EmployeeModal/EditEmployee';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -51,13 +52,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, handleChangeRowsPerPage, totalCount, collectionName, mutateData, mutateCounts }) {
     const router = useRouter();
     const [selected, setSelected] = useState([]);
-    const [editDetail, setEditDetail] = useState({});
-    const [open, setOpen] = useState(false);
-    const handleSelect = (event, _id) => {
+
+    const handleSelect = (event, row) => {
         if (event.target.checked) {
-            setSelected([...selected, _id])
+            setSelected([...selected, row._id])
         } else {
-            setSelected(selected.filter(id => id !== _id))
+            setSelected(selected.filter(id => id !== row._id))
         }
     }
     const handleAllSelect = (event, data) => {
@@ -74,6 +74,7 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
             return ''
         }
     }
+    const a = data.filter(emp => emp._id === selected[0])[0]
 
     const handleDelete = async () => {
         axios.delete(`${baseURL}/api/${collectionName}`, { data: { _ids: selected } })
@@ -84,32 +85,11 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
             })
     }
     const handleEdit = async () => {
-        if (selected.length === 1) {
-            setEditDetail(data.filter(emp => emp._id === selected))
-            setOpen(true)
-        }
+
     }
-    
+
     return (
         <>
-            {Object.keys(editDetail).length > 0 ?
-                <AddEmployee
-                    initialValues={
-                        {
-                            dealAyoId: editDetail.dealAyoId,
-                            firstName: editDetail.firstName,
-                            lastName: editDetail.lastName,
-                            mobile: editDetail.mobile,
-                            email: editDetail.email,
-                            startTime: editDetail.startTime,
-                            endTime: editDetail.endTime,
-                            password: '',
-                            decreaseTask: editDetail.decreaseTasks
-                        }
-                    }
-                    openEmp={open}
-                /> : null
-            }
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
                 <Button
                     size="small"
@@ -128,6 +108,10 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                 >
                     <DeleteForeverIcon />Delete {selected.length}
                 </Button>
+                <EditEmployee
+                    empDetails={selected.length === 1 ? a : {}}
+                    disabled={selected.length != 1}
+                />
                 <Button
                     variant="contained"
                     size="small"
@@ -139,19 +123,7 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                 </Button>
                 {!router.pathname.startsWith('/tasks') ?
                     collectionName === 'employees' ?
-                        <AddEmployee initialValues={
-                            {
-                                dealAyoId: '',
-                                firstName: '',
-                                lastName: '',
-                                mobile: '',
-                                email: '',
-                                startTime: '',
-                                endTime: '',
-                                password: '',
-                                decreaseTask: 0
-                            }
-                        } />
+                        <AddEmployee />
                         : collectionName === 'categories' ? <AddCategory /> : <FullScreenDialog /> : null
 
                 }
@@ -182,7 +154,7 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                                     <StyledTableCell component="th" scope="row">
                                         <Checkbox
                                             checked={selected.includes(row._id)}
-                                            onChange={(e) => handleSelect(e, row._id)}
+                                            onChange={(e) => handleSelect(e, row)}
                                             sx={{ padding: 0, }}
                                         />
                                     </StyledTableCell>

@@ -21,13 +21,13 @@ const arr = [
     { label: 'lastName', type: 'text' },
     { label: 'mobile', type: 'text' },
     { label: 'email', type: 'email' },
-    { label: 'startTime', type: 'text' },
-    { label: 'endTime', type: 'text' },
+    { label: 'startTime', type: 'time' },
+    { label: 'endTime', type: '' },
     { label: 'password', type: 'text' },
     { label: 'decreaseTask', type: 'number' }
 ]
 
-export default function AddEmployee({ initialValues,}) {
+export default function AddEmployee() {
     const [open, setOpen] = React.useState(false);
     const [msg, setMsg] = React.useState('');
     const [role, setRole] = useState('data-entry')
@@ -39,7 +39,17 @@ export default function AddEmployee({ initialValues,}) {
     };
 
     const { handleSubmit, handleChange, handleBlur, touched, errors, values } = useFormik({
-        initialValues,
+        initialValues: {
+            dealAyoId: '',
+            firstName: '',
+            lastName: '',
+            mobile: '',
+            email: '',
+            startTime: '10:00',
+            endTime: '06:00',
+            password: '',
+            decreaseTask: 0
+        },
         validationSchema: employeeValidationSchema,
         async onSubmit() {
             await axios.post(`${baseURL}/api/employees`, { ...values, role: role })
@@ -111,5 +121,5 @@ export default function AddEmployee({ initialValues,}) {
 }
 
 AddEmployee.propTypes = {
-    initialValues:PropTypes.object
+    initialValues: PropTypes.object
 }

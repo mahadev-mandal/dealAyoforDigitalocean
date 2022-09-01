@@ -21,7 +21,6 @@ function Tasks() {
     const [endWork, setEndWork] = useState(false);
     const [comment, setComment] = useState('');
     const [assigning, setAssigning] = useState(false);
-    const [allowClick, setAllowClick] = useState(true);
 
     const checkEndWork = async () => {
         await axios.post(`${baseURL}/api/attendance`, {
@@ -102,7 +101,6 @@ function Tasks() {
     }
 
     const handleStatusChange = async (event, _id, updateField) => {
-        setAllowClick(false)
         //only allow to tick check box if work in not ended
         if (!endWork) {
             let date = null;
@@ -123,15 +121,12 @@ function Tasks() {
                     errorTask: event.target.checked,
                 }
             }
-            if (allowClick) {
-                await axios.put(`${baseURL}/api/products/${_id}`, update)
-                    .then(() => {
-                        setAllowClick(true)
-                        mutate()
-                    }).catch((err) => {
-                        console.log(err)
-                    })
-            }
+            await axios.put(`${baseURL}/api/products/${_id}`, update)
+                .then(() => {
+                    mutate()
+                }).catch((err) => {
+                    console.log(err)
+                })
         } else {
             alert("After Work Ended You are not allow to edit. Please contact admin")
         }
@@ -192,7 +187,6 @@ function Tasks() {
                     rowsPerPage={rowsPerPage}
                     handleChangePage={handleChangePage}
                     handleChangeRowsPerPage={handleChangeRowsPerPage}
-                    allowClick={allowClick}
                 />
             }
             <TextareaAutosize

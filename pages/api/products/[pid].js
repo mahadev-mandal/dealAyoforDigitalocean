@@ -20,6 +20,7 @@ export default function products(req, res) {
 
 const getProduct = async (req, res) => {
     const { pid } = req.query;
+
     await productModel.findById(pid)
         .then((product) => {
             res.send(product)
@@ -30,42 +31,45 @@ const getProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const { pid } = req.query;
-    
-    await productModel.updateOne({ _id: pid }, {
-        $set: {
-            entryStatus: req.body.entryStatus,
-            entryDate: req.body.date,
-            remarks: req.body.remarks,
-            errorTask: req.body.errorTask
+    try {
+        const productBeforUpdate = await productModel.findByIdAndUpdate(pid, {
+            $set: {
+                entryStatus: req.body.entryStatus,
+                entryDate: req.body.date,
+                remarks: req.body.remarks,
+                errorTask: req.body.errorTask
+            }
+        });
+
+        if (productBeforUpdate) {
+            if ('remarks' in req.body) {
+                await productModel.findByIdAndUpdate(pid, {
+                    $set: {
+                        remarks: req.body.remarks
+                    }
+                });
+            }
+            if ('entryStatus' in req.body || 'errorTask' in req.body) {
+                await attendanceModel.updateOne({
+                    date: {
+                        "$gte": new Date().setHours(0, 0, 0, 0),
+                        "$lt": new Date().setHours(24)
+                    },
+                    "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
+                }, {
+                    $inc: {
+                        "employees.$.tasksCompleted": ('entryStatus' in req.body && productBeforUpdate.entryStatus != req.body.entryStatus) ?
+                            req.body.entryStatus ? 1 : -1 : 0,
+                        "employees.$.errorTasks": ('errorTask' in req.body && productBeforUpdate.errorTask != req.body.errorTask) ?
+                            req.body.errorTask ? 1 : -1 : 0,
+                    }
+                });
+            }
         }
-    }).then(async () => {
-        if ('remarks' in req.body) {
-            await productModel.findByIdAndUpdate(pid, {
-                $set: {
-                    remarks: req.body.remarks
-                }
-            }).then(() => {
-                res.status(200).send('product updated sucessfully')
-            })
-        } else {
-            await attendanceModel.updateOne({
-                date: {
-                    "$gte": new Date().setHours(0, 0, 0, 0),
-                    "$lt": new Date().setHours(24)
-                },
-                "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
-            }, {
-                $inc: {
-                    "employees.$.tasksCompleted": 'entryStatus' in req.body ? req.body.entryStatus ? 1 : -1 : 0,
-                    "employees.$.errorTasks": 'errorTask' in req.body ? req.body.errorTask ? 1 : -1 : 0,
-                }
-            }).then(() => {
-                res.status(200).send('product updated sucessfully')
-            })
-        }
-    }).catch(() => {
+        res.status(200).send('product updated sucessfully')
+    } catch (err) {
         res.status(500).send('product updation failed');
-    })
+    }
 }
 
 const deleteProduct = async (req, res) => {

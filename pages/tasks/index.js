@@ -16,7 +16,7 @@ function Tasks() {
     const params = { page, rowsPerPage };
 
     const fetchData = async (url) => {
-        return await axios.get(url)
+        return await axios.get(url, { params })
             .then((res) => res.data)
             .catch((err) => {
                 throw new Error(err)

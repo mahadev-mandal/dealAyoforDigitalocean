@@ -75,6 +75,9 @@ const productSchema = new mongoose.Schema({
     },
     remarks: {
         type: String,
+    },
+    imageUrls:{
+        type:Array
     }
 
 })
