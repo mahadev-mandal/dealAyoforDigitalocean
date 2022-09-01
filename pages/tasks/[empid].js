@@ -12,7 +12,7 @@ import { withAuth } from '../../HOC/withAuth';
 import countTotalData from '../../controllers/countTotalData';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 
-const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks'];
+const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks', 'sku'];
 const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
 
 function Tasks() {
@@ -187,6 +187,8 @@ function Tasks() {
                     rowsPerPage={rowsPerPage}
                     handleChangePage={handleChangePage}
                     handleChangeRowsPerPage={handleChangeRowsPerPage}
+                    // sku={sku}
+                    // handleSkuChange={handleSkuChange}
                 />
             }
             <TextareaAutosize

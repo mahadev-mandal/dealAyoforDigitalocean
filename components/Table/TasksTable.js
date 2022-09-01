@@ -95,6 +95,9 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                                             remarks={row.remarks}
                                         />
                                     </StyledTableCell>
+                                    {/* <StyledTableCell>
+                                        <input type="text" style={{ width: '100%' }} value={sku} onChange={e => handleSkuChange(e)} />
+                                    </StyledTableCell> */}
                                 </StyledTableRow>
                             ))}
                         </TableBody>
@@ -127,6 +130,8 @@ TasksTable.propTypes = {
     collectionName: PropTypes.string,
     mutateData: PropTypes.func,
     mutateCounts: PropTypes.func,
+    // sku: PropTypes.string,
+    // handleSkuChange:PropTypes.func,
 }
 
 export default TasksTable;
