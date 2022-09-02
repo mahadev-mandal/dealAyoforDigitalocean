@@ -23,7 +23,7 @@ export default function countData(req, res) {
             res.status(404).send('use Proper method')
 
     }
-}
+} 
 
 const countEmployees = async (req, res) => {
     await employeeModel.estimatedDocumentCount()

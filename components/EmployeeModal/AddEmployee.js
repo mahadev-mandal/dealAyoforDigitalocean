@@ -22,7 +22,7 @@ const arr = [
     { label: 'mobile', type: 'text' },
     { label: 'email', type: 'email' },
     { label: 'startTime', type: 'time' },
-    { label: 'endTime', type: '' },
+    { label: 'endTime', type: 'time' },
     { label: 'password', type: 'text' },
     { label: 'decreaseTask', type: 'number' }
 ]
@@ -46,7 +46,7 @@ export default function AddEmployee() {
             mobile: '',
             email: '',
             startTime: '10:00',
-            endTime: '06:00',
+            endTime: '18:00',
             password: '',
             decreaseTask: 0
         },

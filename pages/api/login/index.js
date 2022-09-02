@@ -12,7 +12,7 @@ export default function login(req, res) {
             res.status(500).send('User proper method');
 
     }
-}
+} 
 
 const loginUser = async (req, res) => {
     await employeeModel.findOne({

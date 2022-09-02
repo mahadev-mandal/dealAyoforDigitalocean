@@ -7,6 +7,8 @@ export default function Tasks(req, res) {
     switch (req.method) {
         case 'GET':
             return getAllAssignedTasks(req, res);
+        case 'POST':
+            return unAssignTasks(req, res);
         default:
             res.status(500).send('Use proper methods')
     }
@@ -15,17 +17,31 @@ export default function Tasks(req, res) {
 const getAllAssignedTasks = async (req, res) => {
     const { page, rowsPerPage } = req.query;
     await productModel.find({
-        assignStatus: true,
         assignDate: {
             "$gte": new Date().setHours(0, 0, 0, 0),
             "$lt": new Date().setHours(24)
-        }
+        },
     })
-        .skip(parseInt(rowsPerPage) * parseInt(page))
-        .limit(parseInt(rowsPerPage))
+        
         .then((products) => {
             res.status(200).json(products)
         }).catch(() => {
             res.status(500).send('Error occured while fetching assigned tasks')
         })
+}
+
+const unAssignTasks = async (req, res) => {
+    console.log(req.body.selected)
+    try {
+        const unassignedTasks = await productModel.updateMany({ _id: req.body.selected }, {
+            $set: {
+                assignDate: null
+            }
+        }, { new: true })
+        console.log(unassignedTasks);
+        res.send(unassignedTasks);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Error occured while unassigning tasks')
+    }
 }

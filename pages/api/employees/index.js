@@ -41,12 +41,12 @@ const addEmployee = async (req, res) => {
         endTime: req.body.endTime,
         decreaseTask: req.body.decreaseTask,
         password: req.body.password,
+        
     })
     await employee.save()
         .then(() => {
             res.status(200).send('Employee added successfully');
         }).catch((err) => {
-            console.log(err)
             if (err.keyPattern) {
                 if (err.keyPattern.dealAyoId === 1) {
                     res.status(403).send('Deal ayo Id is already present')

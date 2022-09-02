@@ -54,19 +54,19 @@ function Tasks() {
     }
 
 
-    const { data: products, error1, mutate } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
-    const { data: totalCount, error2 } = useSWR(`${baseURL}/api/count-data`,
+    const { data: products, error1, mutate:mutateTasks } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
+    const { data: totalCount, error2, mutate:mutateCount } = useSWR(`${baseURL}/api/count-data`,
         url => countTotalData(url, 'empTasks')
     );
 
     const handleChangePage = (event, newPage) => {
         setPage(parseInt(newPage))
-        handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutate)
+        handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutateTasks)
     }
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0)
-        handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutate)
+        handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutateTasks)
     }
 
     const assignTasks = async () => {
@@ -82,7 +82,8 @@ function Tasks() {
                     await axios.post(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`)
                         .then(() => {
                             setAssigning(false);
-                            mutate();
+                            mutateTasks();
+                            mutateCount();
                         })
                 }).catch((err) => { throw new Error(err); })
             }
@@ -125,7 +126,7 @@ function Tasks() {
             }
             await axios.put(`${baseURL}/api/products/${_id}`, update)
                 .then(() => {
-                    mutate()
+                    mutateTasks()
                     setDisableClick(false);
                 }).catch((err) => {
                     console.log(err)

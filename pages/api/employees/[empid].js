@@ -1,5 +1,6 @@
 import db_conn from "../../../helpers/db_conn";
-import employeeModel from '../../../models/employeeSchema'
+import employeeModel from '../../../models/employeeSchema';
+import bcrypt from 'bcrypt';
 
 db_conn();
 
@@ -16,24 +17,34 @@ export default function employee(req, res) {
 
 const updateEmployee = async (req, res) => {
     const { empid } = req.query;
-    await employeeModel.findByIdAndUpdate(empid, {
-        $set: {
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            mobile: req.body.mobile,
-            email: req.body.email,
-            role: req.body.role,
-            startTime: req.body.startTime,
-            endTime: req.body.endTime,
-            decreaseTask: req.body.decreaseTask,
-            password: req.body.password,
-            staus: req.body.status,
+    try {
+        const emp = await employeeModel.findById(empid);
+
+        emp.firstName = req.body.firstName;
+        emp.lastName = req.body.lastName;
+        emp.mobile = req.body.mobile;
+        emp.email = req.body.email;
+        if (emp.role != req.body.role) {
+            emp.role = req.body.role;
+            emp.tokens = [];
         }
-    }).then(() => {
+        emp.startTime = req.body.startTime;
+        emp.endTime = req.body.endTime;
+        emp.decreaseTask = req.body.decreaseTask;
+        const passwordMatch = await bcrypt.compare(req.body.password, emp.password);
+        if (req.body.password != '' && !passwordMatch) {
+            emp.password = req.body.password;
+            emp.tokens = [];
+        }
+        emp.staus = req.body.status;
+        emp.level = req.body.level,
+
+            await emp.save();
         res.send('Employee updated sucessfully')
-    }).catch(() => {
-        res.status(500).send('Something went wrong')
-    })
+    } catch (err) {
+        res.status(500).send('Employee updation failed')
+    }
+
 }
 
 const deleteEmployee = async (req, res) => {

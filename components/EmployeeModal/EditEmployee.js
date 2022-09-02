@@ -31,6 +31,7 @@ export default function EditEmployee({ empDetails, disabled }) {
 
     const [open, setOpen] = React.useState(false);
     const [msg, setMsg] = React.useState('');
+    const [level, setLevel] = React.useState(1);
     const [role, setRole] = useState('data-entry')
     const handleClickOpen = () => {
         setOpen(true);
@@ -39,7 +40,7 @@ export default function EditEmployee({ empDetails, disabled }) {
         setOpen(false);
     };
 
-    let { handleSubmit, handleChange, handleBlur, touched, errors, values } = useFormik({
+    let { handleSubmit, handleChange, handleBlur, touched, errors, values, resetForm } = useFormik({
         enableReinitialize: true,
         initialValues: {
             dealAyoId: empDetails.dealAyoId,
@@ -54,10 +55,11 @@ export default function EditEmployee({ empDetails, disabled }) {
         },
         validationSchema: employeeValidationEditSchema,
         async onSubmit() {
-            await axios.put(`${baseURL}/api/employees/${empDetails._id}`, { ...values, role: role })
+            await axios.put(`${baseURL}/api/employees/${empDetails._id}`, { ...values, role, level })
                 .then(() => {
                     setOpen(false);
                     setMsg('');
+                    resetForm();
                     mutate(`${baseURL}/api/employees`)
                 }).catch((err) => {
                     setMsg(err.response.data)
@@ -88,14 +90,27 @@ export default function EditEmployee({ empDetails, disabled }) {
                 <DialogContent>
                     <Select
                         fullWidth
-                        id='role'
-                        value={role}
+                        id='level'
+                        defaultValue={empDetails.role}
                         onChange={(e) => setRole(e.target.value)}
                     >
                         <MenuItem value="data-entry">Data entry</MenuItem>
                         <MenuItem value="other">Other</MenuItem>
                         <MenuItem value="admin">admin</MenuItem>
                         <MenuItem value="super-admin">Super admin</MenuItem>
+                    </Select>
+                    <Select
+                        sx={{ my: 1 }}
+                        fullWidth
+                        id='level'
+                        defaultValue={empDetails.level}
+                        onChange={(e) => setLevel(e.target.value)}
+                    >
+                        <MenuItem value={1}>One</MenuItem>
+                        <MenuItem value={2}>Two</MenuItem>
+                        <MenuItem value={3}>Three</MenuItem>
+                        <MenuItem value={4}>Four</MenuItem>
+                        <MenuItem value={5}>Five</MenuItem>
                     </Select>
                     {arr.map((item) => (
                         <TextField

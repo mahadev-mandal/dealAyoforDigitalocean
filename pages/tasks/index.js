@@ -6,8 +6,10 @@ import { baseURL } from '../../helpers/constants';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import countTotalData from '../../controllers/countTotalData';
 import { withAuth } from '../../HOC/withAuth';
+import TasksCard from '../../components/Cards/TasksCard';
+import { Stack } from '@mui/material';
 
-const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assign to', 'Entry status',];
+const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assign to', 'Entry status', 'assign Date'];
 const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignToName', 'entryStatus',];
 
 function Tasks() {
@@ -16,25 +18,25 @@ function Tasks() {
     const params = { page, rowsPerPage };
 
     const fetchData = async (url) => {
-        return await axios.get(url, { params })
+        return await axios.get(url,)
             .then((res) => res.data)
             .catch((err) => {
                 throw new Error(err)
             })
     }
-    const { data: products, error1, mutate } = useSWR(`${baseURL}/api/tasks`, fetchData);
-    const { data: totalCount, error2 } = useSWR(`${baseURL}/api/count-data`,
+    const { data: products, error1, mutate: mutateData } = useSWR(`${baseURL}/api/tasks`, fetchData);
+    const { data: totalCount, error2, mutate: mutateCounts } = useSWR(`${baseURL}/api/count-data`,
         url => countTotalData(url, 'tasks')
     )
 
     const handleChangePage = (event, newPage) => {
         setPage(parseInt(newPage))
-        handleRowsPageChange(`${baseURL}/api/tasks`, params, mutate)
+        handleRowsPageChange(`${baseURL}/api/tasks`, params, mutateData)
     }
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10))
         setPage(0)
-        handleRowsPageChange(`${baseURL}/api/tasks`, params, mutate)
+        handleRowsPageChange(`${baseURL}/api/tasks`, params, mutateData)
     }
     const handleStatusChange = async (event, _id) => {
         //only allow to tick check box if work in not ended
@@ -48,7 +50,7 @@ function Tasks() {
             entryStatus: event.target.checked,
             date: date,
         }).then(() => {
-            mutate()
+            mutateData()
         }).catch((err) => {
             console.log(err)
         })
@@ -61,9 +63,84 @@ function Tasks() {
         }
         return <div>Please wait loading...</div>
     }
-
+    // const b = [{
+    //     assignDate: "2022-09-02T04:25:17.793Z",
+    //     assignToDealAyoId: "d20",
+    //     assignToName: "Sabin",
+    //     category: "grocery",
+    //     model: "GR-SN4.640",
+    //     status: true,
+    //     vendor: "SING GURKHA",
+    // },{
+    //     assignDate: "2022-09-02T04:25:17.793Z",
+    //     assignToDealAyoId: "d20",
+    //     assignToName: "Sabin",
+    //     category: "grocery",
+    //     model: "GR-SN4.640",
+    //     status: true,
+    //     vendor: "SING GURKHA",
+    // },{
+    //     assignDate: "2022-09-05T04:25:17.793Z",
+    //     assignToDealAyoId: "d20",
+    //     assignToName: "Sabin",
+    //     category: "grocery",
+    //     model: "GR-SN4.640",
+    //     status: true,
+    //     vendor: "SING GURKHA",
+    // },{
+    //     assignDate: "2022-09-03T04:25:17.793Z",
+    //     assignToDealAyoId: "d20",
+    //     assignToName: "Sabin",
+    //     category: "grocery",
+    //     model: "GR-SN4.640",
+    //     status: true,
+    //     vendor: "SING GURKHA",
+    // },
+    
+    // ]
+    // const a = b.filter((data, i, self) =>
+    //     self.findIndex(d => new Date(d.assignDate).toDateString() === new Date(data.assignDate).toDateString()) === i
+    // )
+    // console.log(a)
     return (
         <div>
+            <Stack direction="row" spacing={1.5}>
+                <TasksCard
+                    name="Sabin"
+                    date={new Date().toDateString()}
+                    totalTasks={50}
+                    completed={0}
+                    dealAyoId="d17"
+                />
+                <TasksCard
+                    name="Sabin"
+                    date={new Date().toDateString()}
+                    totalTasks={50}
+                    completed={0}
+                    dealAyoId="d17"
+                />
+                <TasksCard
+                    name="Sabin"
+                    date={new Date().toDateString()}
+                    totalTasks={50}
+                    completed={0}
+                    dealAyoId="d17"
+                />
+                <TasksCard
+                    name="Sabin"
+                    date={new Date().toDateString()}
+                    totalTasks={50}
+                    completed={0}
+                    dealAyoId="d17"
+                />
+                <TasksCard
+                    name="Sabin"
+                    date={new Date().toDateString()}
+                    totalTasks={50}
+                    completed={0}
+                    dealAyoId="d17"
+                />
+            </Stack>
             <CustomizedTables
                 tableHeading={tableHeading}
                 data={products.length > 0 ? products : []}
@@ -74,6 +151,8 @@ function Tasks() {
                 handleChangeRowsPerPage={handleChangeRowsPerPage}
                 totalCount={totalCount}
                 onStatusChange={handleStatusChange}
+                mutateData={mutateData}
+                mutateCounts={mutateCounts}
             />
         </div>
     )

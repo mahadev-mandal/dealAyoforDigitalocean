@@ -13,6 +13,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
 import FullScreenDialog from '../FullScreenDialog/FullScreenDialog';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import BlockIcon from '@mui/icons-material/Block';
 import { Button, Stack } from '@mui/material';
 import AddEmployee from '../EmployeeModal/AddEmployee';
@@ -77,7 +78,7 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
 
 
     const handleClickYes = async (type) => {
-        if(type==='delete'){
+        if (type === 'delete') {
             axios.delete(`${baseURL}/api/${collectionName}`, { data: { _ids: selected } })
                 .then(() => {
                     mutateData();
@@ -87,19 +88,42 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
         }
     }
 
+    const handleUnassignClick = async () => {
+        if (selected.length > 0) {
+            await axios.post(`${baseURL}/api/tasks`, { selected })
+                .then(() => {
+                    mutateData();
+                    mutateCounts();
+                    setSelected([])
+                }).catch((err) => {
+                    console.log(err);
+                })
+        }
+    }
+
     const details = data.filter(emp => emp._id === selected[0])[0]
     return (
         <>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
-                <Button
-                    size="small"
-                    variant="contained"
-                    color="warning"
-                    disabled={selected.length >= 1 ? false : true}
-                >
-                    <BlockIcon />Disable {selected.length}
-                </Button>
-
+                {!router.pathname.startsWith('/tasks') ?
+                    <Button
+                        size="small"
+                        variant="contained"
+                        color="warning"
+                        disabled={selected.length >= 1 ? false : true}
+                    >
+                        <BlockIcon />Disable {selected.length}
+                    </Button>
+                    : <Button
+                        size="small"
+                        variant="contained"
+                        color="warning"
+                        onClick={handleUnassignClick}
+                        disabled={selected.length >= 1 ? false : true}
+                    >
+                        <RemoveCircleOutlineIcon /> Unassign {selected.length}
+                    </Button>
+                }
 
                 {!router.pathname.startsWith('/tasks') ?
                     collectionName === 'employees' ?
@@ -107,7 +131,7 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                             <AreYouSureModal
                                 title={`Are you sure want to delete ${selected.length} employees`}
                                 selected={selected}
-                                handleClickYes={()=>handleClickYes('delete')}
+                                handleClickYes={() => handleClickYes('delete')}
                             />
                             <EditEmployee
                                 empDetails={selected.length === 1 ? details : {}}
@@ -120,7 +144,7 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                                 <AreYouSureModal
                                     title={`Are you sure want to delete ${selected.length} categories`}
                                     selected={selected}
-                                    handleClickYes={()=>handleClickYes('delete')}
+                                    handleClickYes={() => handleClickYes('delete')}
                                 />
                                 <EditCategory
                                     categoryDetails={selected.length === 1 ? details : {}}
@@ -132,7 +156,7 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                                 <AreYouSureModal
                                     title={`Are you sure want to delete ${selected.length} products`}
                                     selected={selected}
-                                    handleClickYes={()=>handleClickYes('delete')}
+                                    handleClickYes={() => handleClickYes('delete')}
                                 />
                                 <FullScreenDialog />
                             </> : null
@@ -180,6 +204,9 @@ function CustomizedTables({ tableHeading, data, dataHeading, onStatusChange, pag
                                             }
                                         </StyledTableCell>
                                     ))}
+                                    <StyledTableCell>
+                                        {row.assignDate && new Date(row.assignDate).toDateString()}
+                                    </StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>
