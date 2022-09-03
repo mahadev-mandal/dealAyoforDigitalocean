@@ -18,7 +18,7 @@ const getAllAssignedTasks = async (req, res) => {
     const { page, rowsPerPage } = req.query;
     await productModel.find({
         assignDate: {
-            "$gte": new Date().setHours(0, 0, 0, 0),
+            "$gte": new Date().setDate(1),
             "$lt": new Date().setHours(24)
         },
     })

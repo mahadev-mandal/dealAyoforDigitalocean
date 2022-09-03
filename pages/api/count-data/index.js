@@ -46,7 +46,7 @@ const countTasks = async (req, res) => {
     await productModel.countDocuments({
         assignStatus: true,
         assignDate: {
-            "$gte": new Date().setHours(0, 0, 0, 0),
+            "$gte": new Date().setDate(2),
             "$lt": new Date().setHours(24)
         },
     })

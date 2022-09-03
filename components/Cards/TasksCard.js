@@ -4,10 +4,8 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import { ButtonBase, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import useSWR from 'swr';
 import { styled } from '@mui/material/styles';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
-import { baseURL } from '../../helpers/constants';
 
 const CustomWidthTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -58,7 +56,7 @@ TasksCard.propTypes = {
   dealAyoId: PropTypes.string,
   totalTasks: PropTypes.number,
   completed: PropTypes.number,
-  date: PropTypes.instanceOf(Date),
+  date: PropTypes.string,
 }
 
 function TooltipComp() {
