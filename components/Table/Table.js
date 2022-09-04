@@ -57,13 +57,15 @@ function CustomizedTables({
   dataHeading,
   onStatusChange,
   collectionName,
+  assignDate,
+  assignToEmp
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const params = { page, rowsPerPage };
-
+  console.log(assignToEmp)
   const {
     data,
     error: error1,
@@ -126,7 +128,12 @@ function CustomizedTables({
         });
     }
   };
-
+  const handleAssignClick = async () => {
+    await axios.post(`${baseURL}/api/tasks/assign`, { selected, assignDate, dealAyoId: assignToEmp.dealAyoId, name: assignToEmp.firstName })
+      .then(() => {
+        mutateData();
+      })
+  }
   const handleUnassignClick = async () => {
     if (selected.length > 0) {
       await axios
@@ -170,15 +177,26 @@ function CustomizedTables({
             Disable {selected.length}
           </Button>
         ) : (
-          <Button
-            size="small"
-            variant="contained"
-            color="warning"
-            onClick={handleUnassignClick}
-            disabled={selected.length >= 1 ? false : true}
-          >
-            <RemoveCircleOutlineIcon /> Unassign {selected.length}
-          </Button>
+          <>
+            <Button
+              size="small"
+              variant="contained"
+              color="warning"
+              onClick={handleUnassignClick}
+              disabled={selected.length >= 1 ? false : true}
+            >
+              <RemoveCircleOutlineIcon /> Unassign {selected.length}
+            </Button>
+            <Button
+              size="small"
+              variant="contained"
+              color="warning"
+              onClick={handleAssignClick}
+              disabled={selected.length >= 1 ? false : true}
+            >
+              <RemoveCircleOutlineIcon /> Assign {selected.length}
+            </Button>
+          </>
         )}
 
         {!router.pathname.startsWith("/tasks") ? (
@@ -297,7 +315,8 @@ CustomizedTables.propTypes = {
   dataHeading: PropTypes.array,
   onStatusChange: PropTypes.func,
   collectionName: PropTypes.string,
-  mutateCounts: PropTypes.func,
+  assignToEmp: PropTypes.object,
+  assignDate: PropTypes.string,
 };
 
 export default CustomizedTables;

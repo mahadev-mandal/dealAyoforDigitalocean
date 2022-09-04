@@ -15,7 +15,7 @@ export default function Tasks(req, res) {
 }
 
 const getAllAssignedTasks = async (req, res) => {
-    const { page, rowsPerPage } = req.query;
+    // const { page, rowsPerPage } = req.query;
     await productModel.find({
         assignDate: {
             "$gte": new Date().setDate(1),
@@ -31,14 +31,14 @@ const getAllAssignedTasks = async (req, res) => {
 }
 
 const unAssignTasks = async (req, res) => {
-    console.log(req.body.selected)
     try {
         const unassignedTasks = await productModel.updateMany({ _id: req.body.selected }, {
             $set: {
-                assignDate: null
+                assignDate: null,
+                assignToDealAyoId:null,
+                assignToName:null
             }
         }, { new: true })
-        console.log(unassignedTasks);
         res.send(unassignedTasks);
     } catch (err) {
         console.log(err);

@@ -12,8 +12,8 @@ import { withAuth } from '../../HOC/withAuth';
 import countTotalData from '../../controllers/countTotalData';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 
-const tableHeading = ['model', 'Title', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
+const tableHeading = ['model', 'Title', 'brand', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
+const dataHeading = ['model', 'title', 'brand', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
 
 function Tasks() {
     const [page, setPage] = useState(0);
@@ -54,8 +54,8 @@ function Tasks() {
     }
 
 
-    const { data: products, error1, mutate:mutateTasks } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
-    const { data: totalCount, error2, mutate:mutateCount } = useSWR(`${baseURL}/api/count-data`,
+    const { data: products, error1, mutate: mutateTasks } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
+    const { data: totalCount, error2, mutate: mutateCount } = useSWR(`${baseURL}/api/count-data`,
         url => countTotalData(url, 'empTasks')
     );
 
