@@ -62,7 +62,6 @@ const checkWorkEnded = async (req, res) => {
             res.send(false)
         }
     }).catch(() => {
-        console.log('jkdjf')
         res.status(500).send("Error in checking work ended")
     })
 }

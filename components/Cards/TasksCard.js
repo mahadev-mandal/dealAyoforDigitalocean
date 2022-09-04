@@ -18,8 +18,8 @@ const CustomWidthTooltip = styled(({ className, ...props }) => (
   },
 });
 
-export default function TasksCard(props) {
-  
+export default function TasksCard({ tasks }) {
+
   return (
     <CustomWidthTooltip arrow title={<TooltipComp />}>
       <ButtonBase>
@@ -32,17 +32,20 @@ export default function TasksCard(props) {
           }}
         >
           <CardContent>
+            <Typography variant="body2" component="div">
+              Tasks-{`${tasks[0].tasksId}`}
+            </Typography>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-              {props.date}
+              {new Date(tasks[0].assignDate).toDateString()}
             </Typography>
             <Typography variant="body2" component="div">
-              Employee: {`${props.name}`}
+              Employee: {tasks[0].assignToDealAyoId ? tasks[0].assignToName : ''}
             </Typography>
             <Typography variant="body2" component="div">
-              Total Task: {props.totalTasks}
+              Total Task: {tasks.length}
             </Typography>
             <Typography variant="body2" component="div">
-              Completed: {props.completed}
+              Completed: {0}
             </Typography>
           </CardContent>
         </Card>
@@ -52,11 +55,7 @@ export default function TasksCard(props) {
 }
 
 TasksCard.propTypes = {
-  name: PropTypes.string,
-  dealAyoId: PropTypes.string,
-  totalTasks: PropTypes.number,
-  completed: PropTypes.number,
-  date: PropTypes.string,
+  tasks: PropTypes.array,
 }
 
 function TooltipComp() {

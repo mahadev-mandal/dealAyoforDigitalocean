@@ -10,7 +10,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
 import CustomizedTables from "../Table/Table";
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { baseURL } from "../../helpers/constants";
 import fetchData from "../../controllers/fetchData";
 
@@ -44,10 +44,12 @@ export default function AssignTasks() {
   const [open, setOpen] = React.useState(false);
   const date = new Date();
   const year = date.getFullYear();
-  const month = String("0" + date.getMonth()).slice(-2);
+  let month = date.getMonth() + 1;
+  month = String("0" + month).slice(-2);
   const day = String("0" + date.getDate()).slice(-2);
   const [assignDate, setAssignDate] = useState(`${year}-${month}-${day}`)
   const [assignToEmp, setAssignToEmp] = useState({});
+  const [tasksId, setTasksId] = useState(1)
 
   const { data: employees, error } = useSWR(`${baseURL}/api/employees`, fetchData)
 
@@ -55,6 +57,7 @@ export default function AssignTasks() {
     setOpen(true);
   };
   const handleClose = () => {
+    mutate(`${baseURL}/api/tasks`)
     setOpen(false);
   };
 
@@ -66,7 +69,7 @@ export default function AssignTasks() {
   } else if (!employees) {
     return <div>Please wait loading...</div>
   }
-  
+
   return (
     <div>
       <Button variant="contained" color="success" onClick={handleClickOpen}>
@@ -94,13 +97,20 @@ export default function AssignTasks() {
               >
                 <CloseIcon />
               </IconButton>
-              <Stack direction="row" spacing={2}>
+              <Stack direction="row" spacing={5}>
                 <TextField
                   type="date"
                   variant="standard"
-                  sx={{ input: { color: "white" } }}
+                  sx={{ input: { color: "white" }, width: 250 }}
                   value={assignDate}
                   onChange={e => setAssignDate(e.target.value)}
+                />
+                <TextField
+                  type="number"
+                  variant="standard"
+                  sx={{ input: { color: "white" }, width: 100 }}
+                  value={tasksId}
+                  onChange={e => setTasksId(e.target.value)}
                 />
                 <FormControl size="small" fullWidth>
                   <InputLabel id="demo-simple-select-label">Assign To</InputLabel>
@@ -108,6 +118,7 @@ export default function AssignTasks() {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={assignToEmp}
+                    sx={{ width: 150, color: 'white' }}
                     label="Assign To"
                     onChange={e => setAssignToEmp(e.target.value)}
                   >
@@ -137,6 +148,7 @@ export default function AssignTasks() {
           dataHeading={dataHeading}
           assignDate={assignDate}
           assignToEmp={assignToEmp}
+          tasksId={tasksId}
         />
       </Dialog>
     </div>

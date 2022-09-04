@@ -45,6 +45,9 @@ const productSchema = new mongoose.Schema({
         required: true,
         default: true,
     },
+    tasksId: {
+        type: Number,
+    },
     entryStatus: {
         type: Boolean,
         required: true,
@@ -76,8 +79,8 @@ const productSchema = new mongoose.Schema({
     remarks: {
         type: String,
     },
-    imageUrls:{
-        type:Array
+    imageUrls: {
+        type: Array
     }
 
 })

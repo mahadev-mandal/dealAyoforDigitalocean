@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import PropTypes from "prop-types";
-import { Checkbox, TablePagination } from "@mui/material";
+import { Checkbox, TablePagination, Typography } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { baseURL } from "../../helpers/constants";
@@ -58,14 +58,16 @@ function CustomizedTables({
   onStatusChange,
   collectionName,
   assignDate,
-  assignToEmp
+  assignToEmp,
+  tasksId
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [errMsg, setErrMsg] = useState('');
   const params = { page, rowsPerPage };
-  console.log(assignToEmp)
+  
   const {
     data,
     error: error1,
@@ -92,6 +94,7 @@ function CustomizedTables({
   };
 
   const handleSelect = (event, row) => {
+    setErrMsg('')
     if (event.target.checked) {
       setSelected([...selected, row._id]);
     } else {
@@ -99,6 +102,7 @@ function CustomizedTables({
     }
   };
   const handleAllSelect = (event, data) => {
+    setErrMsg('')
     if (event.target.checked) {
       setSelected([...new Set(selected.concat(data.map((p) => p._id)))]);
     } else {
@@ -122,6 +126,7 @@ function CustomizedTables({
           data: { _ids: selected },
         })
         .then(() => {
+          setErrMsg('')
           mutateData();
           mutateCounts();
           setSelected([]);
@@ -129,9 +134,13 @@ function CustomizedTables({
     }
   };
   const handleAssignClick = async () => {
-    await axios.post(`${baseURL}/api/tasks/assign`, { selected, assignDate, dealAyoId: assignToEmp.dealAyoId, name: assignToEmp.firstName })
+    await axios.post(`${baseURL}/api/tasks/assign`, { selected, assignDate, dealAyoId: assignToEmp.dealAyoId, name: assignToEmp.firstName, tasksId })
       .then(() => {
+        setErrMsg('')
         mutateData();
+      }).catch((err)=>{
+        setErrMsg(err.response.data)
+        // console.log()
       })
   }
   const handleUnassignClick = async () => {
@@ -139,12 +148,13 @@ function CustomizedTables({
       await axios
         .post(`${baseURL}/api/tasks`, { selected })
         .then(() => {
+          setErrMsg('')
           mutateData();
           mutateCounts();
           setSelected([]);
         })
         .catch((err) => {
-          console.log(err);
+          setErrMsg(err.response.data)
         });
     }
   };
@@ -165,6 +175,7 @@ function CustomizedTables({
   };
   return (
     <>
+    <Typography variant="body1"  textAlign="center" color="red">{errMsg}</Typography >
       <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
         {!router.pathname.startsWith("/tasks") ? (
           <Button
@@ -317,6 +328,7 @@ CustomizedTables.propTypes = {
   collectionName: PropTypes.string,
   assignToEmp: PropTypes.object,
   assignDate: PropTypes.string,
+  tasksId: PropTypes.number,
 };
 
 export default CustomizedTables;

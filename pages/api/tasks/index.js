@@ -33,10 +33,11 @@ const getAllAssignedTasks = async (req, res) => {
 const unAssignTasks = async (req, res) => {
     try {
         const unassignedTasks = await productModel.updateMany({ _id: req.body.selected }, {
-            $set: {
-                assignDate: null,
-                assignToDealAyoId:null,
-                assignToName:null
+            $unset: {
+                assignDate: '',
+                assignToDealAyoId:'',
+                assignToName:'',
+                tasksId:''
             }
         }, { new: true })
         res.send(unassignedTasks);
