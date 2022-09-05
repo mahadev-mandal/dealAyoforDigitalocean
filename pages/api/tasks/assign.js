@@ -38,7 +38,6 @@ const AssignTasks = async (req, res) => {
                     "employees.$.tasksAssigned": assignedTasks.modifiedCount
                 }
             })
-            console.log(assignedTasks);
             res.send(assignedTasks);
         } else {
             res.status(500).send('tasks id already presents');

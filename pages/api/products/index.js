@@ -13,7 +13,7 @@ export default function products(req, res) {
             return updateProduct(req, res);
         case 'DELETE':
             return deleteProducts(req, res);
-        default:{
+        default: {
             res.status(500).send('Use proper methods');
             console.log('use proper method')
 
@@ -22,11 +22,28 @@ export default function products(req, res) {
 }
 
 const getProducts = async (req, res) => {
-    const { page, rowsPerPage } = req.query;
-    await productModel.find()
-        .skip((parseInt(page)) * parseInt(rowsPerPage))
-        .limit(parseInt(rowsPerPage))
-        .then((data) => {
+    const { page, rowsPerPage, assignFilter, empFilter } = req.query;
+
+    const query = {
+        // assignToDealAyoId: req.body.empFilter,
+        assignDate: null
+    }
+    if (assignFilter == '') {
+        delete query['assignDate'];
+    } else if (assignFilter == 'assigned') {
+        query.assignDate = { $ne: null }
+    } else if (assignFilter == 'unassigned') {
+        query.assignDate = null
+    }
+    // if (req.body.empFilter == '') {
+    //     delete query('assignToDealAyoId');
+    // }
+    
+    await productModel.find(query)
+        .skip((parseInt(page)) * parseInt(rowsPerPage)
+        ).limit(parseInt(rowsPerPage)
+        ).then((data) => {
+            
             res.status(200).json(data);
         }).catch(() => {
             res.status(500).send('Error occured while fetching products data')
@@ -35,7 +52,6 @@ const getProducts = async (req, res) => {
 
 const saveProducts = async (req, res) => {
     const products = req.body;
-    console.log(req.body)
     await productModel.insertMany(products)
         .then((r) => {
             console.log(r.length)

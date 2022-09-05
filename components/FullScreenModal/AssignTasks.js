@@ -117,12 +117,12 @@ export default function AssignTasks() {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={assignToEmp}
+                    defaultValue=""
                     sx={{ width: 150, color: 'white' }}
                     label="Assign To"
                     onChange={e => setAssignToEmp(e.target.value)}
                   >
-                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value={{}}>None</MenuItem>
                     {employees.map((emp) => (
                       <MenuItem value={emp} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
                     ))}
@@ -149,6 +149,7 @@ export default function AssignTasks() {
           assignDate={assignDate}
           assignToEmp={assignToEmp}
           tasksId={tasksId}
+          employees={employees}
         />
       </Dialog>
     </div>

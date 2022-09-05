@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import PropTypes from "prop-types";
-import { Checkbox, TablePagination, Typography } from "@mui/material";
+import { Checkbox, FormControl, InputLabel, MenuItem, Select, TablePagination, Typography } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { baseURL } from "../../helpers/constants";
@@ -59,15 +59,18 @@ function CustomizedTables({
   collectionName,
   assignDate,
   assignToEmp,
-  tasksId
+  tasksId,
+  employees,
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [errMsg, setErrMsg] = useState('');
-  const params = { page, rowsPerPage };
-  
+  const [empFilter, setEmpFilter] = useState('');
+  const [assignFilter, setAssignFilter] = useState('');
+  const params = { page, rowsPerPage, empFilter, assignFilter };
+
   const {
     data,
     error: error1,
@@ -85,12 +88,12 @@ function CustomizedTables({
 
   const handleChangePage = async (event, newPage) => {
     setPage(newPage);
-    handleRowsPageChange(`${baseURL}/api/products`, params, mutateData);
+    handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData);
   };
   const handleChangeRowsPerPage = async (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-    handleRowsPageChange(`${baseURL}/api/products`, params, mutateData);
+    handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData);
   };
 
   const handleSelect = (event, row) => {
@@ -138,7 +141,8 @@ function CustomizedTables({
       .then(() => {
         setErrMsg('')
         mutateData();
-      }).catch((err)=>{
+        setSelected([])
+      }).catch((err) => {
         setErrMsg(err.response.data)
         // console.log()
       })
@@ -158,6 +162,9 @@ function CustomizedTables({
         });
     }
   };
+  const handleAssignFilterChange = async() => {
+   
+  }
   if (error1 || error2) {
     return <div>Error occured While fetching data</div>;
   } else if (!data || totalCount === undefined) {
@@ -175,7 +182,7 @@ function CustomizedTables({
   };
   return (
     <>
-    <Typography variant="body1"  textAlign="center" color="red">{errMsg}</Typography >
+      <Typography variant="body1" textAlign="center" color="red">{errMsg}</Typography >
       <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
         {!router.pathname.startsWith("/tasks") ? (
           <Button
@@ -188,26 +195,82 @@ function CustomizedTables({
             Disable {selected.length}
           </Button>
         ) : (
-          <>
-            <Button
-              size="small"
-              variant="contained"
-              color="warning"
-              onClick={handleUnassignClick}
-              disabled={selected.length >= 1 ? false : true}
-            >
-              <RemoveCircleOutlineIcon /> Unassign {selected.length}
-            </Button>
-            <Button
-              size="small"
-              variant="contained"
-              color="warning"
-              onClick={handleAssignClick}
-              disabled={selected.length >= 1 ? false : true}
-            >
-              <RemoveCircleOutlineIcon /> Assign {selected.length}
-            </Button>
-          </>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: '100%', mt: 1 }}>
+            <Stack direction="row" spacing={1}>
+              <Button
+                size="small"
+                variant="contained"
+                color="warning"
+                onClick={handleUnassignClick}
+                disabled={selected.length >= 1 ? false : true}
+              >
+                <RemoveCircleOutlineIcon /> Unassign {selected.length}
+              </Button>
+              <Button
+                size="small"
+                variant="contained"
+                color="warning"
+                onClick={handleAssignClick}
+                disabled={selected.length >= 1 ? false : true}
+              >
+                <RemoveCircleOutlineIcon /> Assign {selected.length}
+              </Button>
+            </Stack>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography variant="h6" component="span">SortBy:</Typography>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="demo-simple-select-label">Assign Date</InputLabel>
+                <Select
+                  size="small"
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  // value={assignFilter}
+                  sx={{ width: 150, color: 'white' }}
+                  label="Assign To"
+                // onChange={e => setAssignFilter(e.target.value)}
+                >
+                  <MenuItem value="">None</MenuItem>
+                  <MenuItem value="assigned" >Select Date</MenuItem>
+                  <MenuItem value="unassigned" >Select Date</MenuItem>
+
+                </Select>
+              </FormControl>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="demo-simple-select-label">Assigned</InputLabel>
+                <Select
+                  size="small"
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={assignFilter}
+                  sx={{ width: 150, }}
+                  label="Assigned"
+                  onChange={handleAssignFilterChange}
+                >
+                  <MenuItem value="">None</MenuItem>
+                  <MenuItem value="assigned" >Assigned</MenuItem>
+                  <MenuItem value="unassigned" >Unassigned</MenuItem>
+
+                </Select>
+              </FormControl>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="demo-simple-select-label">Assign To</InputLabel>
+                <Select
+                  size="small"
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={empFilter}
+                  sx={{ width: 150, color: 'white' }}
+                  label="Assign To"
+                  onChange={e => setEmpFilter(e.target.value)}
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {employees.map((emp) => (
+                    <MenuItem value={emp} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+          </Stack>
         )}
 
         {!router.pathname.startsWith("/tasks") ? (
@@ -329,6 +392,7 @@ CustomizedTables.propTypes = {
   assignToEmp: PropTypes.object,
   assignDate: PropTypes.string,
   tasksId: PropTypes.number,
+  employees: PropTypes.array,
 };
 
 export default CustomizedTables;
