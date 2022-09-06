@@ -20,17 +20,39 @@ export default function Tasks(req, res) {
 
 const getAssinedTasks = async (req, res) => {
     const { page, rowsPerPage } = req.query;
-    await productModel.find({
-        assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
-        assignDate: {
-            "$gte": new Date().setHours(0, 0, 0, 0),
-            "$lt": new Date().setHours(24)
-        }
-    }).skip(parseInt(rowsPerPage) * parseInt(page)).limit(parseInt(rowsPerPage)).then((product) => {
-        res.status(200).json(product)
-    }).catch(() => {
+    try {
+        const data = await productModel.find({
+            assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
+            assignDate: {
+                "$gte": new Date().setHours(0, 0, 0, 0),
+                "$lt": new Date().setHours(24)
+            }
+        }).skip(parseInt(rowsPerPage) * parseInt(page)).limit(parseInt(rowsPerPage))
+
+        const totalCount = await productModel.countDocuments({
+            assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
+            assignDate: {
+                "$gte": new Date().setHours(0, 0, 0, 0),
+                "$lt": new Date().setHours(24)
+            }
+        })
+
+        await attendanceModel.updateOne({
+            date: {
+                "$gte": new Date().setHours(0, 0, 0, 0),
+                "$lt": new Date().setHours(24)
+            },
+            "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
+        }, {
+            $set: {
+                "employees.$.tasksAssigned": totalCount
+            }
+        })
+        // console.log(data)
+        res.status(200).json({data, totalCount})
+    } catch (err) {
         res.status(500).send('Error occured in checking assigned tasks')
-    })
+    }
 }
 
 const assignTasks = async (req, res) => {
@@ -73,7 +95,7 @@ const assignTasks = async (req, res) => {
         }
 
         //update assignDate and assignTo of filterd froducts 
-        const updateMany = await productModel.updateMany({ _id: assignedTasks.filter(p => p._id) }, {
+        await productModel.updateMany({ _id: assignedTasks.filter(p => p._id) }, {
             $set: {
                 assignDate: new Date(),
                 assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
@@ -81,19 +103,19 @@ const assignTasks = async (req, res) => {
             }
         })
 
-        //update how many tasks asiigned to employee in attendace collection
-        await attendanceModel.updateOne({
-            date: {
-                "$gte": new Date().setHours(0, 0, 0, 0),
-                "$lt": new Date().setHours(24)
-            },
-            "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
-        }, {
-            $set: {
-                "employees.$.tasksAssigned": updateMany.modifiedCount
-            }
-        })
-        
+        // //update how many tasks asiigned to employee in attendace collection
+        // await attendanceModel.updateOne({
+        //     date: {
+        //         "$gte": new Date().setHours(0, 0, 0, 0),
+        //         "$lt": new Date().setHours(24)
+        //     },
+        //     "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
+        // }, {
+        //     $set: {
+        //         "employees.$.tasksAssigned": updateMany.modifiedCount
+        //     }
+        // })
+
         res.status(200).json(assignedTasks);
     } catch (err) {
         // console.log(err)

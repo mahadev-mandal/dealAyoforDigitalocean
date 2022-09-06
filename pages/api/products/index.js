@@ -22,34 +22,36 @@ export default function products(req, res) {
 }
 
 const getProducts = async (req, res) => {
-    const { page, rowsPerPage, assignFilter, empFilter } = req.query;
+    try {
 
-    const query = {
-        // assignToDealAyoId: req.body.empFilter,
-        assignDate: null
+
+        const { page, rowsPerPage, assignFilter, empFilter } = req.query;
+        const query = {
+            assignToDealAyoId: empFilter,
+            assignDate: null
+        }
+        if (assignFilter == '') {
+            delete query['assignDate'];
+        } else if (assignFilter == 'assigned') {
+            query.assignDate = { $ne: null }
+        } else if (assignFilter == 'unassigned') {
+            query.assignDate = null
+        }
+        if (empFilter == '') {
+            delete query['assignToDealAyoId'];
+        }
+
+        const totalCount = await productModel.countDocuments(query);
+
+        const data = await productModel.find(query)
+            .skip((parseInt(page)) * parseInt(rowsPerPage)
+            ).limit(parseInt(rowsPerPage))
+
+        res.status(200).json({ data, totalCount });
+    } catch (err) {
+        res.status(500).send('Error occured while fetching products data')
     }
-    if (assignFilter == '') {
-        delete query['assignDate'];
-    } else if (assignFilter == 'assigned') {
-        query.assignDate = { $ne: null }
-    } else if (assignFilter == 'unassigned') {
-        query.assignDate = null
-    }
-    // if (req.body.empFilter == '') {
-    //     delete query('assignToDealAyoId');
-    // }
-    
-    await productModel.find(query)
-        .skip((parseInt(page)) * parseInt(rowsPerPage)
-        ).limit(parseInt(rowsPerPage)
-        ).then((data) => {
-            
-            res.status(200).json(data);
-        }).catch(() => {
-            res.status(500).send('Error occured while fetching products data')
-        })
 }
-
 const saveProducts = async (req, res) => {
     const products = req.body;
     await productModel.insertMany(products)

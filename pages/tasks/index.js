@@ -1,10 +1,10 @@
 // import axios from "axios";
 import React from "react";
 import useSWR from "swr";
-import { baseURL } from "../../helpers/constants";
+import { baseURL, containerMargin } from "../../helpers/constants";
 import { withAuth } from "../../HOC/withAuth";
 import TasksCard from "../../components/Cards/TasksCard";
-import { Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import AssignTasks from "../../components/FullScreenModal/AssignTasks";
 import fetchData from "../../controllers/fetchData";
 
@@ -12,7 +12,7 @@ function Tasks() {
     const {
         data: products,
         error1,
-        
+
     } = useSWR(`${baseURL}/api/tasks`, url => fetchData(url));
 
     // const handleStatusChange = async (event, _id) => {
@@ -62,7 +62,7 @@ function Tasks() {
     arr = arr.filter((item) => item.length);
     // console.log(arr,products)
     return (
-        <div>
+        <Box sx={{ m: containerMargin }}>
             <AssignTasks />
             <Stack direction="row" spacing={1.5}>
                 {arr.map((ar,) => (
@@ -85,7 +85,7 @@ function Tasks() {
                 mutateData={mutateData}
                 mutateCounts={mutateCounts}
             /> */}
-        </div>
+        </Box>
     );
 }
 

@@ -9,7 +9,6 @@ import { useEffect } from 'react';
 import TasksTable from '../../components/Table/TasksTable';
 import CommentModal from '../../components/CommentModal/CommentModal';
 import { withAuth } from '../../HOC/withAuth';
-import countTotalData from '../../controllers/countTotalData';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 
 const tableHeading = ['model', 'Title', 'brand', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
@@ -22,6 +21,7 @@ function Tasks() {
     const [comment, setComment] = useState('');
     const [assigning, setAssigning] = useState(false);
     const [disableClick, setDisableClick] = useState(false);
+    const params = { page, rowsPerPage };
 
     const checkEndWork = async () => {
         await axios.post(`${baseURL}/api/attendance`, {
@@ -54,11 +54,8 @@ function Tasks() {
     }
 
 
-    const { data: products, error1, mutate: mutateTasks } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, fetchData);
-    const { data: totalCount, error2, mutate: mutateCount } = useSWR(`${baseURL}/api/count-data`,
-        url => countTotalData(url, 'empTasks')
-    );
-
+    const { data, error1, mutate: mutateTasks } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token'))._id}`, url => fetchData(url, params));
+    const tasks = { data: [], totalCount: 0 }
     const handleChangePage = (event, newPage) => {
         setPage(parseInt(newPage))
         handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutateTasks)
@@ -69,10 +66,10 @@ function Tasks() {
         handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutateTasks)
     }
 
-    const assignTasks = async () => {
-        if (products.length < 1) {
+    const handleStartWork = async () => {
+        if (tasks.data.length < 1) {
             setAssigning(true);
-            if (products.length < 1) {
+            if (tasks.data.length < 1) {
                 await axios.put(`${baseURL}/api/mark-attendance/`, {
                     date: new Date(),
                     dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
@@ -83,7 +80,6 @@ function Tasks() {
                         .then(() => {
                             setAssigning(false);
                             mutateTasks();
-                            mutateCount();
                         })
                 }).catch((err) => { throw new Error(err); })
             }
@@ -135,12 +131,13 @@ function Tasks() {
             alert("After Work Ended You are not allow to edit. Please contact admin")
         }
     }
-    console.log(totalCount)
-    if (error1 || error2) {
+
+    if (error1) {
         return <div>Failed to load Tasks</div>
-    } else if (!products || totalCount === undefined) {
+    } else if (!tasks) {
         return <div>Please wait getting Tasks...</div>
     }
+    console.log(data)
 
     return (
         <div>
@@ -152,8 +149,8 @@ function Tasks() {
                     <FormControlLabel
                         control={
                             <Checkbox
-                                checked={products.length > 1}
-                                onChange={assignTasks}
+                                checked={tasks.data.length > 1}
+                                onChange={handleStartWork}
                             />
                         }
                         label="Start Work"
@@ -184,10 +181,10 @@ function Tasks() {
                 <TasksTable
                     tableHeading={tableHeading}
                     dataHeading={dataHeading}
-                    data={products}
+                    data={tasks.data}
                     onStatusChange={handleStatusChange}
                     page={page}
-                    totalCount={totalCount}
+                    totalCount={tasks.totalCount}
                     rowsPerPage={rowsPerPage}
                     handleChangePage={handleChangePage}
                     handleChangeRowsPerPage={handleChangeRowsPerPage}

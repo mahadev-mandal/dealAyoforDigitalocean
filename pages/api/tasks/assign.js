@@ -1,6 +1,6 @@
 import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema';
-import attendanceModel from '../../../models/attendanceSchema';
+// import attendanceModel from '../../../models/attendanceSchema';
 
 db_conn();
 
@@ -27,17 +27,17 @@ const AssignTasks = async (req, res) => {
                 },
             }, { new: true })
 
-            await attendanceModel.updateOne({
-                date: {
-                    "$gte": new Date(req.body.assignDate).setHours(0, 0, 0, 0),
-                    "$lt": new Date(req.body.assignDate).setHours(24)
-                },
-                "employees.dealAyoId": req.body.dealAyoId
-            }, {
-                $set: {
-                    "employees.$.tasksAssigned": assignedTasks.modifiedCount
-                }
-            })
+            // await attendanceModel.updateOne({
+            //     date: {
+            //         "$gte": new Date(req.body.assignDate).setHours(0, 0, 0, 0),
+            //         "$lt": new Date(req.body.assignDate).setHours(24)
+            //     },
+            //     "employees.dealAyoId": req.body.dealAyoId
+            // }, {
+            //     $set: {
+            //         "employees.$.tasksAssigned": assignedTasks.modifiedCount
+            //     }
+            // })
             res.send(assignedTasks);
         } else {
             res.status(500).send('tasks id already presents');

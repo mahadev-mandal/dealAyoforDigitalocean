@@ -8,10 +8,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import PropTypes from "prop-types";
-import { Checkbox, FormControl, InputLabel, MenuItem, Select, TablePagination, Typography } from "@mui/material";
+import { Backdrop, Box, Checkbox, CircularProgress, FormControl, InputLabel, MenuItem, Select, TablePagination, Typography } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { baseURL } from "../../helpers/constants";
+import { baseURL, containerMargin } from "../../helpers/constants";
 import FullScreenDialog from "../FullScreenDialog/FullScreenDialog";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import BlockIcon from "@mui/icons-material/Block";
@@ -23,7 +23,6 @@ import EditEmployee from "../EmployeeModal/EditEmployee";
 import EditCategory from "../CategoryModal/EditCategory";
 import AreYouSureModal from "../SureModal";
 import useSWR from "swr";
-import countTotalData from "../../controllers/countTotalData";
 import fetchData from "../../controllers/fetchData";
 import handleRowsPageChange from "../../controllers/handleRowsPageChange";
 
@@ -68,8 +67,9 @@ function CustomizedTables({
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [errMsg, setErrMsg] = useState('');
   const [empFilter, setEmpFilter] = useState('');
-  const [assignFilter, setAssignFilter] = useState('');
+  const [assignFilter, setAssignFilter] = useState('unassigned');
   const params = { page, rowsPerPage, empFilter, assignFilter };
+  const [open, setOpen] = useState(false)
 
   const {
     data,
@@ -78,22 +78,19 @@ function CustomizedTables({
   } = useSWR(`${baseURL}/api/${collectionName}`, (url) =>
     fetchData(url, params)
   );
-  const {
-    data: totalCount,
-    error: error2,
-    mutate: mutateCounts,
-  } = useSWR(`${baseURL}/api/count-data`, (url) =>
-    countTotalData(url, collectionName)
-  );
 
   const handleChangePage = async (event, newPage) => {
+    setOpen(true);
     setPage(newPage);
     handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData);
+    setOpen(false)
   };
   const handleChangeRowsPerPage = async (event) => {
+    setOpen(true)
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
     handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData);
+    setOpen(false)
   };
 
   const handleSelect = (event, row) => {
@@ -131,57 +128,78 @@ function CustomizedTables({
         .then(() => {
           setErrMsg('')
           mutateData();
-          mutateCounts();
           setSelected([]);
         });
     }
   };
   const handleAssignClick = async () => {
+    setOpen(true)
     await axios.post(`${baseURL}/api/tasks/assign`, { selected, assignDate, dealAyoId: assignToEmp.dealAyoId, name: assignToEmp.firstName, tasksId })
       .then(() => {
         setErrMsg('')
         mutateData();
         setSelected([])
+        setOpen(false)
       }).catch((err) => {
         setErrMsg(err.response.data)
+        setOpen(false)
         // console.log()
       })
   }
+
   const handleUnassignClick = async () => {
+    setOpen(true);
     if (selected.length > 0) {
       await axios
         .post(`${baseURL}/api/tasks`, { selected })
         .then(() => {
           setErrMsg('')
           mutateData();
-          mutateCounts();
           setSelected([]);
+          setOpen(false)
         })
         .catch((err) => {
           setErrMsg(err.response.data)
+          setOpen(false)
         });
     }
   };
-  const handleAssignFilterChange = async() => {
-   
+  const handleFilterChange = async (event, type) => {
+    setOpen(true)
+    if (type == 'assign') {
+      setAssignFilter(event.target.value);
+      if (event.target.value == 'unassigned') {
+        setEmpFilter('')
+      }
+    } else if (type == 'employee') {
+      setEmpFilter(event.target.value);
+    }
+    await axios.get(`${baseURL}/api/${collectionName}`, params).then(() => { mutateData(); setOpen(false) })
   }
-  if (error1 || error2) {
+  if (error1) {
     return <div>Error occured While fetching data</div>;
-  } else if (!data || totalCount === undefined) {
+  } else if (!data) {
     return <div>Please wait fetching data...</div>;
   }
-
-  const details = data.filter((emp) => emp._id === selected[0])[0];
+  
+  const details = data.data.filter((emp) => emp._id === selected[0])[0];
 
   const allSelectChecker = () => {
     if (selected.length > 0) {
-      return data.map((p) => p._id).every((id) => selected.includes(id));
+      return data.data.map((p) => p._id).every((id) => selected.includes(id));
     } else {
       return false;
     }
   };
   return (
-    <>
+    <Box sx={{ m: containerMargin }}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      // onClick={handleClose}
+      >
+        <CircularProgress color="primary" />
+      </Backdrop>
       <Typography variant="body1" textAlign="center" color="red">{errMsg}</Typography >
       <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
         {!router.pathname.startsWith("/tasks") ? (
@@ -219,14 +237,31 @@ function CustomizedTables({
             <Stack direction="row" spacing={1} alignItems="center">
               <Typography variant="h6" component="span">SortBy:</Typography>
               <FormControl size="small" fullWidth>
-                <InputLabel id="demo-simple-select-label">Assign Date</InputLabel>
+                <InputLabel id="demo-simple-select-label">Assign status</InputLabel>
                 <Select
                   size="small"
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  // value={assignFilter}
-                  sx={{ width: 150, color: 'white' }}
-                  label="Assign To"
+                  defaultValue='unassigned'
+                  sx={{ width: 150, }}
+                  label="Assign status"
+                  onChange={e => handleFilterChange(e, 'assign')}
+                >
+                  <MenuItem value="">None</MenuItem>
+                  <MenuItem value="assigned" >Assigned</MenuItem>
+                  <MenuItem value="unassigned" >Unassigned</MenuItem>
+
+                </Select>
+              </FormControl>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="demo-simple-select-label">Date Range</InputLabel>
+                <Select
+                  size="small"
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  defaultValue=''
+                  sx={{ width: 150, }}
+                  label="Date range"
                 // onChange={e => setAssignFilter(e.target.value)}
                 >
                   <MenuItem value="">None</MenuItem>
@@ -236,36 +271,20 @@ function CustomizedTables({
                 </Select>
               </FormControl>
               <FormControl size="small" fullWidth>
-                <InputLabel id="demo-simple-select-label">Assigned</InputLabel>
-                <Select
-                  size="small"
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={assignFilter}
-                  sx={{ width: 150, }}
-                  label="Assigned"
-                  onChange={handleAssignFilterChange}
-                >
-                  <MenuItem value="">None</MenuItem>
-                  <MenuItem value="assigned" >Assigned</MenuItem>
-                  <MenuItem value="unassigned" >Unassigned</MenuItem>
-
-                </Select>
-              </FormControl>
-              <FormControl size="small" fullWidth>
                 <InputLabel id="demo-simple-select-label">Assign To</InputLabel>
                 <Select
                   size="small"
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
+                  disabled={assignFilter === 'unassigned'}
                   value={empFilter}
-                  sx={{ width: 150, color: 'white' }}
+                  sx={{ width: 150, }}
                   label="Assign To"
-                  onChange={e => setEmpFilter(e.target.value)}
+                  onChange={e => handleFilterChange(e, 'employee')}
                 >
                   <MenuItem value="">None</MenuItem>
                   {employees.map((emp) => (
-                    <MenuItem value={emp} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
+                    <MenuItem value={emp.dealAyoId} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -335,7 +354,7 @@ function CustomizedTables({
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row, index) => (
+              {data.data.map((row, index) => (
                 <StyledTableRow key={index}>
                   <StyledTableCell component="th" scope="row">
                     {page * rowsPerPage + (index + 1)}
@@ -373,14 +392,14 @@ function CustomizedTables({
         <TablePagination
           rowsPerPageOptions={[20, 30, 50]}
           component="div"
-          count={totalCount}
+          count={data.totalCount}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-    </>
+    </Box>
   );
 }
 

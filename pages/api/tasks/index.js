@@ -22,7 +22,7 @@ const getAllAssignedTasks = async (req, res) => {
             "$lt": new Date().setHours(24)
         },
     })
-        
+
         .then((products) => {
             res.status(200).json(products)
         }).catch(() => {
@@ -35,11 +35,12 @@ const unAssignTasks = async (req, res) => {
         const unassignedTasks = await productModel.updateMany({ _id: req.body.selected }, {
             $unset: {
                 assignDate: '',
-                assignToDealAyoId:'',
-                assignToName:'',
-                tasksId:''
+                assignToDealAyoId: '',
+                assignToName: '',
+                tasksId: ''
             }
         }, { new: true })
+
         res.send(unassignedTasks);
     } catch (err) {
         console.log(err);
