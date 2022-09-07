@@ -34,23 +34,70 @@ const getAssinedTasks = async (req, res) => {
             assignDate: {
                 "$gte": new Date().setHours(0, 0, 0, 0),
                 "$lt": new Date().setHours(24)
-            }
+            },
+
         })
 
-        await attendanceModel.updateOne({
+        const foundAttendace = await attendanceModel.find({
             date: {
                 "$gte": new Date().setHours(0, 0, 0, 0),
                 "$lt": new Date().setHours(24)
             },
-            "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
-        }, {
-            $set: {
-                "employees.$.tasksAssigned": totalCount
-            }
         })
-        // console.log(data)
-        res.status(200).json({data, totalCount})
+
+        if (foundAttendace.length > 0) {
+            //if empId found in date then attendance of emp is updated in object
+            if (foundAttendace[0].employees.find(e => e.dealAyoId === tokenPayload(req.cookies.token).dealAyoId)) {
+                await attendanceModel.updateOne({
+                    date: {
+                        "$gte": new Date().setHours(0, 0, 0, 0),
+                        "$lt": new Date().setHours(24)
+                    },
+                    "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId,
+                }, {
+                    $set: {
+                        "employees.$.tasksAssigned": totalCount
+                    }
+                })
+            } else {
+                //if empId not found in date, attendance with empId will be pushed to array
+                await attendanceModel.updateOne({
+                    date: {
+                        "$gte": new Date().setHours(0, 0, 0, 0),
+                        "$lt": new Date().setHours(24)
+                    }
+                }, {
+                    $push: {
+                        employees: {
+                            dealAyoId: tokenPayload(req.cookies.token).dealAyoId,
+                            name: tokenPayload(req.cookies.token).name,
+                            entryTime: new Date(),
+                            tasksAssigned: totalCount
+                        }
+                    }
+                })
+            }
+        } else {
+            //attence will be saved if no date found
+            const attendance = new attendanceModel({
+                date: new Date(),
+                employees: [
+                    {
+                        dealAyoId: tokenPayload(req.cookies.token).dealAyoId,
+                        name: tokenPayload(req.cookies.token).name,
+                        entryTime: new Date(),
+                        tasksAssigned: totalCount
+                    }
+                ]
+            })
+            await attendance.save()
+        }
+
+        // console.log(foundAttendace)
+
+        res.status(200).json({ data, totalCount })
     } catch (err) {
+        console.log(err)
         res.status(500).send('Error occured in checking assigned tasks')
     }
 }

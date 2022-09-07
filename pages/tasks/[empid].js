@@ -1,4 +1,4 @@
-import { Button, Checkbox, CircularProgress, FormControlLabel, Stack, TextareaAutosize, } from '@mui/material';
+import { Button, Checkbox, CircularProgress, FormControlLabel, Stack, TextareaAutosize, Typography, } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react'
@@ -10,6 +10,8 @@ import TasksTable from '../../components/Table/TasksTable';
 import CommentModal from '../../components/CommentModal/CommentModal';
 import { withAuth } from '../../HOC/withAuth';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
+import fetchData from '../../controllers/fetchData';
+import { Box } from '@mui/system';
 
 const tableHeading = ['model', 'Title', 'brand', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
 const dataHeading = ['model', 'title', 'brand', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
@@ -40,22 +42,14 @@ function Tasks() {
         checkEndWork();
     })
 
-    const fetchData = async (url) => {
-        return await axios.get(url, { params: { page, rowsPerPage } })
-            .then((res) => {
-                if (res.data.length > 1) {
-                    return res.data
-                } else {
-                    return []
-                }
-            }).catch((err) => {
-                throw new Error(err)
-            })
-    }
+    const {
+        data: tasks,
+        error: error1,
+        mutate: mutateTasks
+    } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token'))._id}`,
+        url => fetchData(url, params)
+    );
 
-
-    const { data, error1, mutate: mutateTasks } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token'))._id}`, url => fetchData(url, params));
-    const tasks = { data: [], totalCount: 0 }
     const handleChangePage = (event, newPage) => {
         setPage(parseInt(newPage))
         handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutateTasks)
@@ -135,9 +129,16 @@ function Tasks() {
     if (error1) {
         return <div>Failed to load Tasks</div>
     } else if (!tasks) {
+
         return <div>Please wait getting Tasks...</div>
+    } else if (tasks.data.length == 0) {
+        return (
+            <Box textAlign="center">
+                <Typography variant="h5">No Tasks Found</Typography>
+                <Button variant='outlined' sx={{ my: 1 }} onClick={handleStartWork}>Get Random Task</Button>
+            </Box>
+        )
     }
-    console.log(data)
 
     return (
         <div>
@@ -150,7 +151,6 @@ function Tasks() {
                         control={
                             <Checkbox
                                 checked={tasks.data.length > 1}
-                                onChange={handleStartWork}
                             />
                         }
                         label="Start Work"
