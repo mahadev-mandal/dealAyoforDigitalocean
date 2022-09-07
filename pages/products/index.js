@@ -7,7 +7,7 @@ import { withAuth } from "../../HOC/withAuth";
 const tableHeading = [
   "model",
   "title",
-  "vendor",
+  "supplier",
   "category",
   "MRP",
   "SP",
@@ -18,7 +18,7 @@ const tableHeading = [
 const dataHeading = [
   "model",
   "title",
-  "vendor",
+  "supplier",
   "category",
   "MRP",
   "SP",

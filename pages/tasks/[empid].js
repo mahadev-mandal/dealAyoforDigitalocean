@@ -13,8 +13,8 @@ import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import fetchData from '../../controllers/fetchData';
 import { Box } from '@mui/system';
 
-const tableHeading = ['model', 'Title', 'brand', 'Vendor', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
-const dataHeading = ['model', 'title', 'brand', 'vendor', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
+const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
+const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
 
 function Tasks() {
     const [page, setPage] = useState(0);

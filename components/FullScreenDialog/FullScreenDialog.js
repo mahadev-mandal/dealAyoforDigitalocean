@@ -14,8 +14,8 @@ import { baseURL } from '../../helpers/constants';
 import SimpleTable from '../Table/SimpleTable';
 import { mutate } from 'swr';
 
-const allFieldsArr = ['title', 'model', 'vendor', 'category', 'brand', 'weight', 'MRP', 'SP', 'quantity', 'status', 'entryStatus', 'entryDate', 'entryBy', 'assignDate', 'assignTo', 'level']
-const reqFieldsArr = ['title', 'model', 'vendor', 'category'];
+const allFieldsArr = ['title', 'model', 'supplier', 'category', 'brand', 'weight', 'MRP', 'SP', 'quantity', 'status', 'entryStatus', 'entryDate', 'entryBy', 'assignDate', 'assignTo', 'level']
+const reqFieldsArr = ['title', 'model', 'supplier', 'category'];
 
 const checkReqFields = (dataArr, reqArr) => {
     return reqArr.every(field => dataArr.includes(field))
