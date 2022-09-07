@@ -94,7 +94,7 @@ function TopNav() {
           <Stack>
             <Link href="/">
               <a>
-                <Image width={300} height={50} src={logo} alt="tasks assignments logo" />
+                <Image width={250} height={50} src={logo} alt="tasks assignments logo" />
               </a>
             </Link>
           </Stack>
