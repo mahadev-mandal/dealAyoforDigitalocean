@@ -65,7 +65,7 @@ function Tasks() {
         <Box sx={{ m: containerMargin }}>
             <AssignTasks />
             <Stack direction="row" spacing={1.5}>
-                {arr.map((ar,) => (
+                {arr.map((ar) => (
                     <TasksCard
                         key={ar[0].model}
                         tasks={ar}

@@ -72,7 +72,7 @@ export default function AssignTasks() {
 
   return (
     <div>
-      <Button variant="contained" color="success" onClick={handleClickOpen}>
+      <Button variant="contained" color="success" onClick={handleClickOpen} sx={{ mb: 1 }}>
         <AddIcon /> Add
       </Button>
       <Dialog

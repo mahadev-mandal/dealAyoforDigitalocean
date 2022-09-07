@@ -1,4 +1,4 @@
-import { Backdrop, Button, ButtonGroup, CircularProgress, Stack } from '@mui/material';
+import { Backdrop, Button, ButtonGroup, CircularProgress, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import Efficiency from '../../components/Efficiency/Efficiency';
@@ -21,29 +21,29 @@ function Attendance() {
 
     const { data: attendance, error, mutate } = useSWR(`${baseURL}/api/attendance`, url => fetchData(url, params));
 
-    const handleToday = () => {
+    const handleToday = async () => {
         setBackdropOpen(true)
         setDateFrom(new Date().setHours(0, 0, 0, 0));
-        handleDateChange(params, mutate);
+        await handleDateChange(params, mutate);
         setBackdropOpen(false)
         setActiveBtn('today')
     }
 
-    const handleThisWeek = () => {
+    const handleThisWeek = async () => {
         setBackdropOpen(true)
         const date = new Date();
         const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
         setDateFrom(lastSun);
-        handleDateChange(params, mutate);
+        await handleDateChange(params, mutate)
         setBackdropOpen(false)
         setActiveBtn('thisWeek')
     }
-    const handleThisMonth = () => {
+    const handleThisMonth = async () => {
         setBackdropOpen(true)
         const thisYear = new Date().getFullYear();
         const thisMonth = new Date().getMonth(); //month starts from 0-11
         setDateFrom(new Date(thisYear, thisMonth, 1).toLocaleString());
-        handleDateChange(params, mutate)
+        await handleDateChange(params, mutate)
         setBackdropOpen(false)
         setActiveBtn('thisMonth')
     }
@@ -74,7 +74,10 @@ function Attendance() {
                 open={backdropOpen}
             // onClick={handleClose}
             >
-                <CircularProgress color="primary" />
+                <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
+                    <CircularProgress color="secondary" />
+                    <Typography variant='h6'>Loading...</Typography>
+                </Stack>
             </Backdrop>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>

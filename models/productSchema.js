@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema({
     weight: {
         type: String,
     },
-    vendor: {
+    supplier: {
         type: String,
         required: true,
     },

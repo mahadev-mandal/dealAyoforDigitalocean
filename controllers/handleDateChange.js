@@ -2,9 +2,10 @@ import axios from "axios";
 import { baseURL } from "../helpers/constants";
 
 const handleDateChange = async (params, mutate) => {
-    await axios.get(`${baseURL}/api/attendance`, { params })
-        .then(() => {
+    return await axios.get(`${baseURL}/api/attendance`, { params })
+        .then((res) => {
             mutate();
+            return res
         }).catch((err) => {
             console.log(err)
         })

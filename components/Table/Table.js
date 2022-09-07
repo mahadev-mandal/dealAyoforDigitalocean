@@ -181,7 +181,7 @@ function CustomizedTables({
   } else if (!data) {
     return <div>Please wait fetching data...</div>;
   }
-  
+
   const details = data.data.filter((emp) => emp._id === selected[0])[0];
 
   const allSelectChecker = () => {
@@ -198,7 +198,10 @@ function CustomizedTables({
         open={open}
       // onClick={handleClose}
       >
-        <CircularProgress color="primary" />
+        <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
+          <CircularProgress color="secondary" />
+          <Typography variant='h6'>Loading...</Typography>
+        </Stack>
       </Backdrop>
       <Typography variant="body1" textAlign="center" color="red">{errMsg}</Typography >
       <Stack spacing={1} direction="row" sx={{ mb: 0.5 }}>
@@ -345,7 +348,7 @@ function CustomizedTables({
                   <Checkbox
                     sx={{ color: "white", padding: 0 }}
                     checked={allSelectChecker()}
-                    onChange={(e) => handleAllSelect(e, data)}
+                    onChange={(e) => handleAllSelect(e, data.data)}
                   />
                 </StyledTableCell>
                 {tableHeading.map((heading) => (
