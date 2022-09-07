@@ -1,5 +1,4 @@
 import { Backdrop, Button, ButtonGroup, CircularProgress, Stack } from '@mui/material';
-import axios from 'axios';
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import Efficiency from '../../components/Efficiency/Efficiency';
@@ -80,10 +79,30 @@ function Attendance() {
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
                     <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                        <Button variant={activeBtn==='today'?'contained':'outlined'} onClick={handleToday}>Today</Button>
-                        <Button variant={activeBtn==='thisWeek'?'contained':'outlined'} onClick={handleThisWeek}>This Week</Button>
-                        <Button variant={activeBtn==='thisMonth'?'contained':'outlined'} onClick={handleThisMonth}>This Month</Button>
-                        <Button variant={activeBtn==='customDate'?'contained':'outlined'} disabled>Custom Date</Button>
+                        <Button
+                            variant={activeBtn === 'today' ? 'contained' : 'outlined'}
+                            onClick={handleToday}
+                        >
+                            Today
+                        </Button>
+                        <Button
+                            variant={activeBtn === 'thisWeek' ? 'contained' : 'outlined'}
+                            onClick={handleThisWeek}
+                        >
+                            This Week
+                        </Button>
+                        <Button
+                            variant={activeBtn === 'thisMonth' ? 'contained' : 'outlined'}
+                            onClick={handleThisMonth}
+                        >
+                            This Month
+                        </Button>
+                        <Button
+                            variant={activeBtn === 'customDate' ? 'contained' : 'outlined'}
+                            disabled
+                        >
+                            Custom Date
+                        </Button>
                     </ButtonGroup>
 
                 </Stack>
