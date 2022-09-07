@@ -25,6 +25,7 @@ import AreYouSureModal from "../SureModal";
 import useSWR from "swr";
 import fetchData from "../../controllers/fetchData";
 import handleRowsPageChange from "../../controllers/handleRowsPageChange";
+import { returnStyle } from "../../controllers/returnStyle";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -358,7 +359,7 @@ function CustomizedTables({
             </TableHead>
             <TableBody>
               {data.data.map((row, index) => (
-                <StyledTableRow key={index}>
+                <StyledTableRow key={index} style={returnStyle(row)}>
                   <StyledTableCell component="th" scope="row">
                     {page * rowsPerPage + (index + 1)}
                   </StyledTableCell>
