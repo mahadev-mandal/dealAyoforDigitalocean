@@ -1,9 +1,10 @@
-import { Button, Stack } from '@mui/material';
+import { Backdrop, Button, ButtonGroup, CircularProgress, Stack } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import Efficiency from '../../components/Efficiency/Efficiency';
 import AttendanceTable from '../../components/Table/AttendanceTable';
+import fetchData from '../../controllers/fetchData';
 import handleDateChange from '../../controllers/handleDateChange';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
@@ -13,34 +14,39 @@ const dataHeading = ['dealAyoId', 'name', 'entryTime', 'exitTime', 'tasksAssigne
 
 function Attendance() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
+    const [backdropOpen, setBackdropOpen] = useState(false);
+    const [activeBtn, setActiveBtn] = useState('today');
     // const [dateTo, setDateTo] = useState(new Date().setHours(24))
     const dateTo = new Date().setHours(24);
     const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo) };
 
-    const fetchData = async (url) => {
-        return await axios.get(url, { params })
-            .then((res) => res.data)
-            .catch((err) => { throw new Error(err) })
-    }
-
-    const { data: attendance, error, mutate } = useSWR(`${baseURL}/api/attendance`, fetchData,);
+    const { data: attendance, error, mutate } = useSWR(`${baseURL}/api/attendance`, url => fetchData(url, params));
 
     const handleToday = () => {
+        setBackdropOpen(true)
         setDateFrom(new Date().setHours(0, 0, 0, 0));
         handleDateChange(params, mutate);
+        setBackdropOpen(false)
+        setActiveBtn('today')
     }
 
     const handleThisWeek = () => {
+        setBackdropOpen(true)
         const date = new Date();
         const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
         setDateFrom(lastSun);
         handleDateChange(params, mutate);
+        setBackdropOpen(false)
+        setActiveBtn('thisWeek')
     }
     const handleThisMonth = () => {
+        setBackdropOpen(true)
         const thisYear = new Date().getFullYear();
         const thisMonth = new Date().getMonth(); //month starts from 0-11
         setDateFrom(new Date(thisYear, thisMonth, 1).toLocaleString());
         handleDateChange(params, mutate)
+        setBackdropOpen(false)
+        setActiveBtn('thisMonth')
     }
 
     if (error) {
@@ -64,17 +70,22 @@ function Attendance() {
 
     return (
         <div>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={backdropOpen}
+            // onClick={handleClose}
+            >
+                <CircularProgress color="primary" />
+            </Backdrop>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
-                    <Button
-                        variant='outlined'
-                        onClick={handleToday}
-                    >
-                        Today
-                    </Button>
-                    <Button variant='outlined' onClick={handleThisWeek}>This Week</Button>
-                    <Button variant='outlined' onClick={handleThisMonth}>This Month</Button>
-                    <Button variant='outlined' disabled>Custom Date</Button>
+                    <ButtonGroup variant="contained" aria-label="outlined primary button group">
+                        <Button variant={activeBtn==='today'?'contained':'outlined'} onClick={handleToday}>Today</Button>
+                        <Button variant={activeBtn==='thisWeek'?'contained':'outlined'} onClick={handleThisWeek}>This Week</Button>
+                        <Button variant={activeBtn==='thisMonth'?'contained':'outlined'} onClick={handleThisMonth}>This Month</Button>
+                        <Button variant={activeBtn==='customDate'?'contained':'outlined'} disabled>Custom Date</Button>
+                    </ButtonGroup>
+
                 </Stack>
             </Stack>
             <AttendanceTable
