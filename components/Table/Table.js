@@ -61,6 +61,7 @@ function CustomizedTables({
   assignToEmp,
   tasksId,
   employees,
+
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState([]);
@@ -97,18 +98,18 @@ function CustomizedTables({
   const handleSelect = (event, row) => {
     setErrMsg('')
     if (event.target.checked) {
-      setSelected([...selected, row._id]);
+      setSelected([...selected, row]);
     } else {
-      setSelected(selected.filter((id) => id !== row._id));
+      setSelected(selected.filter((p) => p._id !== row._id));
     }
   };
   const handleAllSelect = (event, data) => {
     setErrMsg('')
     if (event.target.checked) {
-      setSelected([...new Set(selected.concat(data.map((p) => p._id)))]);
+      setSelected([...new Set(selected.concat(data.map((p) => p)))]);
     } else {
       setSelected(
-        selected.filter((id) => !data.map((p) => p._id).includes(id))
+        selected.filter((s) => !data.map((p) => p._id).includes(s._id))
       );
     }
   };
@@ -135,17 +136,22 @@ function CustomizedTables({
   };
   const handleAssignClick = async () => {
     setOpen(true)
-    await axios.post(`${baseURL}/api/tasks/assign`, { selected, assignDate, dealAyoId: assignToEmp.dealAyoId, name: assignToEmp.firstName, tasksId })
-      .then(() => {
-        setErrMsg('')
-        mutateData();
-        setSelected([])
-        setOpen(false)
-      }).catch((err) => {
-        setErrMsg(err.response.data)
-        setOpen(false)
-        // console.log()
-      })
+    await axios.post(`${baseURL}/api/tasks/assign`, {
+      selected,
+      assignDate,
+      assignToDealAyoId: assignToEmp.dealAyoId,
+      assignToName: assignToEmp.firstName,
+      tasksId
+    }).then(() => {
+      setErrMsg('')
+      mutateData();
+      setSelected([])
+      setOpen(false)
+    }).catch((err) => {
+      setErrMsg(err.response.data)
+      setOpen(false)
+      // console.log()
+    })
   }
 
   const handleUnassignClick = async () => {
@@ -183,11 +189,11 @@ function CustomizedTables({
     return <div>Please wait fetching data...</div>;
   }
 
-  const details = data.data.filter((emp) => emp._id === selected[0])[0];
+  const details = selected;
 
   const allSelectChecker = () => {
     if (selected.length > 0) {
-      return data.data.map((p) => p._id).every((id) => selected.includes(id));
+      return data.data.map(p => p._id).every((pid) => selected.map(s => s._id).includes(pid));
     } else {
       return false;
     }
@@ -287,7 +293,7 @@ function CustomizedTables({
                   onChange={e => handleFilterChange(e, 'employee')}
                 >
                   <MenuItem value="">None</MenuItem>
-                  {employees.map((emp) => (
+                  {employees.data.map((emp) => (
                     <MenuItem value={emp.dealAyoId} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
                   ))}
                 </Select>
@@ -365,13 +371,13 @@ function CustomizedTables({
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row">
                     <Checkbox
-                      checked={selected.includes(row._id)}
+                      checked={selected.map(p => p._id).includes(row._id)}
                       onChange={(e) => handleSelect(e, row)}
                       sx={{ padding: 0 }}
                     />
                   </StyledTableCell>
                   {dataHeading.map((head) => (
-                    <StyledTableCell key={head}>
+                    <StyledTableCell key={head} sx={{ textTransform: head === 'title' ? 'capitalize' : '' }}>
                       {typeof row[head] === "boolean" ? (
                         <Checkbox
                           checked={row[head]}

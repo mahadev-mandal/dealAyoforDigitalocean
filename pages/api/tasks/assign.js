@@ -15,29 +15,31 @@ export default function Tasks(req, res) {
 
 const AssignTasks = async (req, res) => {
     try {
-        const checkTasksId = await productModel.countDocuments({ tasksId: req.body.tasksId });
+        // const tasks = req.body.selected.map((p) => {
+        //     return { tid: p._id, entryStatus: p.entryStatus, errorTask: p.errorTask, status: p.status }
+        // })
+        // await tasksModel.estimatedDocumentCount() + 1;
+        // const taskId = 5
 
+        // const newTask = new tasksModel({
+        //     taskId: taskId,
+        //     date: req.body.assignDate,
+        //     assignToDealAyoId: req.body.assignToDealAyoId,
+        //     assignToName: req.body.assignToName,
+        //     tasks: tasks, //productId, entryStatus, errorTask, disabled
+        // });
+        // await newTask.save();
+        const checkTasksId = await productModel.countDocuments({ tasksId: req.body.tasksId });
         if (checkTasksId < 1) {
             const assignedTasks = await productModel.updateMany({ _id: req.body.selected }, {
                 $set: {
                     assignDate: req.body.assignDate,
-                    assignToDealAyoId: req.body.dealAyoId,
-                    assignToName: req.body.name,
+                    assignToDealAyoId: req.body.assignToDealAyoId,
+                    assignToName: req.body.assignToName,
                     tasksId: req.body.tasksId
                 },
             }, { new: true })
 
-            // await attendanceModel.updateOne({
-            //     date: {
-            //         "$gte": new Date(req.body.assignDate).setHours(0, 0, 0, 0),
-            //         "$lt": new Date(req.body.assignDate).setHours(24)
-            //     },
-            //     "employees.dealAyoId": req.body.dealAyoId
-            // }, {
-            //     $set: {
-            //         "employees.$.tasksAssigned": assignedTasks.modifiedCount
-            //     }
-            // })
             res.send(assignedTasks);
         } else {
             res.status(500).send('tasks id already presents');

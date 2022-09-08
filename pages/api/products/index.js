@@ -23,8 +23,6 @@ export default function products(req, res) {
 
 const getProducts = async (req, res) => {
     try {
-
-
         const { page, rowsPerPage, assignFilter, empFilter } = req.query;
         const query = {
             assignToDealAyoId: empFilter,

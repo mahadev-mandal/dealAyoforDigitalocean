@@ -52,7 +52,8 @@ export default function AssignTasks() {
   const [tasksId, setTasksId] = useState(1)
 
   const { data: employees, error } = useSWR(`${baseURL}/api/employees`, fetchData)
-
+  const childRef = React.useRef();
+  console.log(childRef)
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -61,9 +62,6 @@ export default function AssignTasks() {
     setOpen(false);
   };
 
-  const handleAssign = () => {
-
-  }
   if (error) {
     return <div>Error occured</div>
   } else if (!employees) {
@@ -123,21 +121,21 @@ export default function AssignTasks() {
                     onChange={e => setAssignToEmp(e.target.value)}
                   >
                     <MenuItem value={{}}>None</MenuItem>
-                    {employees.map((emp) => (
+                    {employees.data.map((emp) => (
                       <MenuItem value={emp} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Stack>
               <Stack spacing={1} direction="row">
-                <Button color="inherit">Verify</Button>
+                {/* <Button color="inherit">Verify</Button>
                 <Button
                   color="inherit"
                   onClick={handleAssign}
                 // disabled={data.length < 1}
                 >
                   save
-                </Button>
+                </Button> */}
               </Stack>
             </Stack>
           </Toolbar>

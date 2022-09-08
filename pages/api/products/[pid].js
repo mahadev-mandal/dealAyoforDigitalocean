@@ -1,6 +1,7 @@
 import db_conn from '../../../helpers/db_conn';
 import attendanceModel from '../../../models/attendanceSchema';
 import productModel from '../../../models/productSchema';
+// import tasksModel from '../../../models/tasksSchema';
 import tokenPayload from '../../../controllers/tokenPayload';
 
 db_conn()
@@ -30,7 +31,7 @@ const getProduct = async (req, res) => {
 }
 
 const updateProduct = async (req, res) => {
-    const { pid } = req.query;
+    const { pid,  } = req.query;
     try {
         const productBeforUpdate = await productModel.findByIdAndUpdate(pid, {
             $set: {
@@ -50,6 +51,12 @@ const updateProduct = async (req, res) => {
                 });
             }
             if ('entryStatus' in req.body || 'errorTask' in req.body) {
+                // await tasksModel.updateOne({ taskId: 5, "tasks.tid": pid }, {
+                //     $set: {
+                //         "tasks.$.entryStatus": req.body.entryStatus,
+                //         "tasks.$.errorTask": req.body.errorTask,
+                //     }
+                // })
                 await attendanceModel.updateOne({
                     date: {
                         "$gte": new Date().setHours(0, 0, 0, 0),

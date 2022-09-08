@@ -42,7 +42,7 @@ function Today() {
   }
 
   if (attendance.length > 0) {
-    d = empDetails.map(emp => ({ ...emp, ...attendance[0].employees.find(attend => attend.dealAyoId === emp.dealAyoId) }));
+    d = empDetails.data.map(emp => ({ ...emp, ...attendance[0].employees.find(attend => attend.dealAyoId === emp.dealAyoId) }));
     if (parseJwt(Cookies.get('token')).role === 'admin' || parseJwt(Cookies.get('token')).role === 'super-admin') {
       data = d
     }

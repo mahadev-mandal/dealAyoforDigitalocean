@@ -15,9 +15,11 @@ export default function categories(req, res) {
 
 const getCategories = async (req, res) => {
     const { page, rowsPerPage } = req.query;
+
+    const totalCount = await categoryModel.estimatedDocumentCount();
     await categoryModel.find().skip(parseInt(page) * parseInt(rowsPerPage)).limit(parseInt(rowsPerPage))
         .then((categories) => {
-            res.status(200).json(categories)
+            res.status(200).json({ data: categories, totalCount })
         }).catch(() => {
             res.status(500).send('Error occured while fetching categories');
         })

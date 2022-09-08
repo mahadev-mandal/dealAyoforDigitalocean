@@ -19,11 +19,13 @@ export default function SwitchMethod(req, res) {
 const getEmployees = async (req, res) => {
     const { page, rowsPerPage } = req.query;
 
+    const totalCount = await employeeModel.countDocuments();
+
     await employeeModel.find({}, { password: 0 })
         .skip(parseInt(rowsPerPage) * parseInt(page))
         .limit(parseInt(rowsPerPage))
         .then((employees) => {
-            res.status(200).json(employees);
+            res.status(200).json({ data: employees, totalCount });
         }).catch(() => {
             res.status(500).send('Internal server Error');
         })
@@ -41,7 +43,7 @@ const addEmployee = async (req, res) => {
         endTime: req.body.endTime,
         decreaseTask: req.body.decreaseTask,
         password: req.body.password,
-        
+
     })
     await employee.save()
         .then(() => {
