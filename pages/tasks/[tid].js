@@ -12,11 +12,13 @@ import { withAuth } from '../../HOC/withAuth';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import fetchData from '../../controllers/fetchData';
 import { Box } from '@mui/system';
+import { useRouter } from 'next/router';
 
 const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
 const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
 
 function Tasks() {
+    const router = useRouter();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [endWork, setEndWork] = useState(false);
@@ -24,6 +26,7 @@ function Tasks() {
     const [assigning, setAssigning] = useState(false);
     const [disableClick, setDisableClick] = useState(false);
     const params = { page, rowsPerPage };
+    const { tid } = router.query;
 
     const checkEndWork = async () => {
         await axios.post(`${baseURL}/api/attendance`, {
@@ -46,18 +49,18 @@ function Tasks() {
         data: tasks,
         error: error1,
         mutate: mutateTasks
-    } = useSWR(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token'))._id}`,
+    } = useSWR(`${baseURL}/api/tasks/${tid}`,
         url => fetchData(url, params)
     );
 
     const handleChangePage = (event, newPage) => {
         setPage(parseInt(newPage))
-        handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutateTasks)
+        handleRowsPageChange(`${baseURL}/api/tasks/${tid}`, { page, rowsPerPage }, mutateTasks)
     }
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0)
-        handleRowsPageChange(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`, { page, rowsPerPage }, mutateTasks)
+        handleRowsPageChange(`${baseURL}/api/tasks/${tid}`, { page, rowsPerPage }, mutateTasks)
     }
 
     const handleStartWork = async () => {

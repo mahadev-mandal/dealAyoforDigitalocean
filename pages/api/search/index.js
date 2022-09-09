@@ -6,27 +6,24 @@ db_conn();
 export default function search(req, res) {
     switch (req.method) {
         case 'GET':
-            return searchEmployees(req, res);
+            return searchProducts(req, res);
         default:
             res.status(404).send('use Proper method')
     }
 }
 
-const searchEmployees = async (req, res) => {
+const searchProducts = async (req, res) => {
     const { searchText, pid } = req.query;
-    if (pid) {
-        await productModel.find({ _id: pid })
-            .then((r) => {
-                res.json(r)
-            }).catch((err) => {
-                res.json(err);
-            })
-    } else {
-        await productModel.find({ $text: { $search: searchText } })
-            .then((r) => {
-                res.json(r)
-            }).catch((err) => {
-                res.json(err);
-            })
+    try {
+        let data;
+        if (pid) {
+            data = await productModel.find({ _id: pid });
+        } else {
+            data = await productModel.find({ $text: { $search: searchText } })
+        }
+        console.log(data.length)
+        res.json(data);
+    } catch (err) {
+        res.json(err)
     }
 }

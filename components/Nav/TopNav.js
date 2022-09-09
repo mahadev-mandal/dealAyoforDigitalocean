@@ -107,7 +107,7 @@ function TopNav() {
             open={open}
             sx={{ pointerEvents: !(parseJwt(Cookies.get('token')).role === 'super-admin') ? 'none' : '' }}
             disabled={!(parseJwt(Cookies.get('token')).role === 'super-admin')}
-            onInputChange={(_, value) => {
+            onInputChange={(_id, value) => {
               if (value.length === 0) {
                 if (open) setOpen(false);
               } else {

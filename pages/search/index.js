@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import Table from '../../components/Table/Table'
+import fetchData from '../../controllers/fetchData';
 import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
@@ -17,16 +18,13 @@ function Products() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const params = { page, rowsPerPage };
-
-    const fetchData = async (url) => {
-        return await axios.get(url, { params })
-            .then((res) => res.data)
-            .catch((err) => {
-                throw new Error(err)
-            })
-    }
-    const { data: products, error: error1, mutate: mutateProducts } = useSWR(`${baseURL}/api/search?searchText=${searchText}&pid=${pid}`, fetchData);
-
+    
+    const {
+        data: products,
+        error: error1,
+        mutate: mutateProducts
+    } = useSWR(`${baseURL}/api/search?searchText=${searchText}&pid=${pid}`, url => fetchData(url, params));
+    
     const handleChangePage = async (event, newPage) => {
         setPage(newPage)
         handleRowsPageChange(`${baseURL}/api/products`, params, mutateProducts)
@@ -56,14 +54,14 @@ function Products() {
     } else if (!products || products.stringValue) {
         return <div>Please wait loading...</div>
     }
-    
+
     return (
         <div>
 
             <Table
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}
-                data={products.slice(page*rowsPerPage,rowsPerPage)}
+                data={products.slice(page * rowsPerPage, rowsPerPage)}
                 page={page}
                 rowsPerPage={rowsPerPage}
                 totalCount={products.length}

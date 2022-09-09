@@ -36,8 +36,7 @@ export function withAuth(WrappedComponent) {
 
         if (verified) {
             if (role === 'data-entry') {
-                const dEntryAllowedUrls = ['/tasks/[empid]', '/attendance'];
-                if (dEntryAllowedUrls.includes(router.pathname)) {
+                if (router.pathname.startsWith('/tasks') || router.pathname.startsWith('/attendance')) {
                     return <WrappedComponent {...props} />
                 } else {
                     return <div>404 Error page not found</div>

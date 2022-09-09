@@ -1,5 +1,6 @@
 import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema'
+import tokenPayload from '../../../controllers/tokenPayload'
 
 db_conn();
 
@@ -15,19 +16,28 @@ export default function Tasks(req, res) {
 }
 
 const getAllAssignedTasks = async (req, res) => {
-    // const { page, rowsPerPage } = req.query;
-    await productModel.find({
+    const { dateFrom, dateTo, assignToEmp } = req.query;
+    console.log(req.query)
+    const query = {
         assignDate: {
-            "$gte": new Date().setDate(1),
-            "$lt": new Date().setHours(24)
+            "$gte": new Date(dateFrom),
+            "$lt": new Date(dateTo),
         },
+        assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
+    }
+    if (tokenPayload(req.cookies.token).role === 'super-admin') {
+        if (!assignToEmp == '') {
+            query.assignToDealAyoId = assignToEmp
+        }
+        delete query['assignToDealAyoId'];
+    }
+    await productModel.find(query)
+    .then((data) => {
+        res.status(200).json({ data })
+    }).catch((e) => {
+        console.log(e)
+        res.status(500).send('Error occured while fetching assigned tasks')
     })
-
-        .then((products) => {
-            res.status(200).json(products)
-        }).catch(() => {
-            res.status(500).send('Error occured while fetching assigned tasks')
-        })
 }
 
 const unAssignTasks = async (req, res) => {

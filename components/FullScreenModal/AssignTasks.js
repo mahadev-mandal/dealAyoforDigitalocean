@@ -52,8 +52,6 @@ export default function AssignTasks() {
   const [tasksId, setTasksId] = useState(1)
 
   const { data: employees, error } = useSWR(`${baseURL}/api/employees`, fetchData)
-  const childRef = React.useRef();
-  console.log(childRef)
   const handleClickOpen = () => {
     setOpen(true);
   };

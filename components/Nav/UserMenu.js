@@ -8,12 +8,11 @@ import { useRouter } from 'next/router'
 import Cookies from 'js-cookie'
 import { useEffect } from 'react'
 import { useState } from 'react'
-import parseJwt from '../../controllers/parseJwt'
 
 const categories = [
     {
         title: 'tasks',
-        url: `${baseURL}/tasks/${parseJwt(Cookies.get('token'))._id}`
+        url: `${baseURL}/tasks`
     },
     {
         title: 'attendance',

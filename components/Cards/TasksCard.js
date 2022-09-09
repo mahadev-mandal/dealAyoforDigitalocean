@@ -3,7 +3,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import { ButtonBase,  } from '@mui/material';
+import { ButtonBase, } from '@mui/material';
+import { useRouter } from 'next/router';
+import { baseURL } from '../../helpers/constants';
 // import { styled } from '@mui/material/styles';
 // import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 
@@ -18,37 +20,42 @@ import { ButtonBase,  } from '@mui/material';
 //   },
 // });
 export default function TasksCard({ tasks }) {
+  const router = useRouter();
+
+  const handleTaskClick = (tid) => {
+    router.push(`${baseURL}/tasks/${tid}`);
+  }
 
   return (
     // <CustomWidthTooltip arrow title={<TooltipComp />}>
-      <ButtonBase>
-        <Card elevation={2}
-          sx={{
-            width: 170,
-            '&:hover': {
+    <ButtonBase onClick={() => handleTaskClick(tasks[0].tasksId)}>
+      <Card elevation={2}
+        sx={{
+          width: 170,
+          '&:hover': {
 
-            }
-          }}
-        >
-          <CardContent>
-            <Typography variant="body2" component="div">
-              Task-{`${tasks[0].tasksId}`}
-            </Typography>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-              {new Date(tasks[0].assignDate).toDateString()}
-            </Typography>
-            <Typography variant="body2" component="div">
-              Employee: {tasks[0].assignToDealAyoId ? tasks[0].assignToName : ''}
-            </Typography>
-            <Typography variant="body2" component="div">
-              Total Task: {tasks.length}
-            </Typography>
-            <Typography variant="body2" component="div">
-              Completed: {tasks.filter(t=>t.entryStatus===true).length}
-            </Typography>
-          </CardContent>
-        </Card>
-      </ButtonBase>
+          }
+        }}
+      >
+        <CardContent>
+          <Typography variant="body2" component="div">
+            Task-{`${tasks[0].tasksId}`}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            {new Date(tasks[0].assignDate).toDateString()}
+          </Typography>
+          <Typography variant="body2" component="div">
+            Employee: {tasks[0].assignToDealAyoId ? tasks[0].assignToName : ''}
+          </Typography>
+          <Typography variant="body2" component="div">
+            Total Task: {tasks.length}
+          </Typography>
+          <Typography variant="body2" component="div">
+            Completed: {tasks.filter(t => t.entryStatus === true).length}
+          </Typography>
+        </CardContent>
+      </Card>
+    </ButtonBase>
     // </CustomWidthTooltip>
   );
 }
