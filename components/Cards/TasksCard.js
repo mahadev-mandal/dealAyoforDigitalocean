@@ -28,7 +28,7 @@ export default function TasksCard({ tasks }) {
 
   return (
     // <CustomWidthTooltip arrow title={<TooltipComp />}>
-    <ButtonBase onClick={() => handleTaskClick(tasks[0].tasksId)}>
+    <ButtonBase onClick={() => handleTaskClick(tasks.taskId)}>
       <Card elevation={2}
         sx={{
           width: 170,
@@ -39,19 +39,19 @@ export default function TasksCard({ tasks }) {
       >
         <CardContent>
           <Typography variant="body2" component="div">
-            Task-{`${tasks[0].tasksId}`}
+            Task-{`${tasks.taskId}`}
           </Typography>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {new Date(tasks[0].assignDate).toDateString()}
+            {new Date(tasks.date).toDateString()}
           </Typography>
           <Typography variant="body2" component="div">
-            Employee: {tasks[0].assignToDealAyoId ? tasks[0].assignToName : ''}
+            Employee: {tasks.assignToName}
           </Typography>
           <Typography variant="body2" component="div">
-            Total Task: {tasks.length}
+            Total Task: {tasks.tasks.length}
           </Typography>
           <Typography variant="body2" component="div">
-            Completed: {tasks.filter(t => t.entryStatus === true).length}
+            Completed: {tasks.tasks.filter(t => t.entryStatus === true).length}
           </Typography>
         </CardContent>
       </Card>
@@ -61,7 +61,7 @@ export default function TasksCard({ tasks }) {
 }
 
 TasksCard.propTypes = {
-  tasks: PropTypes.array,
+  tasks: PropTypes.object,
 }
 
 // function TooltipComp() {

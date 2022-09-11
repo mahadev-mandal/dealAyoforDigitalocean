@@ -1,39 +1,17 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react'
-import useSWR from 'swr';
+import React from 'react'
 import Table from '../../components/Table/Table'
-import fetchData from '../../controllers/fetchData';
-import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 
 
-const tableHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'Assign to', 'entry status',];
-const dataHeading = ['model', 'title', 'vendor', 'category', 'MRP', 'SP', 'assignTo', 'entryStatus',]
+const tableHeading = ['model', 'title', 'category', 'MRP', 'SP', 'Assign to', 'entry status','assign Date'];
+const dataHeading = ['model', 'title', 'category', 'MRP', 'SP', 'assignToName', 'entryStatus',]
 
 function Products() {
     const router = useRouter();
     const { searchText, pid } = router.query;
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(20);
-    const params = { page, rowsPerPage };
-    
-    const {
-        data: products,
-        error: error1,
-        mutate: mutateProducts
-    } = useSWR(`${baseURL}/api/search?searchText=${searchText}&pid=${pid}`, url => fetchData(url, params));
-    
-    const handleChangePage = async (event, newPage) => {
-        setPage(newPage)
-        handleRowsPageChange(`${baseURL}/api/products`, params, mutateProducts)
-    }
-    const handleChangeRowsPerPage = async (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-        handleRowsPageChange(`${baseURL}/api/products`, params, mutateProducts)
-    }
 
     const handleStatusChange = async (event, _id) => {
         //only allow to tick check box if work in not ended
@@ -43,16 +21,10 @@ function Products() {
             entryStatus: event.target.checked,
             date: date,
         }).then(() => {
-            mutateProducts()
+            
         }).catch((err) => {
             console.log(err)
         })
-    }
-
-    if (error1) {
-        return <div>Failed to load products</div>
-    } else if (!products || products.stringValue) {
-        return <div>Please wait loading...</div>
     }
 
     return (
@@ -61,16 +33,10 @@ function Products() {
             <Table
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}
-                data={products.slice(page * rowsPerPage, rowsPerPage)}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                totalCount={products.length}
-                handleChangePage={handleChangePage}
-                handleChangeRowsPerPage={handleChangeRowsPerPage}
-                collectionName="products"
-                mutateData={mutateProducts}
-                // mutateCounts={mutateCounts}
+                collectionName={`search?searchText=${searchText}&pid=${pid}`}
                 onStatusChange={handleStatusChange}
+                defaultEmpFilter=""
+                defaultAssignFilter=""
             />
         </div>
     )

@@ -1,5 +1,6 @@
 import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema'
+import tasksModel from '../../../models/tasksSchema'
 import tokenPayload from '../../../controllers/tokenPayload'
 
 db_conn();
@@ -17,27 +18,32 @@ export default function Tasks(req, res) {
 
 const getAllAssignedTasks = async (req, res) => {
     const { dateFrom, dateTo, assignToEmp } = req.query;
-    console.log(req.query)
-    const query = {
-        assignDate: {
-            "$gte": new Date(dateFrom),
-            "$lt": new Date(dateTo),
-        },
-        assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
+    let query = {};
+    if (Object.keys(req.query).length > 0) {
+        query = {
+            date: {
+                "$gte": new Date(dateFrom),
+                "$lt": new Date(dateTo),
+            },
+            assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
+        }
+
     }
     if (tokenPayload(req.cookies.token).role === 'super-admin') {
         if (!assignToEmp == '') {
             query.assignToDealAyoId = assignToEmp
+        } else {
+            delete query['assignToDealAyoId'];
         }
-        delete query['assignToDealAyoId'];
     }
-    await productModel.find(query)
-    .then((data) => {
-        res.status(200).json({ data })
-    }).catch((e) => {
-        console.log(e)
-        res.status(500).send('Error occured while fetching assigned tasks')
-    })
+    
+    await tasksModel.find(query)
+        .then((data) => {
+            res.status(200).json({ data })
+        }).catch((e) => {
+            console.log(e)
+            res.status(500).send('Error occured while fetching assigned tasks')
+        })
 }
 
 const unAssignTasks = async (req, res) => {

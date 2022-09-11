@@ -1,5 +1,6 @@
 import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema';
+import tasksModel from '../../../models/tasksSchema';
 
 db_conn();
 
@@ -15,15 +16,19 @@ export default function Tasks(req, res) {
 const getTasks = async (req, res) => {
     const { tid, page, rowsPerPage } = req.query;
     try {
-        const data = await productModel.find({ tasksId: tid })
+        const tasks = await tasksModel.findOne({ taskId: tid })
+        const tids = tasks.tasks.map((t) => t.tid)
+
+        const data = await productModel.find({ _id: tids })
             .skip((parseInt(page)) * parseInt(rowsPerPage))
             .limit(parseInt(rowsPerPage))
 
-        const totalCount = await productModel.countDocuments({ tasksId: tid });
-
+        const totalCount = tids.length;
+        // console.log(data)
         res.json({ data, totalCount })
 
     } catch (err) {
+        console.log(err)
         res.status(500).send('error while getting tasks');
     }
 }

@@ -16,12 +16,15 @@ const searchProducts = async (req, res) => {
     const { searchText, pid } = req.query;
     try {
         let data;
+        let totalCount;
         if (pid) {
             data = await productModel.find({ _id: pid });
+            totalCount = 1;
         } else {
-            data = await productModel.find({ $text: { $search: searchText } })
+            data = await productModel.find({ $text: { $search: searchText } });
+            totalCount = await productModel.countDocuments({ $text: { $search: searchText } });
         }
-        res.json(data);
+        res.json({ data, totalCount });
     } catch (err) {
         res.json(err)
     }

@@ -51,12 +51,14 @@ const updateProduct = async (req, res) => {
                 });
             }
             if ('entryStatus' in req.body || 'errorTask' in req.body) {
-                await tasksModel.updateOne({ taskId: 5, "tasks.tid": pid }, {
+            
+                await tasksModel.updateOne({ taskId: req.body.taskId, "tasks.tid": pid }, {
                     $set: {
                         "tasks.$.entryStatus": req.body.entryStatus,
                         "tasks.$.errorTask": req.body.errorTask,
                     }
                 })
+                
                 await attendanceModel.updateOne({
                     date: {
                         "$gte": new Date().setHours(0, 0, 0, 0),

@@ -19,13 +19,14 @@ function Tasks() {
     const [dateTo, setDateTo] = useState(new Date().setHours(24));
     const [backdropOpen, setBackdropOpen] = useState(false);
     const [assignToEmp, setAssignToEmp] = useState('');
+    
     const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), assignToEmp };
 
     const {
         data,
         error,
         mutate
-    } = useSWR(`${baseURL}/api/tasks/`, url => fetchData(url, params));
+    } = useSWR(`${baseURL}/api/tasks`, url => fetchData(url, params));
     const {
         data: employees,
         error1
@@ -61,10 +62,9 @@ function Tasks() {
     }
     const handleFilterChange = async (event) => {
         setAssignToEmp(event.target.value)
-        console.log(params)
         setBackdropOpen(true);
         await axios.get(`${baseURL}/api/tasks`, params)
-            .then((r) => { mutate(); setBackdropOpen(false); console.log(r) })
+            .then(() => { mutate(); setBackdropOpen(false) })
     }
 
     if (error || error1) {
@@ -72,26 +72,7 @@ function Tasks() {
     } else if (!data || !employees) {
         return <div>Please wait loading...</div>;
     }
-
-    let arr = [];
-    data.data.filter((data, i, self) => {
-        // self.findIndex(d => new Date(d.assignDate).toDateString() === new Date(data.assignDate).toDateString()) === i
-        const indx = self.findIndex(
-            (d) =>
-                new Date(d.assignDate).toDateString() ===
-                new Date(data.assignDate).toDateString() &&
-                d.tasksId === data.tasksId
-        );
-        // console.log(indx ===i )
-        if (indx === i) {
-            arr.push([data]);
-        } else {
-            arr[i] = "";
-            arr[indx].push(data);
-        }
-    });
-    arr = arr.filter((item) => item.length);
-
+    
     return (
         <Box sx={{ m: containerMargin }}>
             <Backdrop
@@ -120,7 +101,7 @@ function Tasks() {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={assignToEmp}
-                            sx={{ width: 150, color: 'white' }}
+                            sx={{ width: 150, }}
                             label="Assign To"
                             onChange={handleFilterChange}
                         >
@@ -133,10 +114,10 @@ function Tasks() {
                 </Stack>
             </Stack>
             <Stack direction="row" sx={{ mt: 1 }} spacing={1.5}>
-                {arr.map((ar) => (
+                {data.data.map((tasks) => (
                     <TasksCard
-                        key={ar[0].model}
-                        tasks={ar}
+                        key={tasks.taskId}
+                        tasks={tasks}
                     />
                 ))}
             </Stack>

@@ -49,7 +49,7 @@ function TopNav() {
       })
   }
 
-  const { data: products } = useSWR(`${baseURL}/api/search?searchText=${searchText}`, fetchData)
+  const { data } = useSWR(`${baseURL}/api/search?searchText=${searchText}`, fetchData)
 
   const handleSearchClick = () => {
     router.push(`${baseURL}/search?searchText=${searchText}&pid=null`)
@@ -79,6 +79,7 @@ function TopNav() {
   useEffect(() => {
     returnFirstLetter()
   }, [token])
+
   return (
     <>
       <Grid container
@@ -105,8 +106,7 @@ function TopNav() {
             freeSolo
             size="small"
             open={open}
-            sx={{ pointerEvents: !(parseJwt(Cookies.get('token')).role === 'super-admin') ? 'none' : '' }}
-            disabled={!(parseJwt(Cookies.get('token')).role === 'super-admin')}
+            // disabled={!(parseJwt(Cookies.get('token')).role === 'super-admin')}
             onInputChange={(_id, value) => {
               if (value.length === 0) {
                 if (open) setOpen(false);
@@ -117,7 +117,7 @@ function TopNav() {
             onClose={() => setOpen(false)}
             // disabled={!router.pathname.startsWith('/products')}
             onChange={(e, v) => handleSelectedChange(e, v)}
-            options={products ? products.length >= 1 ? products.map((option) => ({ _id: option._id, label: option.title })) : [] : []}
+            options={data ? data.data.length >= 1 ? data.data.map((option) => ({ _id: option._id, label: option.title })) : [] : []}
             renderInput={(params) =>
               <Paper
                 sx={{

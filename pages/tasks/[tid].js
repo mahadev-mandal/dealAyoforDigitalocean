@@ -117,7 +117,7 @@ function Tasks() {
                     errorTask: event.target.checked,
                 }
             }
-            await axios.put(`${baseURL}/api/products/${_id}`, update)
+            await axios.put(`${baseURL}/api/products/${_id}`, { ...update, taskId: tid })
                 .then(() => {
                     mutateTasks()
                     setDisableClick(false);

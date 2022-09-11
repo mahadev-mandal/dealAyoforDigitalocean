@@ -51,7 +51,7 @@ function Today() {
       data = d.filter(e => e.dealAyoId === parseJwt(Cookies.get('token')).dealAyoId)
     }
   } else {
-    data = empDetails
+    data = empDetails.data
   }
   return (
     <div>

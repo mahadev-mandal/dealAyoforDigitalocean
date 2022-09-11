@@ -8,11 +8,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
 import AddIcon from "@mui/icons-material/Add";
 import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
-import CustomizedTables from "../Table/Table";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { baseURL } from "../../helpers/constants";
 import fetchData from "../../controllers/fetchData";
+import AssignTasksTable from "../Table/AssignTaskTable";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -138,14 +138,16 @@ export default function AssignTasks() {
             </Stack>
           </Toolbar>
         </AppBar>
-        <CustomizedTables
+        <AssignTasksTable
           collectionName="products"
           tableHeading={tableHeading}
           dataHeading={dataHeading}
           assignDate={assignDate}
           assignToEmp={assignToEmp}
           tasksId={tasksId}
-          employees={employees}
+          employees={employees.data}
+          defaultEmpFilter=""
+          defaultAssignFilter="unassigned"
         />
       </Dialog>
     </div>

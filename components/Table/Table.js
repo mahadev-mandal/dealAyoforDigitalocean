@@ -61,6 +61,8 @@ function CustomizedTables({
   assignToEmp,
   tasksId,
   employees,
+  defaultEmpFilter,
+  defaultAssignFilter
 
 }) {
   const router = useRouter();
@@ -68,8 +70,8 @@ function CustomizedTables({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [errMsg, setErrMsg] = useState('');
-  const [empFilter, setEmpFilter] = useState('');
-  const [assignFilter, setAssignFilter] = useState('unassigned');
+  const [empFilter, setEmpFilter] = useState(defaultEmpFilter);
+  const [assignFilter, setAssignFilter] = useState(defaultAssignFilter);
   const params = { page, rowsPerPage, empFilter, assignFilter };
   const [open, setOpen] = useState(false)
 
@@ -422,6 +424,8 @@ CustomizedTables.propTypes = {
   assignDate: PropTypes.string,
   tasksId: PropTypes.number,
   employees: PropTypes.array,
+  defaultEmpFilter: PropTypes.string,
+  defaultAssignFilter: PropTypes.string,
 };
 
 export default CustomizedTables;

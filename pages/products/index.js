@@ -51,6 +51,8 @@ function Products() {
         dataHeading={dataHeading}
         collectionName="products"
         onStatusChange={handleStatusChange}
+        defaultEmpFilter=""
+        defaultAssignFilter=""
       />
     </div>
   );
