@@ -21,7 +21,6 @@ const searchProducts = async (req, res) => {
         } else {
             data = await productModel.find({ $text: { $search: searchText } })
         }
-        console.log(data.length)
         res.json(data);
     } catch (err) {
         res.json(err)

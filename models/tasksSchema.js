@@ -15,6 +15,7 @@ const tasksSchema = new mongoose.Schema({
     },
     assignToDealAyoId: String,
     assignToName: String,
+    comment: String,
     tasks: [
         {
             _id: false,
@@ -33,7 +34,7 @@ const tasksSchema = new mongoose.Schema({
             status: {
                 type: Boolean,
                 required: true,
-                default: false
+                default: true
             }
         }
     ]
