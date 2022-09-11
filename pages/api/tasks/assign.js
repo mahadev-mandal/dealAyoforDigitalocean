@@ -1,5 +1,5 @@
 import db_conn from "../../../helpers/db_conn";
-import productModel from '../../../models/productSchema';
+// import productModel from '../../../models/productSchema';
 import tasksModel from '../../../models/tasksSchema';
 // import attendanceModel from '../../../models/attendanceSchema';
 
