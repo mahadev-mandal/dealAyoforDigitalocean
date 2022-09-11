@@ -12,6 +12,8 @@ import FilterByDate from "../../components/FilterByDate";
 import handleDateChange from "../../controllers/handleDateChange";
 import AssignTasks from "../../components/FullScreenModal/AssignTasks";
 import axios from "axios";
+import Cookies from "js-cookie";
+import parseJwt from "../../controllers/parseJwt";
 
 function Tasks() {
     const [activeBtn, setActiveBtn] = useState('today');
@@ -19,7 +21,7 @@ function Tasks() {
     const [dateTo, setDateTo] = useState(new Date().setHours(24));
     const [backdropOpen, setBackdropOpen] = useState(false);
     const [assignToEmp, setAssignToEmp] = useState('');
-    
+
     const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), assignToEmp };
 
     const {
@@ -72,7 +74,7 @@ function Tasks() {
     } else if (!data || !employees) {
         return <div>Please wait loading...</div>;
     }
-    
+
     return (
         <Box sx={{ m: containerMargin }}>
             <Backdrop
@@ -87,7 +89,7 @@ function Tasks() {
             </Backdrop>
             <Stack direction="row" justifyContent="space-between">
                 <Stack>
-                    <AssignTasks />
+                    {parseJwt(Cookies.get('token')).role == 'super-admin' && <AssignTasks />}
                     <FilterByDate
                         activeBtn={activeBtn}
                         onClick={handleDateClick}

@@ -52,7 +52,7 @@ function TopNav() {
   const { data } = useSWR(`${baseURL}/api/search?searchText=${searchText}`, fetchData)
 
   const handleSearchClick = () => {
-    router.push(`${baseURL}/search?searchText=${searchText}&pid=null`)
+    router.push(`${baseURL}/search?searchText=${searchText}&pid`)
     setOpen(false)
   }
   const handleSelectedChange = (event, value) => {

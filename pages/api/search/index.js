@@ -13,17 +13,22 @@ export default function search(req, res) {
 }
 
 const searchProducts = async (req, res) => {
-    const { searchText, pid } = req.query;
+    const { searchText, pid, page, rowsPerPage } = req.query;
+
     try {
+        // await productModel.find({ model: { $regex: searchText.trim() } }).limit(10);
         let data;
         let totalCount;
         if (pid) {
             data = await productModel.find({ _id: pid });
             totalCount = 1;
         } else {
-            data = await productModel.find({ $text: { $search: searchText } });
-            totalCount = await productModel.countDocuments({ $text: { $search: searchText } });
+            data = await productModel.find({ $text: { $search: searchText.trim() } })
+                .skip(parseInt(page) * parseInt(rowsPerPage))
+                .limit(parseInt(rowsPerPage));
+            totalCount = await productModel.countDocuments({ $text: { $search: searchText.trim() } });
         }
+
         res.json({ data, totalCount });
     } catch (err) {
         res.json(err)
