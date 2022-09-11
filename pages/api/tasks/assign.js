@@ -21,10 +21,10 @@ const AssignTasks = async (req, res) => {
             return { tid: p._id, entryStatus: p.entryStatus, errorTask: p.errorTask, status: p.status }
         })
         await tasksModel.estimatedDocumentCount() + 1;
-        const taskId = 3
+        // const taskId = 3
 
         const newTask = new tasksModel({
-            taskId: taskId,
+            taskId: req.body.tasksId,
             date: req.body.assignDate,
             assignToDealAyoId: req.body.assignToDealAyoId,
             assignToName: req.body.assignToName,
