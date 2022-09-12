@@ -88,7 +88,6 @@ function Tasks() {
                 date: new Date(),
                 dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
                 exitTime: new Date(),
-                comment: comment
             }).then(() => {
                 setEndWork(true)
             })

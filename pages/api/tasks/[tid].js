@@ -8,6 +8,8 @@ export default function Tasks(req, res) {
     switch (req.method) {
         case 'GET':
             return getTasks(req, res);
+        case 'POST':
+            return saveComment(req, res);
         default:
             res.status(404).send('use proper method')
     }
@@ -30,5 +32,19 @@ const getTasks = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(500).send('error while getting tasks');
+    }
+}
+
+const saveComment = async (req, res) => {
+    const { tid } = req.query;
+    try {
+        await tasksModel.updateOne({ taskId: tid }, {
+            $set: {
+                comment: req.body.comment
+            }
+        })
+        res.send('saved')
+    } catch (err) {
+        res.status(500).send('Error while saving comment')
     }
 }

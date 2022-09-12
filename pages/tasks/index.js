@@ -69,6 +69,16 @@ function Tasks() {
             .then(() => { mutate(); setBackdropOpen(false) })
     }
 
+    function sortFunc(a, b) {
+        if (a.taskId < b.taskId) {
+            return -1;
+        }
+        if (a.last_nom > b.last_nom) {
+            return 1;
+        }
+        return 0;
+    }
+
     if (error || error1) {
         return <div>Failed to load products</div>;
     } else if (!data || !employees) {
@@ -115,8 +125,17 @@ function Tasks() {
                     </FormControl>
                 </Stack>
             </Stack>
-            <Stack direction="row" sx={{ mt: 1 }} spacing={1.5}>
-                {data.data.map((tasks) => (
+            <Stack
+                direction="row"
+                sx={{
+                    mt: 1,
+                    width: '100%',
+                    overflowX: 'auto',
+                    py: 1
+                }}
+                spacing={1.5}
+            >
+                {data.data.sort(sortFunc).map((tasks) => (
                     <TasksCard
                         key={tasks.taskId}
                         tasks={tasks}
