@@ -14,7 +14,8 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const [Msg, setMsg] = useState('')
 
-  const login = async () => {
+  const login = async (event) => {
+    event.preventDefault();
     await axios.post(`${baseURL}/api/login`, { dealAyoId: empId, password: password })
       .then((res) => {
         Cookies.set('token', res.data);
@@ -40,27 +41,28 @@ export default function Home() {
           padding: 5,
           background: 'rgb(240, 240, 240, 0.5)'
         }}>
-
-          <AccountCircleIcon sx={{ fontSize: 80, m: 'auto', display: 'block' }} /> <br />
-          <TextField
-            fullWidth
-            variant='outlined'
-            label="Your id"
-            value={empId}
-            autoComplete="off"
-            onChange={(e) => setEmpId(e.target.value)}
-          /> <br /><br />
-          <TextField
-            fullWidth
-            variant='outlined'
-            label="Password"
-            type="password"
-            autoComplete="off"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          /><br /><br />
-          <Button fullWidth variant="outlined" onClick={login}>Login</Button><br /><br />
-          <Typography color="red">{Msg}</Typography>
+          <form onSubmit={e => login(e)}>
+            <AccountCircleIcon sx={{ fontSize: 80, m: 'auto', display: 'block' }} /> <br />
+            <TextField
+              fullWidth
+              variant='outlined'
+              label="Your id"
+              value={empId}
+              autoComplete="off"
+              onChange={(e) => setEmpId(e.target.value)}
+            /> <br /><br />
+            <TextField
+              fullWidth
+              variant='outlined'
+              label="Password"
+              type="password"
+              autoComplete="off"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            /><br /><br />
+            <Button fullWidth variant="outlined" type='submit'>Login</Button><br /><br />
+            <Typography color="red">{Msg}</Typography>
+          </form>
         </Paper>
 
       </main>

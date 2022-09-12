@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import { ButtonBase, } from '@mui/material';
 import { useRouter } from 'next/router';
-import { baseURL,  } from '../../helpers/constants';
+import { baseURL, } from '../../helpers/constants';
 import styles from './TasksCard.module.css';
 import { green } from '@mui/material/colors';
 
@@ -73,6 +73,7 @@ export default function TasksCard({ tasks }) {
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             {new Date(tasks.date).toDateString()}
           </Typography>
+          { }
           <Typography
             variant="body2"
             component="div"
@@ -82,16 +83,16 @@ export default function TasksCard({ tasks }) {
               overflow: 'hidden'
             }}
           >
-            Employee: {tasks.assignToName}
+            Employee: <span style={{ fontWeight: 'bold' }}>{tasks.assignToName}</span>
           </Typography>
           <Typography variant="body2" component="div">
-            Total Task: {tasks.tasks.length}
+            Total Task: <span style={{ fontWeight: 'bold' }}>{tasks.tasks.length}</span>
           </Typography>
           <Typography variant="body2" component="div">
-            Completed: {completedTasks}
+            Completed: <span style={{ fontWeight: 'bold' }}>{completedTasks}</span>
           </Typography>
           <Typography variant="body2" component="div">
-            Errors: {errorTasks}
+            Errors: <span style={{ fontWeight: 'bold' }}>{errorTasks}</span>
           </Typography>
         </CardContent>
       </Card>
