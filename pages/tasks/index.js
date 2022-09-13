@@ -41,6 +41,7 @@ function Tasks() {
             setBackdropOpen(true);
             const date = new Date();
             const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
+            // const commingSun = new Date(date.setDate(date.getDate() - date.getDay()))
             setDateFrom(lastSun);
             setDateTo(new Date().setHours(24))
             await handleDateChange(params, mutate)
@@ -51,7 +52,7 @@ function Tasks() {
             const thisYear = new Date().getFullYear();
             const thisMonth = new Date().getMonth(); //month starts from 0-11
             setDateFrom(new Date(thisYear, thisMonth, 1).toLocaleString());
-            setDateTo(new Date().setDate(31));
+            setDateTo(new Date(thisYear, thisMonth + 1, 0));
             await handleDateChange(params, mutate);
             setActiveBtn('thisMonth');
             setBackdropOpen(false);
