@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react'
 import Table from '../../components/Table/Table'
@@ -6,7 +7,7 @@ import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 
 
-const tableHeading = ['model', 'title', 'category', 'MRP', 'SP', 'Assign to', 'entry status','assign Date'];
+const tableHeading = ['model', 'title', 'category', 'MRP', 'SP', 'Assign to', 'entry status', 'assign Date'];
 const dataHeading = ['model', 'title', 'category', 'MRP', 'SP', 'assignToName', 'entryStatus',]
 
 function Products() {
@@ -21,7 +22,7 @@ function Products() {
             entryStatus: event.target.checked,
             date: date,
         }).then(() => {
-            
+
         }).catch((err) => {
             console.log(err)
         })
@@ -29,7 +30,9 @@ function Products() {
 
     return (
         <div>
-
+            <Head>
+                <title>Tasks By DealAyo</title>
+            </Head>
             <Table
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}

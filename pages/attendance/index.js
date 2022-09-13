@@ -1,7 +1,9 @@
 import { Backdrop, Button, ButtonGroup, CircularProgress, Stack, Typography } from '@mui/material';
+import Head from 'next/head';
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import Efficiency from '../../components/Efficiency/Efficiency';
+import FullScreenDialog from '../../components/FullScreenDialog/FullScreenDialog';
 import AttendanceTable from '../../components/Table/AttendanceTable';
 import fetchData from '../../controllers/fetchData';
 import handleDateChange from '../../controllers/handleDateChange';
@@ -69,6 +71,9 @@ function Attendance() {
 
     return (
         <div>
+            <Head>
+                <title>Tasks By DealAyo</title>
+            </Head>
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={backdropOpen}
@@ -81,6 +86,7 @@ function Attendance() {
             </Backdrop>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
+                    <FullScreenDialog />
                     <ButtonGroup variant="contained" aria-label="outlined primary button group">
                         <Button
                             variant={activeBtn === 'today' ? 'contained' : 'outlined'}

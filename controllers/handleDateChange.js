@@ -8,6 +8,7 @@ const handleDateChange = async (params, mutate) => {
             return res
         }).catch((err) => {
             console.log(err)
+            throw new Error(err);
         })
 }
 export default handleDateChange;

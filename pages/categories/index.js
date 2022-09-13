@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import Head from 'next/head';
 import React from 'react'
 import { useState } from 'react';
 import useSWR from 'swr';
@@ -50,6 +51,9 @@ function Categories() {
     if (parseJwt(Cookies.get('token')).role === 'admin' || parseJwt(Cookies.get('token')).role === 'super-admin') {
         return (
             <div>
+                <Head>
+                    <title>Tasks By DealAyo</title>
+                </Head>
                 <Table
                     tableHeading={tableHeading}
                     dataHeading={dataHeading}

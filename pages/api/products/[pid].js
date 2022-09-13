@@ -1,8 +1,8 @@
 import db_conn from '../../../helpers/db_conn';
-import attendanceModel from '../../../models/attendanceSchema';
+// import attendanceModel from '../../../models/attendanceSchema';
 import productModel from '../../../models/productSchema';
 import tasksModel from '../../../models/tasksSchema';
-import tokenPayload from '../../../controllers/tokenPayload';
+// import tokenPayload from '../../../controllers/tokenPayload';
 
 db_conn()
 
@@ -59,20 +59,20 @@ const updateProduct = async (req, res) => {
                     }
                 })
                 
-                await attendanceModel.updateOne({
-                    date: {
-                        "$gte": new Date().setHours(0, 0, 0, 0),
-                        "$lt": new Date().setHours(24)
-                    },
-                    "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
-                }, {
-                    $inc: {
-                        "employees.$.tasksCompleted": ('entryStatus' in req.body && productBeforUpdate.entryStatus != req.body.entryStatus) ?
-                            req.body.entryStatus ? 1 : -1 : 0,
-                        "employees.$.errorTasks": ('errorTask' in req.body && productBeforUpdate.errorTask != req.body.errorTask) ?
-                            req.body.errorTask ? 1 : -1 : 0,
-                    }
-                });
+                // await attendanceModel.updateOne({
+                //     date: {
+                //         "$gte": new Date().setHours(0, 0, 0, 0),
+                //         "$lt": new Date().setHours(24)
+                //     },
+                //     "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
+                // }, {
+                //     $inc: {
+                //         "employees.$.tasksCompleted": ('entryStatus' in req.body && productBeforUpdate.entryStatus != req.body.entryStatus) ?
+                //             req.body.entryStatus ? 1 : -1 : 0,
+                //         "employees.$.errorTasks": ('errorTask' in req.body && productBeforUpdate.errorTask != req.body.errorTask) ?
+                //             req.body.errorTask ? 1 : -1 : 0,
+                //     }
+                // });
             }
         }
         res.status(200).send('product updated sucessfully')

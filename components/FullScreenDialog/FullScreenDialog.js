@@ -54,6 +54,7 @@ export default function FullScreenDialog() {
     const [dataHeading, setdataHeading] = React.useState([])
     const [msg, setMsg] = React.useState(null);
     const [saving, setSaving] = React.useState(false);
+    const [errMsg, setErrMsg] = React.useState(null);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -135,9 +136,11 @@ export default function FullScreenDialog() {
             .then((res) => {
                 setSaving(false)
                 setMsg(res.data)
+                setErrMsg(null);
                 // setOpen(false);
             }).catch((err) => {
                 console.log(err)
+                setErrMsg(JSON.stringify(err.response));
                 setSaving(false);
             })
     }
@@ -216,7 +219,10 @@ export default function FullScreenDialog() {
                         <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
                             <CircularProgress color="secondary" />
                             Saving...
-                        </Stack> : <Typography variant="h6" textAlign="center" sx={{ mt: 3 }}>{msg}</Typography>
+                        </Stack> : <Typography variant="h6" textAlign="center" sx={{ mt: 3 }}>
+                            <span color={{ color: 'green' }}>{msg}</span>
+                            <span style={{ color: 'red' }}>{errMsg}</span>
+                        </Typography>
                     : <Typography variant="h6" textAlign="center" sx={{ mt: 3 }}>Please wait generating data...</Typography>
                 }
             </Dialog>

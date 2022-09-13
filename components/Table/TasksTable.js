@@ -12,6 +12,7 @@ import { Checkbox, TablePagination } from '@mui/material';
 import copyToClipboard from '../../controllers/copyToClipboard';
 import AdditionalDetailsModal from '../AdditionalDetailsModal/AdditionalDetailsModal';
 import Remarks from '../Remarks/Remarks';
+import { returnStyle } from '../../controllers/returnStyle';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -40,7 +41,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage,disableClick, handleChangeRowsPerPage, totalCount, }) {
+function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, disableClick, handleChangeRowsPerPage, totalCount, }) {
     const returnTime = (date) => {
         if (date) {
             return new Date(date).toLocaleTimeString();
@@ -64,12 +65,15 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                         </TableHead>
                         <TableBody>
                             {data.map((row, index) => (
-                                <StyledTableRow key={index}>
+                                <StyledTableRow key={index} style={returnStyle(row)}>
                                     <StyledTableCell component="th" scope="row">
                                         {(page * rowsPerPage) + (index + 1)}
                                     </StyledTableCell>
                                     {dataHeading.map((head) => (
-                                        <StyledTableCell key={head} onClick={(e) => copyToClipboard(e.target.innerText)}>
+                                        <StyledTableCell
+                                            key={head}
+                                            onClick={(e) => copyToClipboard(e.target.innerText)}
+                                        >
                                             {
                                                 typeof (row[head]) === 'boolean' ?
                                                     <Checkbox
@@ -131,7 +135,7 @@ TasksTable.propTypes = {
     collectionName: PropTypes.string,
     mutateData: PropTypes.func,
     mutateCounts: PropTypes.func,
-    disableClick:PropTypes.bool,
+    disableClick: PropTypes.bool,
     // sku: PropTypes.string,
     // handleSkuChange:PropTypes.func,
 }

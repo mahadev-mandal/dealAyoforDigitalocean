@@ -86,15 +86,15 @@ function AssignTasksTable({
     const handleChangePage = async (event, newPage) => {
         setOpen(true);
         setPage(newPage);
-        handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData);
-        setOpen(false)
+        handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData)
+            .then(() => setOpen(false));
     };
     const handleChangeRowsPerPage = async (event) => {
         setOpen(true)
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-        handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData);
-        setOpen(false)
+        handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData)
+            .then(() => setOpen(false));
     };
 
     const handleSelect = (event, row) => {

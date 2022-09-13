@@ -14,6 +14,8 @@ import AssignTasks from "../../components/FullScreenModal/AssignTasks";
 import axios from "axios";
 import Cookies from "js-cookie";
 import parseJwt from "../../controllers/parseJwt";
+import Head from "next/head";
+import LinearProgressBar from "../../components/ProgressBar/LinearProgress";
 
 function Tasks() {
     const [activeBtn, setActiveBtn] = useState('today');
@@ -49,7 +51,7 @@ function Tasks() {
             const thisYear = new Date().getFullYear();
             const thisMonth = new Date().getMonth(); //month starts from 0-11
             setDateFrom(new Date(thisYear, thisMonth, 1).toLocaleString());
-            setDateTo(new Date().setHours(24));
+            setDateTo(new Date().setDate(31));
             await handleDateChange(params, mutate);
             setActiveBtn('thisMonth');
             setBackdropOpen(false);
@@ -69,14 +71,19 @@ function Tasks() {
             .then(() => { mutate(); setBackdropOpen(false) })
     }
 
-    function sortFunc(a, b) {
+    function sortDescFunc(a, b) {
         if (a.taskId < b.taskId) {
-            return -1;
+            return 0;
         }
-        if (a.last_nom > b.last_nom) {
-            return 1;
-        }
-        return 0;
+        return -1;
+    }
+    function sortAscFunc(a, b) {
+        return new Date(a.date) - new Date(b.date);
+    }
+    const checkTaskCompleted = (tasks) => {
+        const completed = tasks.tasks.filter(t => t.entryStatus).length;
+        const errors = tasks.tasks.filter(t => t.errorTask).length;
+        return (tasks.tasks.length <= (completed + errors))
     }
 
     if (error || error1) {
@@ -87,6 +94,9 @@ function Tasks() {
 
     return (
         <Box sx={{ m: containerMargin }}>
+            <Head>
+                <title>Tasks By DealAyo</title>
+            </Head>
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={backdropOpen}
@@ -100,11 +110,17 @@ function Tasks() {
             <Stack direction="row" justifyContent="space-between">
                 <Stack>
                     {parseJwt(Cookies.get('token')).role == 'super-admin' && <AssignTasks />}
-                    <FilterByDate
-                        activeBtn={activeBtn}
-                        onClick={handleDateClick}
-                    />
                 </Stack>
+                <Stack>
+                    <LinearProgressBar data={data.data} />
+                </Stack>
+                <Stack></Stack>
+            </Stack>
+            <Stack direction="row" justifyContent="space-between">
+                <FilterByDate
+                    activeBtn={activeBtn}
+                    onClick={handleDateClick}
+                />
                 <Stack direction="row" alignItems="center">
                     <Typography variant='h6'>SortBy</Typography>
                     <FormControl size="small" fullWidth>
@@ -125,24 +141,47 @@ function Tasks() {
                     </FormControl>
                 </Stack>
             </Stack>
-            <Stack
-                direction="row"
-                sx={{
-                    mt: 1,
-                    width: '100%',
-                    overflowX: 'auto',
-                    py: 1
-                }}
-                spacing={1.5}
-            >
-                {data.data.sort(sortFunc).map((tasks) => (
-                    <TasksCard
-                        key={tasks.taskId}
-                        tasks={tasks}
-                    />
-                ))}
+            <Stack spacing={2}>
+                <Stack
+                    direction="row"
+                    sx={{
+                        mt: 1,
+                        width: '100%',
+                        overflowX: 'auto',
+                        py: 1
+                    }}
+                    spacing={1.5}
+                >
+                    {data.data.sort(sortDescFunc).map((tasks) => (
+                        <TasksCard
+                            key={tasks.taskId}
+                            tasks={tasks}
+                        />
+                    ))}
+                </Stack>
+                <Box>
+                    <Typography variant='h6'>Pending... Tasks</Typography>
+                    <Stack
+                        direction="row"
+                        spacing={1.5}
+                        sx={{
+                            width: '100%',
+                            overflowX: 'auto',
+                            py: 1
+                        }}
+                    >
+                        {data.data.sort(sortAscFunc).map((tasks) => (
+                            !checkTaskCompleted(tasks) &&
+                            <TasksCard
+                                key={tasks.taskId}
+                                tasks={tasks}
+                            />
+                        ))}
+                    </Stack>
+                </Box>
             </Stack>
         </Box>
+
     );
 }
 

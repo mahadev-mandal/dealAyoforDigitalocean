@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import Head from 'next/head';
 import React from 'react'
 import useSWR from 'swr';
 import TodayTable from '../../components/Table/TodayTable';
@@ -55,6 +56,9 @@ function Today() {
   }
   return (
     <div>
+      <Head>
+        <title>Tasks By DealAyo</title>
+      </Head>
       <TodayTable
         tableHeading={tableHeading}
         dataHeading={dataHeading}

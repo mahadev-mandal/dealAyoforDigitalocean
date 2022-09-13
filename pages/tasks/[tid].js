@@ -13,6 +13,8 @@ import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import fetchData from '../../controllers/fetchData';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
+import moment from 'moment';
 
 const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
 const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
@@ -144,9 +146,20 @@ function Tasks() {
 
     return (
         <div>
+            <Head>
+                <title>Tasks By DealAyo</title>
+            </Head>
             <Stack justifyContent="space-between" sx={{ mb: 0.5 }} direction="row">
                 <Stack spacing={2} direction="row">
                     <Button variant="outlined">Get Extra 5 Tasks</Button>
+                </Stack>
+                <Stack spacing={2} direction="row" alignItems="center">
+                    <Typography variant='body1' component="span">
+                        Tasks Id: <span style={{fontWeight:'bold'}}>{tid}</span>
+                        </Typography>
+                    <Typography variant='body1' component="span">
+                        Assigned: <span style={{fontWeight:'bold'}}>{moment(tasks.data[0].assignDate).fromNow()}</span>
+                        </Typography>
                 </Stack>
                 <Stack spacing={2} alignItems="center" justifyContent="center" direction="row">
                     <FormControlLabel

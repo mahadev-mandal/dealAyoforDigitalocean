@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import Head from 'next/head';
 import React from 'react'
 import { useState } from 'react';
 import useSWR from 'swr';
@@ -23,8 +24,8 @@ function Employees() {
     return await axios.get(url, { params })
       .then((res) => res.data).catch((err) => { throw new Error(err) })
   }
-  const { data: employees, error: error1, mutate:mutateEmployees } = useSWR(`${baseURL}/api/employees`, fetchData)
-  const { data: totalCount, error: error2, mutate:mutateCount } = useSWR(`${baseURL}/api/count-data`,
+  const { data: employees, error: error1, mutate: mutateEmployees } = useSWR(`${baseURL}/api/employees`, fetchData)
+  const { data: totalCount, error: error2, mutate: mutateCount } = useSWR(`${baseURL}/api/count-data`,
     url => countTotalData(url, 'employees')
   )
 
@@ -50,6 +51,9 @@ function Employees() {
   if (parseJwt(Cookies.get('token')).role === 'admin' || parseJwt(Cookies.get('token')).role === 'super-admin') {
     return (
       <div>
+        <Head>
+          <title>Tasks By DealAyo</title>
+        </Head>
         <Table
           tableHeading={tableHeading}
           dataHeading={dataHeading}

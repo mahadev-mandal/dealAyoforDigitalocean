@@ -1,4 +1,5 @@
 import axios from "axios";
+import Head from "next/head";
 import React from "react";
 import Table from "../../components/Table/Table";
 import { baseURL } from "../../helpers/constants";
@@ -46,6 +47,9 @@ function Products() {
 
   return (
     <div>
+      <Head>
+        <title>Tasks By DealAyo</title>
+      </Head>
       <Table
         tableHeading={tableHeading}
         dataHeading={dataHeading}

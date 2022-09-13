@@ -58,7 +58,7 @@ const saveProducts = async (req, res) => {
             res.status(200).send(`${r.length} products saved`)
         }).catch((err) => {
             console.log(err)
-            res.status(500).send('Error occured while saving products')
+            res.status(500).send(err)
         })
 }
 

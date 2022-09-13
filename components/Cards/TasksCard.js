@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import { baseURL, } from '../../helpers/constants';
 import styles from './TasksCard.module.css';
 import { green } from '@mui/material/colors';
+// import moment from 'moment';
 
 // import { styled } from '@mui/material/styles';
 // import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
@@ -70,7 +71,7 @@ export default function TasksCard({ tasks }) {
           <Typography variant="body2" component="div">
             Task-{`${tasks.taskId}`}
           </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          <Typography sx={{ fontSize: 13.5,fontWeight:'bold' }} color="text.secondary" gutterBottom>
             {new Date(tasks.date).toDateString()}
           </Typography>
           { }
