@@ -16,16 +16,16 @@ import FullScreenDialog from "../FullScreenDialog/FullScreenDialog";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import BlockIcon from "@mui/icons-material/Block";
 import { Button, Stack } from "@mui/material";
-import AddEmployee from "../EmployeeModal/AddEmployee";
-import AddCategory from "../CategoryModal/AddCategory";
 import { useRouter } from "next/router";
-import EditEmployee from "../EmployeeModal/EditEmployee";
-import EditCategory from "../CategoryModal/EditCategory";
-import AreYouSureModal from "../SureModal";
+// import AreYouSureModal from "../SureModal";
 import useSWR from "swr";
 import fetchData from "../../controllers/fetchData";
 import handleRowsPageChange from "../../controllers/handleRowsPageChange";
 import { returnStyle } from "../../controllers/returnStyle";
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import downloadExcel from "../../controllers/downloadExcel";
+import Remarks from "../Remarks/Remarks";
+// import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -60,7 +60,6 @@ function AssignTasksTable({
     assignDate,
     assignToEmp,
     tasksId,
-    employees,
     defaultEmpFilter,
     defaultAssignFilter
 
@@ -82,6 +81,10 @@ function AssignTasksTable({
     } = useSWR(`${baseURL}/api/${collectionName}`, (url) =>
         fetchData(url, params)
     );
+    const {
+        data: employees,
+        error: error2,
+    } = useSWR(`${baseURL}/api/employees`, fetchData);
 
     const handleChangePage = async (event, newPage) => {
         setOpen(true);
@@ -123,19 +126,19 @@ function AssignTasksTable({
         }
     };
 
-    const handleClickYes = async (type) => {
-        if (type === "delete") {
-            axios
-                .delete(`${baseURL}/api/${collectionName}`, {
-                    data: { _ids: selected },
-                })
-                .then(() => {
-                    setErrMsg('')
-                    mutateData();
-                    setSelected([]);
-                });
-        }
-    };
+    // const handleClickYes = async (type) => {
+    //     if (type === "delete") {
+    //         axios
+    //             .delete(`${baseURL}/api/${collectionName}`, {
+    //                 data: { _ids: selected },
+    //             })
+    //             .then(() => {
+    //                 setErrMsg('')
+    //                 mutateData();
+    //                 setSelected([]);
+    //             });
+    //     }
+    // };
     const handleAssignClick = async () => {
         setOpen(true)
         await axios.post(`${baseURL}/api/tasks/assign`, {
@@ -185,13 +188,13 @@ function AssignTasksTable({
         }
         await axios.get(`${baseURL}/api/${collectionName}`, params).then(() => { mutateData(); setOpen(false) })
     }
-    if (error1) {
+    if (error1 || error2) {
         return <div>Error occured While fetching data</div>;
-    } else if (!data) {
+    } else if (!data || !employees) {
         return <div>Please wait fetching data...</div>;
     }
 
-    const details = selected;
+    // const details = selected;
 
     const allSelectChecker = () => {
         if (selected.length > 0) {
@@ -200,6 +203,17 @@ function AssignTasksTable({
             return false;
         }
     };
+
+    const handleResetFilter = () => {
+        setOpen(true);
+        setSelected([]);
+        console.log(defaultAssignFilter)
+        setAssignFilter(defaultAssignFilter);
+        setEmpFilter(defaultEmpFilter);
+        setPage(1);
+        handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData)
+            .then(() => setOpen(false));
+    }
     return (
         <Box sx={{ m: containerMargin }}>
             <Backdrop
@@ -227,6 +241,16 @@ function AssignTasksTable({
                 ) : (
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: '100%', mt: 1 }}>
                         <Stack direction="row" spacing={1}>
+                            {router.pathname.startsWith("/products") && <FullScreenDialog />}
+                            <Button
+                                size="small"
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => downloadExcel(selected)}
+                                disabled={selected.length >= 1 ? false : true}
+                            >
+                                <FileDownloadIcon /> Excel file {selected.length}
+                            </Button>
                             <Button
                                 size="small"
                                 variant="contained"
@@ -249,12 +273,12 @@ function AssignTasksTable({
                         <Stack direction="row" spacing={1} alignItems="center">
                             <Typography variant="h6" component="span">SortBy:</Typography>
                             <FormControl size="small" fullWidth>
-                                <InputLabel id="demo-simple-select-label">Assign status</InputLabel>
+                                <InputLabel id="demo-simple-select-label">Status</InputLabel>
                                 <Select
                                     size="small"
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
-                                    defaultValue='unassigned'
+                                    value={assignFilter}
                                     sx={{ width: 150, }}
                                     label="Assign status"
                                     onChange={e => handleFilterChange(e, 'assign')}
@@ -262,7 +286,28 @@ function AssignTasksTable({
                                     <MenuItem value="">None</MenuItem>
                                     <MenuItem value="assigned" >Assigned</MenuItem>
                                     <MenuItem value="unassigned" >Unassigned</MenuItem>
+                                    <MenuItem value="entry-done" >Entry Done</MenuItem>
+                                    <MenuItem value="entry-not-done" >Entry not Done</MenuItem>
+                                    <MenuItem value="error-tasks" >Error Tasks</MenuItem>
 
+                                </Select>
+                            </FormControl>
+                            <FormControl size="small" fullWidth>
+                                <InputLabel id="demo-simple-select-label">Employee</InputLabel>
+                                <Select
+                                    size="small"
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    disabled={assignFilter === 'unassigned'}
+                                    value={empFilter}
+                                    sx={{ width: 150, }}
+                                    label="Assign To"
+                                    onChange={e => handleFilterChange(e, 'employee')}
+                                >
+                                    <MenuItem value="">None</MenuItem>
+                                    {employees.data.map((emp) => (
+                                        <MenuItem value={emp.dealAyoId} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
                             <FormControl size="small" fullWidth>
@@ -282,66 +327,16 @@ function AssignTasksTable({
 
                                 </Select>
                             </FormControl>
-                            <FormControl size="small" fullWidth>
-                                <InputLabel id="demo-simple-select-label">Assign To</InputLabel>
-                                <Select
-                                    size="small"
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    disabled={assignFilter === 'unassigned'}
-                                    value={empFilter}
-                                    sx={{ width: 150, }}
-                                    label="Assign To"
-                                    onChange={e => handleFilterChange(e, 'employee')}
-                                >
-                                    <MenuItem value="">None</MenuItem>
-                                    {employees.map((emp) => (
-                                        <MenuItem value={emp.dealAyoId} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <Button size="small" variant="outlined" onClick={handleResetFilter}>Reset</Button>
                         </Stack>
                     </Stack>
                 )}
-
-                {!router.pathname.startsWith("/tasks") ? (
-                    collectionName === "employees" ? (
-                        <>
-                            <AreYouSureModal
-                                title={`Are you sure want to delete ${selected.length} employees`}
-                                selected={selected}
-                                handleClickYes={() => handleClickYes("delete")}
-                            />
-                            <EditEmployee
-                                empDetails={selected.length === 1 ? details : {}}
-                                disabled={selected.length != 1}
-                            />
-                            <AddEmployee />
-                        </>
-                    ) : collectionName === "categories" ? (
-                        <>
-                            <AreYouSureModal
-                                title={`Are you sure want to delete ${selected.length} categories`}
-                                selected={selected}
-                                handleClickYes={() => handleClickYes("delete")}
-                            />
-                            <EditCategory
-                                categoryDetails={selected.length === 1 ? details : {}}
-                                disabled={selected.length != 1}
-                            />
-                            <AddCategory />
-                        </>
-                    ) : (
-                        <>
-                            <AreYouSureModal
-                                title={`Are you sure want to delete ${selected.length} products`}
-                                selected={selected}
-                                handleClickYes={() => handleClickYes("delete")}
-                            />
-                            <FullScreenDialog />
-                        </>
-                    )
-                ) : null}
+                {/* <AreYouSureModal
+                    title={`Are you sure want to delete ${selected.length} products`}
+                    selected={selected}
+                    handleClickYes={() => handleClickYes("delete")}
+                />
+                <FullScreenDialog /> */}
             </Stack>
             <Paper>
                 <TableContainer component={Paper}>
@@ -395,6 +390,13 @@ function AssignTasksTable({
                                     ))}
                                     <StyledTableCell>
                                         {row.assignDate && new Date(row.assignDate).toDateString()}
+                                    </StyledTableCell>
+                                    <StyledTableCell sx={{ textAlign: 'center' }}>
+                                        <Remarks
+                                            title={row.title}
+                                            _id={row._id}
+                                            remarks={row.remarks}
+                                        />
                                     </StyledTableCell>
                                 </StyledTableRow>
                             ))}

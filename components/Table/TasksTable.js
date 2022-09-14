@@ -73,6 +73,9 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                                         <StyledTableCell
                                             key={head}
                                             onClick={(e) => copyToClipboard(e.target.innerText)}
+                                            sx={{
+                                                textTransform: head === 'title' ? 'capitalize' : ''
+                                            }}
                                         >
                                             {
                                                 typeof (row[head]) === 'boolean' ?

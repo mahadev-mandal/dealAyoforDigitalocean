@@ -1,7 +1,7 @@
 import axios from "axios";
 import Head from "next/head";
 import React from "react";
-import Table from "../../components/Table/Table";
+import AssignTaskTable from "../../components/Table/AssignTaskTable";
 import { baseURL } from "../../helpers/constants";
 import { withAuth } from "../../HOC/withAuth";
 
@@ -15,6 +15,7 @@ const tableHeading = [
   "Assign to",
   "entry status",
   "assign date",
+  "remarks"
 ];
 const dataHeading = [
   "model",
@@ -50,7 +51,7 @@ function Products() {
       <Head>
         <title>Tasks By DealAyo</title>
       </Head>
-      <Table
+      <AssignTaskTable
         tableHeading={tableHeading}
         dataHeading={dataHeading}
         collectionName="products"

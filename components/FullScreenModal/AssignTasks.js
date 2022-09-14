@@ -28,6 +28,7 @@ const tableHeading = [
   "Assign to",
   "entry status",
   "assign date",
+  "remarks"
 ];
 const dataHeading = [
   "model",

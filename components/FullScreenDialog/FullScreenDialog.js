@@ -160,7 +160,7 @@ export default function FullScreenDialog() {
     return (
         <div>
             <Button variant="contained" color="success" onClick={handleClickOpen}>
-                <AddIcon /> Add
+                <AddIcon /> Add Excel
             </Button>
             <Dialog
                 fullScreen

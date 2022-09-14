@@ -24,12 +24,13 @@ function FilterByDate({ onClick, activeBtn }) {
             >
                 This Month
             </Button>
-            {/* <Button
-                variant={activeBtn === 'thisMonth' ? 'contained' : 'outlined'}
-                onClick={() => onClick('thisMonth')}
+            <Button
+                disabled
+                variant={activeBtn === 'prevWeek' ? 'contained' : 'outlined'}
+                onClick={() => onClick('prevWeek')}
             >
-                Upcommings
-            </Button> */}
+                Prev Week
+            </Button>
             <Button
                 variant={activeBtn === 'customDate' ? 'contained' : 'outlined'}
                 disabled

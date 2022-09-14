@@ -26,7 +26,6 @@ const getProducts = async (req, res) => {
         const { page, rowsPerPage, assignFilter, empFilter } = req.query;
         const query = {
             assignToDealAyoId: empFilter,
-            assignDate: null
         }
         if (assignFilter == '') {
             delete query['assignDate'];
@@ -34,11 +33,19 @@ const getProducts = async (req, res) => {
             query.assignDate = { $ne: null }
         } else if (assignFilter == 'unassigned') {
             query.assignDate = null
+        } else if (assignFilter == 'entry-done') {
+            query.entryStatus = true;
+            query.assignDate = { $ne: null }
+        } else if (assignFilter == 'entry-not-done') {
+            query.entryStatus = false;
+            query.assignDate = { $ne: null }
+        } else if (assignFilter == 'error-tasks') {
+            query.errorTask = true;
         }
         if (empFilter == '') {
             delete query['assignToDealAyoId'];
         }
-
+        
         const totalCount = await productModel.countDocuments(query);
 
         const data = await productModel.find(query)
