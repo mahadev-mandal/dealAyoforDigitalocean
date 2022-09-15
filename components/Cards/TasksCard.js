@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { baseURL, } from '../../helpers/constants';
 import styles from './TasksCard.module.css';
 import { green } from '@mui/material/colors';
-import EditTasksDialog from '../FullScreenModal/editTasksDialog';
+import EditTasksDialog from '../FullScreenModal/EditTasksDialog';
 // import moment from 'moment';
 
 // import { styled } from '@mui/material/styles';
