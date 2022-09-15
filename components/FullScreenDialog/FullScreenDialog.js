@@ -120,7 +120,7 @@ export default function FullScreenDialog() {
                 setData((finalData));
                 setLoading(false);
             } else {
-                alert('title, model, vendor, & category are required fields')
+                alert('title, model, supplier, & category are required fields')
                 setLoading(false)
                 setSaving(false)
             }

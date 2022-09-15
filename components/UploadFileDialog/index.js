@@ -5,11 +5,13 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box, LinearProgress, Stack, Typography } from '@mui/material';
+import axios from 'axios';
+// import { baseURL } from '../../helpers/constants';
 
 export default function UploadFileDialog() {
     const [open, setOpen] = React.useState(false);
     const [files, setFile] = React.useState({});
-    const [progress, setProgress] = React.useState(10);
+    const [progress, setProgress] = React.useState(0);
     const [errMsg, setErrMsg] = React.useState(null);
 
     const handleClickOpen = () => {
@@ -34,17 +36,17 @@ export default function UploadFileDialog() {
             setErrMsg(null)
             setFile(event.target.files);
         } else {
-            setErrMsg('Some file name length is so long')
+            setErrMsg('Some file name length is so long max:30 char')
         }
     }
-    React.useEffect(() => {
-        const timer = setInterval(() => {
-            setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
-        }, 800);
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+
+    const handleUploadClick = async () => {
+        const formData = new FormData();
+        formData.append('file', files[0])
+        await axios.post(`/api/hello`, formData,
+            { "Content-Type": "multipart/form-data" },
+        ).then((r) => console.log(r))
+    }
 
 
     return (
@@ -60,10 +62,10 @@ export default function UploadFileDialog() {
             >
                 <DialogTitle id="alert-dialog-title">
                     {"Upload multiple or Singe files"}
-                <Typography variant="body2" textAlign="center" color='red'>{errMsg}</Typography>
+                    <Typography variant="body2" textAlign="center" color='red'>{errMsg}</Typography>
                 </DialogTitle>
                 <DialogContent sx={{ minWidth: 460 }}>
-                    <input type="file" name="" multiple id="" onChange={handleFileChange} />
+                    <input type="file" multiple id="" onChange={handleFileChange} name="file" />
                     <Stack spacing={1} sx={{ mt: 2 }}>
                         {Object.keys(files).map((key) => (
                             <Box key={files[key].name} sx={{ border: '2px dashed gray', p: 1 }}>
@@ -78,9 +80,9 @@ export default function UploadFileDialog() {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Disagree</Button>
-                    <Button onClick={handleClose} autoFocus>
-                        Agree
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleUploadClick} autoFocus>
+                        Upload
                     </Button>
                 </DialogActions>
             </Dialog>

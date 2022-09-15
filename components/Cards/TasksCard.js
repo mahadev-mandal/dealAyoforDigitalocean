@@ -3,11 +3,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import { ButtonBase, } from '@mui/material';
+import { ButtonBase } from '@mui/material';
 import { useRouter } from 'next/router';
 import { baseURL, } from '../../helpers/constants';
 import styles from './TasksCard.module.css';
 import { green } from '@mui/material/colors';
+import EditTasksDialog from '../FullScreenModal/editTasksDialog';
 // import moment from 'moment';
 
 // import { styled } from '@mui/material/styles';
@@ -37,6 +38,7 @@ export default function TasksCard({ tasks }) {
     router.push(`${baseURL}/tasks/${tid}`);
   }
 
+
   const getPercent = () => {
     return {
       comp: `${((completedTasks + errorTasks - commonTasks) / total) * 100}%`,
@@ -57,7 +59,8 @@ export default function TasksCard({ tasks }) {
           "&::before": {
             width: '100%',
             height: getPercent().comp,
-            background: green[returnColorNum()]
+            background: green[returnColorNum()],
+            transition: '0.3s',
           },
           "&::after": {
             width: '100%',
@@ -67,11 +70,12 @@ export default function TasksCard({ tasks }) {
         }}
         className={styles.card}
       >
+        <EditTasksDialog />
         <CardContent>
           <Typography variant="body2" component="div">
             Task-{`${tasks.taskId}`}
           </Typography>
-          <Typography sx={{ fontSize: 13.5,fontWeight:'bold' }} color="text.secondary" gutterBottom>
+          <Typography sx={{ fontSize: 13.5, fontWeight: 'bold' }} color="text.secondary" gutterBottom>
             {new Date(tasks.date).toDateString()}
           </Typography>
           { }

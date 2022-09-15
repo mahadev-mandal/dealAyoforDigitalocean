@@ -5,6 +5,7 @@ export const containerMargin = '0 20px';
 export const errBg = '#E0826D';
 export const entryTrueBg = '#64D47A';
 export const disabledBg = '#727E74';
+export const enteredAndErrBg = 'linear-gradient(to bottom, #64D47A, #D84A27 )'
 export const tasksColor = {
     100: 'green',
     80: 'blue',

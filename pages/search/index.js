@@ -7,8 +7,8 @@ import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 
 
-const tableHeading = ['model', 'title', 'category', 'MRP', 'SP', 'Assign to', 'entry status', 'assign Date'];
-const dataHeading = ['model', 'title', 'category', 'MRP', 'SP', 'assignToName', 'entryStatus',]
+const tableHeading = ['model', 'title', 'category','brand', 'MRP', 'SP', 'Assign to', 'entry status', 'assign Date'];
+const dataHeading = ['model', 'title', 'category','brand', 'MRP', 'SP', 'assignToName', 'entryStatus',]
 
 function Products() {
     const router = useRouter();

@@ -41,7 +41,18 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, rowsPerPage, handleChangePage, disableClick, handleChangeRowsPerPage, totalCount, }) {
+function TasksTable({
+    tableHeading,
+    data,
+    dataHeading,
+    onStatusChange,
+    page,
+    rowsPerPage,
+    handleChangePage,
+    disableClick,
+    handleChangeRowsPerPage,
+    totalCount,
+}) {
     const returnTime = (date) => {
         if (date) {
             return new Date(date).toLocaleTimeString();
@@ -74,7 +85,7 @@ function TasksTable({ tableHeading, data, dataHeading, onStatusChange, page, row
                                             key={head}
                                             onClick={(e) => copyToClipboard(e.target.innerText)}
                                             sx={{
-                                                textTransform: head === 'title' ? 'capitalize' : ''
+                                                textTransform: head === 'title' ? 'capitalize' : head == 'model' ? 'lowercase' : ''
                                             }}
                                         >
                                             {

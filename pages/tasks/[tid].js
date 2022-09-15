@@ -155,11 +155,13 @@ function Tasks() {
                 </Stack>
                 <Stack spacing={2} direction="row" alignItems="center">
                     <Typography variant='body1' component="span">
-                        Tasks Id: <span style={{fontWeight:'bold'}}>{tid}</span>
-                        </Typography>
+                        Tasks Id: <span style={{ fontWeight: 'bold' }}>{tid}</span>
+                    </Typography>
                     <Typography variant='body1' component="span">
-                        Assigned: <span style={{fontWeight:'bold'}}>{moment(tasks.data[0].assignDate).fromNow()}</span>
-                        </Typography>
+                        Assigned: <span style={{ fontWeight: 'bold' }}>
+                            {moment(new Date(tasks.data[0].assignDate).setHours(10, 0, 0, 0)).fromNow()}
+                        </span>
+                    </Typography>
                 </Stack>
                 <Stack spacing={2} alignItems="center" justifyContent="center" direction="row">
                     <FormControlLabel

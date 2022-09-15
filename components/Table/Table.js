@@ -73,7 +73,8 @@ function CustomizedTables({
   const [empFilter, setEmpFilter] = useState(defaultEmpFilter);
   const [assignFilter, setAssignFilter] = useState(defaultAssignFilter);
   const params = { page, rowsPerPage, empFilter, assignFilter };
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const { searchText } = router.query;
 
   const {
     data,
@@ -186,6 +187,12 @@ function CustomizedTables({
     await axios.get(`${baseURL}/api/${collectionName}`, params)
       .then(() => { mutateData(); setOpen(false) })
   }
+  const compareText = (row, head) => {
+    if (typeof (row[head]) == 'string' && searchText) {
+      return row[head].toLowerCase() == searchText.toLowerCase()
+    }
+  }
+
   if (error1) {
     return <div>Error occured While fetching data</div>;
   } else if (!data) {
@@ -383,7 +390,8 @@ function CustomizedTables({
                     <StyledTableCell
                       key={head}
                       sx={{
-                        textTransform: head === 'title' ? 'capitalize' : ''
+                        textTransform: head === 'title' ? 'capitalize' : '',
+                        background: compareText(row, head) ? '#FFFF00' : '',
                       }}
                     >
                       {typeof row[head] === "boolean" ? (

@@ -9,7 +9,7 @@ import Cookies from 'js-cookie'
 import { useEffect } from 'react'
 import { useState } from 'react'
 
-const categories = ['attendance', 'tasks', 'employees', 'mark-attendance', 'products','product-update', 'categories'];
+const categories = ['attendance', 'tasks', 'employees', 'mark-attendance', 'products', 'product-update', 'categories'];
 
 function Menu() {
     const router = useRouter();
@@ -50,9 +50,9 @@ function Menu() {
                 sx={{
                     background: '#E1304C',
                     p: containerPadding,
-                    position:'sticky',
-                    top:0,
-                    zIndex:100,
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 100,
                 }}
             >
                 {categories.map((item) => (
@@ -62,11 +62,12 @@ function Menu() {
                         alignItems="center"
                         direction="row"
                         color="white"
-                        
+
                         sx={{
                             textTransform: 'uppercase',
                             background: matchUrl(item) ? 'white' : 'inherit',
                             color: matchUrl(item) ? 'black' : 'white',
+                            transition: '0.5s',
                             '&:hover': {
                                 background: 'white',
                                 color: 'black'
