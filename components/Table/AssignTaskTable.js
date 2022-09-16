@@ -25,6 +25,7 @@ import { returnStyle } from "../../controllers/returnStyle";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import downloadExcel from "../../controllers/downloadExcel";
 import Remarks from "../Remarks/Remarks";
+import AreYouSureModal from "../SureModal";
 // import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -141,7 +142,7 @@ function AssignTasksTable({
     // };
     const handleAssignClick = async () => {
         setOpen(true)
-        await axios.post(`${baseURL}/api/tasks/assign`, {
+        await axios.post(`${baseURL}/api/${collectionName=='products'?'tasks':'update-tasks'}/assign`, {
             selected,
             assignDate,
             assignToDealAyoId: assignToEmp.dealAyoId,
@@ -163,7 +164,7 @@ function AssignTasksTable({
         setOpen(true);
         if (selected.length > 0) {
             await axios
-                .post(`${baseURL}/api/tasks`, { selected })
+                .post(`${baseURL}/api/${collectionName=='products'?'tasks':'update-tasks'}`, { selected })
                 .then(() => {
                     setErrMsg('')
                     mutateData();
@@ -214,6 +215,19 @@ function AssignTasksTable({
         handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData)
             .then(() => setOpen(false));
     }
+    const handleClickYes = async (type) => {
+        if (type === "delete") {
+            axios
+                .delete(`${baseURL}/api/${collectionName}`, {
+                    data: { _ids: selected },
+                })
+                .then(() => {
+                    setErrMsg('')
+                    mutateData();
+                    setSelected([]);
+                });
+        }
+    };
     return (
         <Box sx={{ m: containerMargin }}>
             <Backdrop
@@ -241,7 +255,17 @@ function AssignTasksTable({
                 ) : (
                     <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: '100%', mt: 1 }}>
                         <Stack direction="row" spacing={1}>
-                            {router.pathname.startsWith("/products") && <FullScreenDialog />}
+                            {router.pathname.startsWith("/products") &&
+                                <>
+                                    <FullScreenDialog collName="products" />
+                                    <AreYouSureModal
+                                        title={`Are you sure want to delete ${selected.length} products`}
+                                        selected={selected}
+                                        handleClickYes={() => handleClickYes("delete")}
+                                    />
+
+                                </>
+                            }
                             <Button
                                 size="small"
                                 variant="contained"

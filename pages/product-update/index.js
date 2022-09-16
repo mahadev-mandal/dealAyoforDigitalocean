@@ -7,7 +7,9 @@ function UpdateProduct() {
     return (
         <div>
             <Stack direction="row" spacing={1.5}>
-                <FullScreenDialog />
+                <FullScreenDialog 
+                    collName="product-update"
+                />
                 <UploadFileDialog />
             </Stack>
         </div>

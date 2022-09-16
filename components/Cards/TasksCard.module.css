@@ -2,10 +2,10 @@
   position: relative;
   z-index: 1;
   border: 1px solid green;
-  transition: 0.3s;
+  transition: 0.3s !important;
 }
 
-.card:hover{
+.card:hover {
   transform: scale(0.93);
 }
 

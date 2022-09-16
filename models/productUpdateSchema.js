@@ -7,7 +7,7 @@ const productUpdateSchema = new mongoose.Schema({
     },
     model: {
         type: String,
-        required: true,
+        // required: true,
     },
     oldPrice: {
         type: Number

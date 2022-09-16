@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
 import AddIcon from "@mui/icons-material/Add";
-import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { baseURL } from "../../helpers/constants";
@@ -50,7 +50,8 @@ export default function AssignTasks() {
   const day = String("0" + date.getDate()).slice(-2);
   const [assignDate, setAssignDate] = useState(`${year}-${month}-${day}`)
   const [assignToEmp, setAssignToEmp] = useState({});
-  const [tasksId, setTasksId] = useState(1)
+  const [tasksId, setTasksId] = useState(1);
+  const [collName, setCollName] = useState('products');
 
   const { data: employees, error } = useSWR(`${baseURL}/api/employees`, fetchData)
   const handleClickOpen = () => {
@@ -60,6 +61,13 @@ export default function AssignTasks() {
     mutate(`${baseURL}/api/tasks`)
     setOpen(false);
   };
+  const handleCollChange = (event) => {
+    if (event.target.checked) {
+      setCollName('product-update');
+    } else {
+      setCollName('products');
+    }
+  }
 
   if (error) {
     return <div>Error occured</div>
@@ -126,21 +134,16 @@ export default function AssignTasks() {
                   </Select>
                 </FormControl>
               </Stack>
-              <Stack spacing={1} direction="row">
-                {/* <Button color="inherit">Verify</Button>
-                <Button
-                  color="inherit"
-                  onClick={handleAssign}
-                // disabled={data.length < 1}
-                >
-                  save
-                </Button> */}
+              <Stack spacing={1} direction="row" alignItems="center">
+                <Typography component="span">Data Entry</Typography>
+                <Switch color="warning" onChange={handleCollChange} />
+                <Typography component="span">Update</Typography>
               </Stack>
             </Stack>
           </Toolbar>
         </AppBar>
         <AssignTasksTable
-          collectionName="products"
+          collectionName={collName}
           tableHeading={tableHeading}
           dataHeading={dataHeading}
           assignDate={assignDate}

@@ -32,6 +32,11 @@ function Tasks() {
         mutate
     } = useSWR(`${baseURL}/api/tasks`, url => fetchData(url, params));
     const {
+        data: updateTasks,
+        error: error2,
+        mutate: mutateUpdateTasks
+    } = useSWR(`${baseURL}/api/update-tasks`, url => fetchData(url, params))
+    const {
         data: employees,
         error1
     } = useSWR(`${baseURL}/api/employees`, fetchData)
@@ -44,23 +49,23 @@ function Tasks() {
             // const commingSun = new Date(date.setDate(date.getDate() - date.getDay()))
             setDateFrom(lastSun);
             setDateTo(new Date().setHours(24))
-            await handleDateChange(params, mutate)
+            await handleDateChange(params, mutate, mutateUpdateTasks)
             setActiveBtn('thisWeek')
             setBackdropOpen(false)
         } else if (d == 'thisMonth') {
             setBackdropOpen(true);
             const thisYear = new Date().getFullYear();
             const thisMonth = new Date().getMonth(); //month starts from 0-11
-            setDateFrom(new Date(thisYear, thisMonth, 1).toLocaleString());
+            setDateFrom(new Date(thisYear, thisMonth, 1));
             setDateTo(new Date(thisYear, thisMonth + 1, 0));
-            await handleDateChange(params, mutate);
+            await handleDateChange(params, mutate, mutateUpdateTasks);
             setActiveBtn('thisMonth');
             setBackdropOpen(false);
         } else {
             setBackdropOpen(true);
             setDateFrom(new Date().setHours(0, 0, 0, 0));
             setDateTo(new Date().setHours(24));
-            await handleDateChange(params, mutate);
+            await handleDateChange(params, mutate, mutateUpdateTasks);
             setActiveBtn('today')
             setBackdropOpen(false);
         }
@@ -69,7 +74,7 @@ function Tasks() {
         setAssignToEmp(event.target.value)
         setBackdropOpen(true);
         await axios.get(`${baseURL}/api/tasks`, params)
-            .then(() => { mutate(); setBackdropOpen(false) })
+            .then(() => { mutate(); mutateUpdateTasks(); setBackdropOpen(false) })
     }
 
     function sortDescFunc(a, b) {
@@ -87,9 +92,9 @@ function Tasks() {
         return (tasks.tasks.length <= (completed + errors))
     }
 
-    if (error || error1) {
+    if (error || error1 || error2) {
         return <div>Failed to load products</div>;
-    } else if (!data || !employees) {
+    } else if (!data || !employees || !updateTasks) {
         return <div>Please wait loading...</div>;
     }
 
@@ -155,6 +160,14 @@ function Tasks() {
                 >
                     {data.data.sort(sortDescFunc).map((tasks) => (
                         <TasksCard
+                            workType="Data Entry"
+                            key={tasks.taskId}
+                            tasks={tasks}
+                        />
+                    ))}
+                    {updateTasks.data.sort(sortDescFunc).map((tasks) => (
+                        <TasksCard
+                            workType="Product Update"
                             key={tasks.taskId}
                             tasks={tasks}
                         />
@@ -174,6 +187,14 @@ function Tasks() {
                         {data.data.sort(sortAscFunc).map((tasks) => (
                             !checkTaskCompleted(tasks) &&
                             <TasksCard
+                                workType="Data Entry"
+                                key={tasks.taskId}
+                                tasks={tasks}
+                            />
+                        ))}
+                        {updateTasks.data.sort(sortDescFunc).map((tasks) => (
+                            <TasksCard
+                                workType="Product Update"
                                 key={tasks.taskId}
                                 tasks={tasks}
                             />

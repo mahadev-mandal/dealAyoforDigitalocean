@@ -13,14 +13,17 @@ import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
 import SimpleTable from '../Table/SimpleTable';
 import { mutate } from 'swr';
+import PropTypes from 'prop-types';
 
-const allFieldsArr = ['title', 'model', 'supplier', 'category', 'brand', 'weight', 'MRP', 'SP', 'quantity', 'status', 'entryStatus', 'entryDate', 'entryBy', 'assignDate', 'assignTo', 'level']
-const reqFieldsArr = ['title', 'model', 'supplier', 'category'];
+const allfieldsArrForDataEntry = ['title', 'model', 'supplier', 'category', 'brand', 'weight', 'MRP', 'SP', 'quantity', 'status', 'entryStatus', 'entryDate', 'entryBy', 'assignDate', 'assignTo', 'level']
+const allFieldsArrForUpdate = ['title', 'model', 'oldPrice', 'updatedPrice', 'availability', 'assignDate', 'assignToName', 'assignToDealAyoId']
+const reqFieldsArrForDataEntry = ['title', 'model', 'supplier', 'category'];
+const reqFieldsArrForUpdate = ['title'];
 
 const checkReqFields = (dataArr, reqArr) => {
     return reqArr.every(field => dataArr.includes(field))
 }
-//put other details except allfieldsArr to additional details
+//put other details except allfieldsArrForDataEntryallfieldsArrForDataEntry to additional details
 const finalDataArr = (dataArr, allFieldsArr) => {
     return dataArr.map((d) => {
         let data = {};
@@ -43,7 +46,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog() {
+export default function FullScreenDialog({ collName }) {
     const [open, setOpen] = React.useState(false);
     const [file, setFile] = React.useState(null);
     const [data, setData] = React.useState([]);
@@ -113,8 +116,8 @@ export default function FullScreenDialog() {
             const jsonData = XLSX.utils.sheet_to_json(worksheet)
             const dataKeysArr = Object.keys(jsonData[0])
             //checks if all required fields are presents or not
-            if (checkReqFields(dataKeysArr, reqFieldsArr)) {
-                const finalData = finalDataArr(jsonData, allFieldsArr);
+            if (checkReqFields(dataKeysArr, collName == 'products' ? reqFieldsArrForDataEntry : reqFieldsArrForUpdate)) {
+                const finalData = finalDataArr(jsonData, collName == 'products' ? allfieldsArrForDataEntry : allFieldsArrForUpdate);
                 setTableHeading(Object.keys(finalData[0]));
                 setdataHeading(Object.keys(finalData[0]));
                 setData((finalData));
@@ -132,7 +135,7 @@ export default function FullScreenDialog() {
     const handleSave = async () => {
         setSaving(true)
         setData([])
-        await axios.post(`${baseURL}/api/products`, data)
+        await axios.post(`${baseURL}/api/${collName}`, data)
             .then((res) => {
                 setSaving(false)
                 setMsg(res.data)
@@ -230,5 +233,6 @@ export default function FullScreenDialog() {
     );
 }
 
-
-
+FullScreenDialog.propTypes = {
+    collName: PropTypes.string,
+}

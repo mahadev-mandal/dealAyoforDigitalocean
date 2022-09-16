@@ -85,7 +85,9 @@ function TasksTable({
                                             key={head}
                                             onClick={(e) => copyToClipboard(e.target.innerText)}
                                             sx={{
-                                                textTransform: head === 'title' ? 'capitalize' : head == 'model' ? 'lowercase' : ''
+                                                transformation: 'lowercase, "a-z" to "A-Z" single',
+                                                scope: 'initial',
+
                                             }}
                                         >
                                             {
