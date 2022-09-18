@@ -12,7 +12,7 @@ import { Checkbox, TablePagination } from '@mui/material';
 import copyToClipboard from '../../controllers/copyToClipboard';
 import AdditionalDetailsModal from '../AdditionalDetailsModal/AdditionalDetailsModal';
 import Remarks from '../Remarks/Remarks';
-import { returnStyle } from '../../controllers/returnStyle';
+import { returnStyleTaskTable } from '../../controllers/returnStyleTaskTable';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -77,7 +77,7 @@ function TasksTable({
                         </TableHead>
                         <TableBody>
                             {data.map((row, index) => (
-                                <StyledTableRow key={index} style={returnStyle(row, oldAssignedDate)} sx={{}}>
+                                <StyledTableRow key={index} style={returnStyleTaskTable(row, oldAssignedDate)} sx={{}}>
                                     <StyledTableCell component="th" scope="row">
                                         {(page * rowsPerPage) + (index + 1)}
                                     </StyledTableCell>
@@ -153,6 +153,7 @@ TasksTable.propTypes = {
     mutateData: PropTypes.func,
     mutateCounts: PropTypes.func,
     disableClick: PropTypes.bool,
+    oldAssignedDate: PropTypes.instanceOf(Date)
     // sku: PropTypes.string,
     // handleSkuChange:PropTypes.func,
 }

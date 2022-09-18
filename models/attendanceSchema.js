@@ -7,7 +7,6 @@ const attendanceSchema = new mongoose.Schema({
         unique: true,
         index: true,
     },
-    name: String,
     employees: [
         {
             _id: false,
@@ -19,28 +18,17 @@ const attendanceSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
+            attendanceStatus:String,
             entryTime: {
                 type: Date,
             },
             exitTime: {
                 type: Date,
             },
-            tasksAssigned: {
-                type: Number,
-                default: 0
-            },
-            tasksCompleted: {
-                type: Number,
-                default: 0,
-            },
-            extraTasksCompleted: {
-                type: Number,
-                default: 0
-            },
-            errorTasks: {
-                type: Number,
-                default: 0,
-            },
+            late:String,
+            earlyLeave:String,
+            worked:String,
+            breakTime:String,
             comment: String,
         }
     ]
