@@ -9,11 +9,15 @@ import { IconButton, TextareaAutosize, } from '@mui/material';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { baseURL } from '../../helpers/constants';
 import axios from 'axios';
+import { mutate } from 'swr';
+import { useRouter } from 'next/router';
 
 
 export default function Remarks({ title, _id, remarks }) {
+    const router = useRouter();
     const [open, setOpen] = React.useState(false);
-    const [newRemarks, setNewRemarks] = React.useState(remarks)
+    const [newRemarks, setNewRemarks] = React.useState();
+    const { tid } = router.query;
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -25,8 +29,10 @@ export default function Remarks({ title, _id, remarks }) {
 
     const handleRemarksSave = async () => {
         await axios.put(`${baseURL}/api/products/${_id}`, { remarks: newRemarks })
-            .then(() => setOpen(false))
-            .catch((err) => { throw new Error(err) })
+            .then(() => {
+                setOpen(false)
+                mutate(`${baseURL}/api/tasks/${tid}`)
+            }).catch((err) => { throw new Error(err) })
     }
 
     return (
@@ -54,7 +60,7 @@ export default function Remarks({ title, _id, remarks }) {
                         aria-label="empty textarea"
                         minRows={4}
                         placeholder="Write remarks"
-                        value={newRemarks}
+                        defaultValue={remarks}
                         onChange={e => setNewRemarks(e.target.value)}
                         style={{ width: '100%' }}
                     />

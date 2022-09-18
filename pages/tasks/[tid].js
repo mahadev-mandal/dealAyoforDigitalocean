@@ -16,8 +16,8 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import moment from 'moment';
 
-const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'Entry Status', 'error', 'Entry Time', 'additional', 'remarks',];
-const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP', 'entryStatus', 'errorTask', 'entryDate',]
+const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP','assignTo', 'Entry', 'error', 'Time', 'additional', 'remarks',];
+const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP','assignToName', 'entryStatus', 'errorTask', 'entryDate',]
 
 function Tasks() {
     const router = useRouter();
@@ -206,6 +206,7 @@ function Tasks() {
                     handleChangePage={handleChangePage}
                     handleChangeRowsPerPage={handleChangeRowsPerPage}
                     disableClick={disableClick}
+                    oldAssignedDate={tasks.oldAssignedDate}
                 // sku={sku}
                 // handleSkuChange={handleSkuChange}
                 />

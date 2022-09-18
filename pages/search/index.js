@@ -7,7 +7,7 @@ import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 
 
-const tableHeading = ['model', 'title', 'category','brand', 'MRP', 'SP', 'Assign to', 'entry status', 'assign Date'];
+const tableHeading = ['model', 'title', 'category','brand', 'MRP', 'SP', 'Assign to', 'entry status', 'assign Date', 'remarks'];
 const dataHeading = ['model', 'title', 'category','brand', 'MRP', 'SP', 'assignToName', 'entryStatus',]
 
 function Products() {

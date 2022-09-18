@@ -26,6 +26,7 @@ import useSWR from "swr";
 import fetchData from "../../controllers/fetchData";
 import handleRowsPageChange from "../../controllers/handleRowsPageChange";
 import { returnStyle } from "../../controllers/returnStyle";
+import Remarks from "../Remarks/Remarks";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -409,6 +410,13 @@ function CustomizedTables({
                   ))}
                   <StyledTableCell>
                     {row.assignDate && new Date(row.assignDate).toDateString()}
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ textAlign: 'center' }}>
+                    <Remarks
+                      title={row.title}
+                      _id={row._id}
+                      remarks={row.remarks}
+                    />
                   </StyledTableCell>
                 </StyledTableRow>
               ))}

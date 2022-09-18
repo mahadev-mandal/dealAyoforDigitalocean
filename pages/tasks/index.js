@@ -46,11 +46,21 @@ function Tasks() {
             setBackdropOpen(true);
             const date = new Date();
             const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
-            // const commingSun = new Date(date.setDate(date.getDate() - date.getDay()))
+            const commingSat = new Date(date.setDate(new Date(lastSun).getDate() + 6)).setHours(24)
             setDateFrom(lastSun);
-            setDateTo(new Date().setHours(24))
+            setDateTo(commingSat)
             await handleDateChange(params, mutate, mutateUpdateTasks)
             setActiveBtn('thisWeek')
+            setBackdropOpen(false)
+        } else if (d == 'prevWeek') {
+            setBackdropOpen(true);
+            const date = new Date();
+            const prevWeekSun = new Date(date.setDate(date.getDate() - date.getDay() - 7)).setHours(0, 0, 0, 0);
+            const prevWeekCommingSat = new Date(date.setDate(new Date(prevWeekSun).getDate() + 6)).setHours(24)
+            setDateFrom(prevWeekSun);
+            setDateTo(prevWeekCommingSat)
+            await handleDateChange(params, mutate, mutateUpdateTasks)
+            setActiveBtn('prevWeek')
             setBackdropOpen(false)
         } else if (d == 'thisMonth') {
             setBackdropOpen(true);

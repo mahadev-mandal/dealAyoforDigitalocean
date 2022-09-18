@@ -19,17 +19,16 @@ function FilterByDate({ onClick, activeBtn }) {
                 This Week
             </Button>
             <Button
-                variant={activeBtn === 'thisMonth' ? 'contained' : 'outlined'}
-                onClick={() => onClick('thisMonth')}
-            >
-                This Month
-            </Button>
-            <Button
-                disabled
                 variant={activeBtn === 'prevWeek' ? 'contained' : 'outlined'}
                 onClick={() => onClick('prevWeek')}
             >
                 Prev Week
+            </Button>
+            <Button
+                variant={activeBtn === 'thisMonth' ? 'contained' : 'outlined'}
+                onClick={() => onClick('thisMonth')}
+            >
+                This Month
             </Button>
             <Button
                 variant={activeBtn === 'customDate' ? 'contained' : 'outlined'}

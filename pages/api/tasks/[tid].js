@@ -27,10 +27,9 @@ const getTasks = async (req, res) => {
 
         const totalCount = tids.length;
         // console.log(data)
-        res.json({ data, totalCount })
+        res.json({ data, totalCount, oldAssignedDate:tasks.date })
 
     } catch (err) {
-        console.log(err)
         res.status(500).send('error while getting tasks');
     }
 }

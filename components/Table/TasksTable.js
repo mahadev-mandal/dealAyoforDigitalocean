@@ -22,7 +22,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
     [`&.${tableCellClasses.body}`]: {
         fontSize: 14,
-        maxWidth: '200px',
+        maxWidth: '150px',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -52,6 +52,7 @@ function TasksTable({
     disableClick,
     handleChangeRowsPerPage,
     totalCount,
+    oldAssignedDate
 }) {
     const returnTime = (date) => {
         if (date) {
@@ -76,7 +77,7 @@ function TasksTable({
                         </TableHead>
                         <TableBody>
                             {data.map((row, index) => (
-                                <StyledTableRow key={index} style={returnStyle(row)}>
+                                <StyledTableRow key={index} style={returnStyle(row, oldAssignedDate)} sx={{}}>
                                     <StyledTableCell component="th" scope="row">
                                         {(page * rowsPerPage) + (index + 1)}
                                     </StyledTableCell>
