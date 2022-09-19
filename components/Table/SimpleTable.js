@@ -59,7 +59,7 @@ export default function SimpleTable({ tableHeading, data, dataHeading, page, row
                                 </StyledTableCell>
                                 {dataHeading.map((head) => (
                                     <StyledTableCell key={head}>
-                                        {head != 'additionalDetails' ? row[head] : JSON.stringify(row[head])}
+                                        {JSON.stringify(row[head])}
                                     </StyledTableCell>
 
                                 ))}

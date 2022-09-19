@@ -8,7 +8,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
-import UpdateAttendance from '../UpdateAttendanceModal/UpdateAttendance';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -41,20 +40,6 @@ const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 
 export default function AttendanceTable({ tableHeading, data, dataHeading, }) {
 
-    const returnTime = (date) => {
-        if (date) {
-            let hours = new Date(date).getHours();
-            let min = new Date(date).getMinutes();
-            let sec = new Date(date).getSeconds();
-            const formatTwoDigit = (p) => {
-                return String(p).padStart(2, '0')
-            }
-            return `${formatTwoDigit(hours)}:${formatTwoDigit(min)}:${formatTwoDigit(sec)}`
-        } else {
-            return ''
-        }
-    }
-
     return (
         <>
             <TableContainer component={Paper}>
@@ -83,24 +68,9 @@ export default function AttendanceTable({ tableHeading, data, dataHeading, }) {
                                     </StyledTableCell>
                                     {dataHeading.map((head) => (
                                         <StyledTableCell key={head}>
-                                            {
-                                                (head === 'entryTime' || head === 'exitTime') ?
-                                                    returnTime(attendance[head])
-                                                    : attendance[head]
-                                            }
+                                            {attendance[head]}
                                         </StyledTableCell>
                                     ))}
-                                    <StyledTableCell>
-                                        {/* <IconButton size="small" xs={{ p: 0 }} onClick={e => handleEdit(attendances.date, attendance.dealAyoId)}>
-                                            <EditIcon />
-                                        </IconButton> */}
-                                        <UpdateAttendance
-                                            date={attendances.date}
-                                            dealAyoId={attendance.dealAyoId}
-                                            entryTime={returnTime(attendance.entryTime)}
-                                            exitTime={returnTime(attendance.exitTime)}
-                                        />
-                                    </StyledTableCell>
                                 </StyledTableRow>
                             ))
                         ))}

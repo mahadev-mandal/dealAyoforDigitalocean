@@ -9,17 +9,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
-import { useRouter } from 'next/router';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function CommentModal({ onChange, value, endWork }) {
-    const router = useRouter();
+export default function CommentModal({ mutate }) {
     const [open, setOpen] = React.useState(false);
-
-    const { tid } = router.query;
+    const [comment, setComment] = React.useState('');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -30,13 +27,16 @@ export default function CommentModal({ onChange, value, endWork }) {
     };
 
     const handleSaveComment = async () => {
-        await axios.post(`${baseURL}/api/tasks/${tid}`, { comment: value })
-            .then(() => setOpen(false))
+        await axios.post(`${baseURL}/api/worksheet`, { comment })
+            .then(() => {
+                mutate()
+                setOpen(false)
+            })
     }
 
     return (
         <div>
-            <Button variant="outlined" disabled={endWork} onClick={handleClickOpen}>
+            <Button variant="outlined" onClick={handleClickOpen}>
                 Write Comment
             </Button>
             <Dialog
@@ -53,8 +53,8 @@ export default function CommentModal({ onChange, value, endWork }) {
                             minRows={3}
                             placeholder="Write comment"
                             style={{ width: 500, margin: '10px 0', }}
-                            value={value}
-                            onChange={e => onChange(e)}
+                            value={comment}
+                            onChange={e => setComment(e.target.value)}
                         />
                     </DialogContentText>
                 </DialogContent>
@@ -66,7 +66,5 @@ export default function CommentModal({ onChange, value, endWork }) {
     );
 }
 CommentModal.propTypes = {
-    onChange: PropTypes.func,
-    value: PropTypes.string,
-    endWork: PropTypes.bool,
+    mutate: PropTypes.func,
 }

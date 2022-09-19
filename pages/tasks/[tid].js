@@ -1,4 +1,4 @@
-import { Button, Checkbox, CircularProgress, FormControlLabel, Stack, TextareaAutosize, Typography, } from '@mui/material';
+import { Button, Checkbox, FormControlLabel, Stack, TextareaAutosize, Typography, } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react'
@@ -16,8 +16,8 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import moment from 'moment';
 
-const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP','assignTo', 'Entry', 'error', 'Time', 'additional', 'remarks',];
-const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP','assignToName', 'entryStatus', 'errorTask', 'entryDate',]
+const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'assignTo', 'Entry', 'error', 'Time', 'additional', 'remarks',];
+const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP', 'assignToName', 'entryStatus', 'errorTask', 'entryDate',]
 
 function Tasks() {
     const router = useRouter();
@@ -25,7 +25,6 @@ function Tasks() {
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [endWork, setEndWork] = useState(false);
     const [comment, setComment] = useState('');
-    const [assigning, setAssigning] = useState(false);
     const [disableClick, setDisableClick] = useState(false);
     const params = { page, rowsPerPage };
     const { tid } = router.query;
@@ -63,37 +62,6 @@ function Tasks() {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0)
         handleRowsPageChange(`${baseURL}/api/tasks/${tid}`, { page, rowsPerPage }, mutateTasks)
-    }
-
-    const handleStartWork = async () => {
-        if (tasks.data.length < 1) {
-            setAssigning(true);
-            if (tasks.data.length < 1) {
-                await axios.put(`${baseURL}/api/mark-attendance/`, {
-                    date: new Date(),
-                    dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
-                    name: parsejwt(Cookies.get('token')).name,
-                    entryTime: new Date(),
-                }).then(async () => {
-                    await axios.post(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`)
-                        .then(() => {
-                            setAssigning(false);
-                            mutateTasks();
-                        })
-                }).catch((err) => { throw new Error(err); })
-            }
-        }
-    }
-    const handleEndWork = async () => {
-        if (!endWork) {
-            await axios.put(`${baseURL}/api/mark-attendance`, {
-                date: new Date(),
-                dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
-                exitTime: new Date(),
-            }).then(() => {
-                setEndWork(true)
-            })
-        }
     }
 
     const handleStatusChange = async (event, _id, updateField) => {
@@ -139,7 +107,7 @@ function Tasks() {
         return (
             <Box textAlign="center">
                 <Typography variant="h5">No Tasks Found</Typography>
-                <Button variant='outlined' sx={{ my: 1 }} disabled onClick={handleStartWork}>Get Random Task</Button>
+                <Button variant='outlined' sx={{ my: 1 }} disabled >Get Random Task</Button>
             </Box>
         )
     }
@@ -176,41 +144,31 @@ function Tasks() {
                         control={
                             <Checkbox
                                 checked={endWork}
-                                onChange={handleEndWork}
+                            // onChange={handleEndWork}
                             />
                         }
                         label="End Work"
                     />
                 </Stack>
                 <Stack>
-                    <CommentModal
-                        onChange={e => setComment(e.target.value)}
-                        value={comment}
-                        endWork={endWork}
-                    />
+                    <CommentModal />
                 </Stack>
             </Stack>
-            {(assigning) ?
-                <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
-                    <CircularProgress color="secondary" />
-                    Assigning Tasks...
-                </Stack> :
-                <TasksTable
-                    tableHeading={tableHeading}
-                    dataHeading={dataHeading}
-                    data={tasks.data}
-                    onStatusChange={handleStatusChange}
-                    page={page}
-                    totalCount={tasks.totalCount}
-                    rowsPerPage={rowsPerPage}
-                    handleChangePage={handleChangePage}
-                    handleChangeRowsPerPage={handleChangeRowsPerPage}
-                    disableClick={disableClick}
-                    oldAssignedDate={tasks.oldAssignedDate}
-                // sku={sku}
-                // handleSkuChange={handleSkuChange}
-                />
-            }
+            <TasksTable
+                tableHeading={tableHeading}
+                dataHeading={dataHeading}
+                data={tasks.data}
+                onStatusChange={handleStatusChange}
+                page={page}
+                totalCount={tasks.totalCount}
+                rowsPerPage={rowsPerPage}
+                handleChangePage={handleChangePage}
+                handleChangeRowsPerPage={handleChangeRowsPerPage}
+                disableClick={disableClick}
+                oldAssignedDate={tasks.oldAssignedDate}
+            // sku={sku}
+            // handleSkuChange={handleSkuChange}
+            />
             <TextareaAutosize
                 minRows={3}
                 placeholder="your comment"

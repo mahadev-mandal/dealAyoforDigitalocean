@@ -17,6 +17,10 @@ const categories = [
     {
         title: 'attendance',
         url: `${baseURL}/attendance`
+    },
+    {
+        title:'worksheet',
+        url:`${baseURL}/worksheet`
     }
 ]
 

@@ -2,73 +2,74 @@ import { Backdrop, Button, ButtonGroup, CircularProgress, Stack, Typography } fr
 import Head from 'next/head';
 import React, { useState } from 'react'
 import useSWR from 'swr';
-import Efficiency from '../../components/Efficiency/Efficiency';
-import FullScreenDialog from '../../components/FullScreenDialog/FullScreenDialog';
+import FilterByDate from '../../components/FilterByDate';
+import AddAttendanceDialog from '../../components/FullScreenModal/AddAttendaceDialog';
 import AttendanceTable from '../../components/Table/AttendanceTable';
 import fetchData from '../../controllers/fetchData';
 import handleDateChange from '../../controllers/handleDateChange';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 
-const tableHeading = ['Date', 'Day', 'Emp Id', 'Name', 'Entry Time', 'Exit Time', 'Assigned', 'Completed', 'Extra', 'Error Tasks', 'Edit'];
-const dataHeading = ['dealAyoId', 'name', 'entryTime', 'exitTime', 'tasksAssigned', 'tasksCompleted', 'extraTasksCompleted', 'errorTasks'];
+const tableHeading = ['Date', 'Day', 'Emp Id', 'Name', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time',];
+const dataHeading = ['dealAyoId', 'name', 'attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime'];
 
 function Attendance() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
     const [backdropOpen, setBackdropOpen] = useState(false);
     const [activeBtn, setActiveBtn] = useState('today');
-    // const [dateTo, setDateTo] = useState(new Date().setHours(24))
-    const dateTo = new Date().setHours(24);
-    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo) };
+    const [dateTo, setDateTo] = useState(new Date().setHours(24))
+    const params = { dateFrom: new Date(dateFrom), dateTo: dateTo };
 
     const { data: attendance, error, mutate } = useSWR(`${baseURL}/api/attendance`, url => fetchData(url, params));
 
-    const handleToday = async () => {
-        setBackdropOpen(true)
-        setDateFrom(new Date().setHours(0, 0, 0, 0));
-        await handleDateChange(params, mutate);
-        setBackdropOpen(false)
-        setActiveBtn('today')
+    const handleDateClick = async (d) => {
+        if (d == 'thisWeek') {
+            setBackdropOpen(true);
+            const date = new Date();
+            const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
+            const commingSat = new Date(date.setDate(new Date(lastSun).getDate() + 6)).setHours(24)
+            setDateFrom(lastSun);
+            setDateTo(commingSat)
+            await handleDateChange(params, mutate, ()=>{})
+            setActiveBtn('thisWeek')
+            setBackdropOpen(false)
+        } else if (d == 'prevWeek') {
+            setBackdropOpen(true);
+            const date = new Date();
+            const prevWeekSun = new Date(date.setDate(date.getDate() - date.getDay() - 7)).setHours(0, 0, 0, 0);
+            const prevWeekCommingSat = new Date(date.setDate(new Date(prevWeekSun).getDate() + 6)).setHours(24)
+            setDateFrom(prevWeekSun);
+            setDateTo(prevWeekCommingSat)
+            await handleDateChange(params, mutate, ()=>{})
+            setActiveBtn('prevWeek')
+            setBackdropOpen(false)
+        } else if (d == 'thisMonth') {
+            setBackdropOpen(true);
+            const thisYear = new Date().getFullYear();
+            const thisMonth = new Date().getMonth(); //month starts from 0-11
+            setDateFrom(new Date(thisYear, thisMonth, 1));
+            setDateTo(new Date(thisYear, thisMonth + 1, 0));
+            await handleDateChange(params, mutate, ()=>{});
+            setActiveBtn('thisMonth');
+            setBackdropOpen(false);
+        } else {
+            setBackdropOpen(true);
+            setDateFrom(new Date().setHours(0, 0, 0, 0));
+            setDateTo(new Date().setHours(24));
+            await handleDateChange(params, mutate, ()=>{});
+            setActiveBtn('today')
+            setBackdropOpen(false);
+        }
     }
 
-    const handleThisWeek = async () => {
-        setBackdropOpen(true)
-        const date = new Date();
-        const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
-        setDateFrom(lastSun);
-        await handleDateChange(params, mutate)
-        setBackdropOpen(false)
-        setActiveBtn('thisWeek')
-    }
-    const handleThisMonth = async () => {
-        setBackdropOpen(true)
-        const thisYear = new Date().getFullYear();
-        const thisMonth = new Date().getMonth(); //month starts from 0-11
-        setDateFrom(new Date(thisYear, thisMonth, 1).toLocaleString());
-        await handleDateChange(params, mutate)
-        setBackdropOpen(false)
-        setActiveBtn('thisMonth')
-    }
 
     if (error) {
         return <div color='red'>Failed to load Attendance</div>
     } else if (!attendance) {
         return <div>Please wait loading...</div>
     }
-    const returnTotal = () => {
-        let assigned = 0;
-        let completed = 0;
-        attendance.forEach((date) => {
-            date.employees.forEach((emp) => {
-                assigned += emp.tasksAssigned;
-                completed += emp.tasksCompleted;
-            })
-        })
-        return { assigned, completed };
-    }
     // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
-
     return (
         <div>
             <Head>
@@ -86,33 +87,11 @@ function Attendance() {
             </Backdrop>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
-                    <FullScreenDialog />
-                    <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                        <Button
-                            variant={activeBtn === 'today' ? 'contained' : 'outlined'}
-                            onClick={handleToday}
-                        >
-                            Today
-                        </Button>
-                        <Button
-                            variant={activeBtn === 'thisWeek' ? 'contained' : 'outlined'}
-                            onClick={handleThisWeek}
-                        >
-                            This Week
-                        </Button>
-                        <Button
-                            variant={activeBtn === 'thisMonth' ? 'contained' : 'outlined'}
-                            onClick={handleThisMonth}
-                        >
-                            This Month
-                        </Button>
-                        <Button
-                            variant={activeBtn === 'customDate' ? 'contained' : 'outlined'}
-                            disabled
-                        >
-                            Custom Date
-                        </Button>
-                    </ButtonGroup>
+                    <AddAttendanceDialog collName="attendance" />
+                    <FilterByDate
+                        activeBtn={activeBtn}
+                        onClick={handleDateClick}
+                    />
 
                 </Stack>
             </Stack>
@@ -120,10 +99,6 @@ function Attendance() {
                 tableHeading={tableHeading}
                 data={attendance.length < 1 ? [] : attendance}
                 dataHeading={dataHeading}
-            />
-            <Efficiency
-                assigned={returnTotal().assigned}
-                completed={returnTotal().completed}
             />
         </div>
     )

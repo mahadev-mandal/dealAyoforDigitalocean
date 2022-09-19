@@ -18,18 +18,18 @@ const attendanceSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
-            attendanceStatus:String,
+            attendanceStatus: String,
             entryTime: {
-                type: Date,
+                type: String,
             },
             exitTime: {
-                type: Date,
+                type: String,
             },
-            late:String,
-            earlyLeave:String,
-            worked:String,
-            breakTime:String,
-            comment: String,
+            late: String,
+            earlyLeave: String,
+            worked: String,
+            breakTime: String,
+            additionalDetails: Object,
         }
     ]
 })

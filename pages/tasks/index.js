@@ -25,12 +25,17 @@ function Tasks() {
     const [assignToEmp, setAssignToEmp] = useState('');
 
     const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), assignToEmp };
+    // const pendingParams = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), assignToEmp }
 
     const {
         data,
         error,
         mutate
     } = useSWR(`${baseURL}/api/tasks`, url => fetchData(url, params));
+    // const {
+    //     data: pending,
+    //     error1,
+    // } = useSWR(`${baseURL}/api/tasks`, url => fetchData(url, params));
     const {
         data: updateTasks,
         error: error2,
