@@ -82,10 +82,21 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 
 const getWorkSheet = async (req, res) => {
+    const params = {
+        date: {
+            $gt: new Date().setHours(0, 0, 0, 0),
+            $lte: new Date().setHours(24),
+        },
+        dealAyoId: tokenPayload(req.cookies.token).dealAyoId
+    }
     try {
-        const data = await worksheetModel.find();
+        const data = await worksheetModel.find(
+            params,
+            
+        );
         res.json({ data });
     } catch (err) {
+        console.log(err)
         res.status(500).send('Error while fetching worksheet')
     }
 }

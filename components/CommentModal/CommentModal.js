@@ -50,7 +50,7 @@ export default function CommentModal({ mutate }) {
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
                         <TextareaAutosize
-                            minRows={3}
+                            minRows={8}
                             placeholder="Write comment"
                             style={{ width: 500, margin: '10px 0', }}
                             value={comment}
@@ -60,6 +60,7 @@ export default function CommentModal({ mutate }) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleSaveComment}>Save</Button>
+                    <Button onClick={handleClose}>Close</Button>
                 </DialogActions>
             </Dialog>
         </div>
