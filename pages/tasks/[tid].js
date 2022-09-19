@@ -1,11 +1,8 @@
 import { Button, Checkbox, FormControlLabel, Stack, TextareaAutosize, Typography, } from '@mui/material';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import { baseURL } from '../../helpers/constants';
-import parsejwt from '../../controllers/parseJwt';
-import { useEffect } from 'react';
 import TasksTable from '../../components/Table/TasksTable';
 import CommentModal from '../../components/CommentModal/CommentModal';
 import { withAuth } from '../../HOC/withAuth';
@@ -23,28 +20,10 @@ function Tasks() {
     const router = useRouter();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
-    const [endWork, setEndWork] = useState(false);
     const [comment, setComment] = useState('');
     const [disableClick, setDisableClick] = useState(false);
     const params = { page, rowsPerPage };
     const { tid } = router.query;
-
-    const checkEndWork = async () => {
-        await axios.post(`${baseURL}/api/attendance`, {
-            date: new Date(),
-            dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
-        }).then(async (res) => {
-            if (res.data) {
-                setEndWork(true)
-            } else {
-                setEndWork(false)
-            }
-        })
-    }
-
-    useEffect(() => {
-        checkEndWork();
-    })
 
     const {
         data: tasks,
@@ -66,36 +45,32 @@ function Tasks() {
 
     const handleStatusChange = async (event, _id, updateField) => {
         //only allow to tick check box if work in not ended
-        if (!endWork) {
-            setDisableClick(true);
-            let date = null;
-            if (event.target.checked) {
-                date = new Date();
-            } else {
-                date = ''
-            }
-            let update;
-
-            if (updateField === 'entryStatus') {
-                update = {
-                    entryStatus: event.target.checked,
-                    date: date,
-                }
-            } else {
-                update = {
-                    errorTask: event.target.checked,
-                }
-            }
-            await axios.put(`${baseURL}/api/products/${_id}`, { ...update, taskId: tid })
-                .then(() => {
-                    mutateTasks()
-                    setDisableClick(false);
-                }).catch((err) => {
-                    console.log(err)
-                })
+        setDisableClick(true);
+        let date = null;
+        if (event.target.checked) {
+            date = new Date();
         } else {
-            alert("After Work Ended You are not allow to edit. Please contact admin")
+            date = ''
         }
+        let update;
+
+        if (updateField === 'entryStatus') {
+            update = {
+                entryStatus: event.target.checked,
+                date: date,
+            }
+        } else {
+            update = {
+                errorTask: event.target.checked,
+            }
+        }
+        await axios.put(`${baseURL}/api/products/${_id}`, { ...update, taskId: tid })
+            .then(() => {
+                mutateTasks()
+                setDisableClick(false);
+            }).catch((err) => {
+                console.log(err)
+            })
     }
 
     if (error1) {
@@ -143,7 +118,6 @@ function Tasks() {
                     <FormControlLabel
                         control={
                             <Checkbox
-                                checked={endWork}
                             // onChange={handleEndWork}
                             />
                         }
