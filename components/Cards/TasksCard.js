@@ -27,7 +27,6 @@ import Link from 'next/link';
 const arr = [0, 20, 40, 60, 80, 100];
 
 export default function TasksCard({ tasks, workType }) {
-  console.log(tasks)
   const completedTasks = tasks.tasks.filter(t => t.entryStatus).length;
   const errorTasks = tasks.tasks.filter(t => t.errorTask).length;
   const commonTasks = tasks.tasks.filter(t => t.entryStatus && t.errorTask).length;

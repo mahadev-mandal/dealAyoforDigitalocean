@@ -22,7 +22,8 @@ function Attendance() {
 
     const { data: attendance, error, mutate } = useSWR(`${baseURL}/api/attendance`, url => fetchData(url, params));
 
-    const handleDateClick = async (d) => {
+    const handleDateClick = async (d, df, dt) => {
+        console.log(d)
         if (d == 'thisWeek') {
             setBackdropOpen(true);
             const date = new Date();
@@ -49,6 +50,13 @@ function Attendance() {
             const thisMonth = new Date().getMonth(); //month starts from 0-11
             setDateFrom(new Date(thisYear, thisMonth, 1));
             setDateTo(new Date(thisYear, thisMonth + 1, 0));
+            await handleDateChange(params, mutate, ()=>{});
+            setActiveBtn('thisMonth');
+            setBackdropOpen(false);
+        }else if (d == 'customDate') {
+            setBackdropOpen(true);
+            setDateFrom(new Date(df).setHours(0,0,0,0));
+            setDateTo(new Date(dt).setHours(24));
             await handleDateChange(params, mutate, ()=>{});
             setActiveBtn('thisMonth');
             setBackdropOpen(false);

@@ -85,7 +85,7 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 const getWorkSheet = async (req, res) => {
     const { dateFrom, dateTo } = req.query;
-    console.log(dateFrom, dateTo)
+    console.log(req.query)
     try {
         let data;
         if (tokenPayload(req.cookies.token).role == 'super-admin') {

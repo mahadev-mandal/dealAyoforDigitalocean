@@ -46,7 +46,7 @@ function Tasks() {
         error1
     } = useSWR(`${baseURL}/api/employees`, fetchData)
 
-    const handleDateClick = async (d) => {
+    const handleDateClick = async (d, df, dt) => {
         if (d == 'thisWeek') {
             setBackdropOpen(true);
             const date = new Date();
@@ -75,6 +75,13 @@ function Tasks() {
             setDateTo(new Date(thisYear, thisMonth + 1, 0));
             await handleDateChange(params, mutate, mutateUpdateTasks);
             setActiveBtn('thisMonth');
+            setBackdropOpen(false);
+        } else if (d == 'customDate') {
+            setBackdropOpen(true);
+            setDateFrom(new Date(df).setHours(0, 0, 0, 0));
+            setDateTo(new Date(dt).setHours(24));
+            await handleDateChange(params, mutate, () => { });
+            setActiveBtn('customDate');
             setBackdropOpen(false);
         } else {
             setBackdropOpen(true);
@@ -141,6 +148,7 @@ function Tasks() {
                 <FilterByDate
                     activeBtn={activeBtn}
                     onClick={handleDateClick}
+                    customOpen={backdropOpen}
                 />
                 <Stack direction="row" alignItems="center">
                     <Typography variant='h6'>SortBy</Typography>

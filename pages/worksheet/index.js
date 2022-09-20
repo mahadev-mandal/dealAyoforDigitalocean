@@ -23,7 +23,7 @@ function WorkSheet() {
         mutate
     } = useSWR(`${baseURL}/api/worksheet`, url => fetchData(url, params));
 
-    const handleDateClick = async (d) => {
+    const handleDateClick = async (d, df, dt) => {
         if (d == 'thisWeek') {
             setBackdropOpen(true);
             const date = new Date();
@@ -52,6 +52,13 @@ function WorkSheet() {
             setDateTo(new Date(thisYear, thisMonth + 1, 0));
             await handleDateChange(params, mutate, () => { });
             setActiveBtn('thisMonth');
+            setBackdropOpen(false);
+        }else if (d == 'customDate') {
+            setBackdropOpen(true);
+            setDateFrom(new Date(df).setHours(0,0,0,0));
+            setDateTo(new Date(dt).setHours(24));
+            await handleDateChange(params, mutate, ()=>{});
+            setActiveBtn('customDate');
             setBackdropOpen(false);
         } else {
             setBackdropOpen(true);
