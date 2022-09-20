@@ -15,7 +15,6 @@ const workSheet = new mongoose.Schema({
             dealAyoId: {
                 type: String,
                 required: true,
-                unique:true,
             },
             name: {
                 type: String

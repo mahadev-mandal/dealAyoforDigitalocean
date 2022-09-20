@@ -46,7 +46,7 @@ export default function CommentModal({ mutate }) {
                 onClose={handleClose}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>{"Write Beatiful Comment"}</DialogTitle>
+                <DialogTitle>{"Write clear & understandable Comment"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
                         <TextareaAutosize

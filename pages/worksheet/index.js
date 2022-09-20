@@ -16,7 +16,7 @@ function WorkSheet() {
     const [backdropOpen, setBackdropOpen] = useState(false);
     const [activeBtn, setActiveBtn] = useState('today');
     const [dateTo, setDateTo] = useState(new Date().setHours(24))
-    const params = { dateFrom: new Date(dateFrom), dateTo: dateTo };
+    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo) };
 
     const {
         data,

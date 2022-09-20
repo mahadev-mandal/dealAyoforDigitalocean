@@ -24,6 +24,7 @@ const saveOrUpdateWorksheet = async (req, res) => {
                 "$lt": new Date().setHours(24)
             }
         })
+
         const updateWorksheet = async (req, res, found) => {
             if (found[0].employees.find(e => e.dealAyoId === tokenPayload(req.cookies.token).dealAyoId)) {
                 await worksheetModel.updateOne({
@@ -39,9 +40,10 @@ const saveOrUpdateWorksheet = async (req, res) => {
                     }
                 })
             } else {
-                await worksheetModel.updateOne({
+
+                await worksheetModel.findOneAndUpdate({
                     date: {
-                        "$gte": new Date().setHours(0, 0, 0, 0),
+                        "$gte": new Date(new Date().setHours(0, 0, 0, 0)),
                         "$lt": new Date().setHours(24)
                     }
                 }, {
@@ -82,18 +84,32 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 
 const getWorkSheet = async (req, res) => {
-    const params = {
-        date: {
-            $gt: new Date().setHours(0, 0, 0, 0),
-            $lte: new Date().setHours(24),
-        },
-        dealAyoId: tokenPayload(req.cookies.token).dealAyoId
-    }
+    const { dateFrom, dateTo } = req.query;
     try {
-        const data = await worksheetModel.find(
-            params,
-            
-        );
+        let data;
+        if (tokenPayload(req.cookies.token).role == 'super-admin') {
+            data = await worksheetModel.find({
+                date: {
+                    $gte: new Date(dateFrom),
+                    $lt: new Date(dateTo),
+                }
+            }).sort({ date: -1 })
+        } else {
+            data = await worksheetModel.find(
+                {
+                    date: {
+                        $gte: new Date(req.body.dateFrom),
+                        $lt: new Date(req.body.dateTo),
+                    },
+                    'employees.dealAyoId': tokenPayload(req.cookies.token).dealAyoId
+                },
+                {
+                    date: 1,
+                    'employees.$': 1
+                }
+
+            ).sort({ date: -1 });
+        }
         res.json({ data });
     } catch (err) {
         console.log(err)
