@@ -7,6 +7,7 @@ import { baseURL } from '../helpers/constants';
 import { useState } from 'react';
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router';
+import parseJwt from '../controllers/parseJwt';
 
 export default function Home() {
   const router = useRouter();
@@ -21,6 +22,9 @@ export default function Home() {
     await axios.post(`${baseURL}/api/login`, { dealAyoId: empId, password: password })
       .then((res) => {
         Cookies.set('token', res.data);
+        if (parseJwt(res.data).role == 'other') {
+          router.push(`${baseURL}/worksheet`)
+        }
         router.push(`${baseURL}/tasks`)
         setMsg('');
         setLogging(false)
