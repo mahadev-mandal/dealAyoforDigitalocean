@@ -2,6 +2,7 @@ import db_conn from '../../../helpers/db_conn';
 import worksheetModel from '../../../models/worksheetSchema';
 // import jwt from 'jsonwebtoken';
 import tokenPayload from '../../../controllers/tokenPayload';
+// import employeeModal from '../../../models/employeeSchema';
 
 db_conn();
 
@@ -84,17 +85,30 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 
 const getWorkSheet = async (req, res) => {
-    const { dateFrom, dateTo } = req.query;
-    console.log(req.query)
+    const { dateFrom, dateTo, dealAyoId } = req.query;
     try {
         let data;
         if (tokenPayload(req.cookies.token).role == 'super-admin') {
-            data = await worksheetModel.find({
+            let query = {
                 date: {
                     $gte: new Date(dateFrom),
                     $lt: new Date(dateTo),
-                }
-            }).sort({ date: -1 })
+                },
+                'employees.dealAyoId': dealAyoId,
+            }
+            let abc = {
+                date: 1,
+                'employees.$': 1
+            }
+            if (!dealAyoId) {
+                delete query['employees.dealAyoId'];
+                abc = {};
+            }
+            data = await worksheetModel.find(
+                query,
+                abc
+
+            ).sort({ date: -1 })
         } else {
             data = await worksheetModel.find(
                 {
@@ -110,6 +124,25 @@ const getWorkSheet = async (req, res) => {
                 }
 
             ).sort({ date: -1 });
+            let l = new Date(dateFrom);
+            let i = 0;
+            let a = [];
+            let dateArr = data.map((d) => {
+                return new Date(d.date).toDateString();
+            })
+            while (l < new Date(dateTo)) {
+                // console.log(l)
+                if (dateArr.includes(l.toDateString())) {
+                    a = [...a, data[i]];
+                    // console.log(data[i]);
+                } else {
+                    a = [...a, { date: l, employees: [] }]
+                    // console.log({ date: l, employees: [] })
+                }
+                l.setDate(l.getDate() + 1);
+                i++
+            }
+            // console.log(new Date(a[0].date).toDateString())
         }
         res.json({ data });
     } catch (err) {

@@ -17,7 +17,7 @@ export default function Tasks(req, res) {
 }
 
 const getAllAssignedTasks = async (req, res) => {
-    const { dateFrom, dateTo, assignToEmp } = req.query;
+    const { dateFrom, dateTo, dealAyoId } = req.query;
     let query = {};
     if (Object.keys(req.query).length > 0) {
         query = {
@@ -30,8 +30,8 @@ const getAllAssignedTasks = async (req, res) => {
 
     }
     if (tokenPayload(req.cookies.token).role === 'super-admin') {
-        if (!assignToEmp == '') {
-            query.assignToDealAyoId = assignToEmp
+        if (!dealAyoId == '') {
+            query.assignToDealAyoId = dealAyoId
         } else {
             delete query['assignToDealAyoId'];
         }

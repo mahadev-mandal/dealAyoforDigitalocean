@@ -7,7 +7,9 @@ import { ButtonBase } from '@mui/material';
 import styles from './TasksCard.module.css';
 import { green } from '@mui/material/colors';
 import EditTasksDialog from '../FullScreenModal/EditTasksDialog';
+import parseJwt from '../../controllers/parseJwt';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 // import moment from 'moment';
 
 // import { styled } from '@mui/material/styles';
@@ -65,7 +67,7 @@ export default function TasksCard({ tasks, workType }) {
             }}
             className={styles.card}
           >
-            <EditTasksDialog />
+            {parseJwt}
             <CardContent>
               <Typography variant="body2" component="div" color="#FF00FF" sx={{ textDecoration: 'underline' }}>
                 {workType}
@@ -76,7 +78,7 @@ export default function TasksCard({ tasks, workType }) {
               <Typography sx={{ fontSize: 13.5, fontWeight: 'bold' }} color="text.secondary" gutterBottom>
                 {new Date(tasks.date).toDateString()}
               </Typography>
-              { }
+              {parseJwt(Cookies.get('token')).role == 'super-admin' && <EditTasksDialog />}
               <Typography
                 variant="body2"
                 component="div"

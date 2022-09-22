@@ -1,31 +1,29 @@
-
-
-// import axios from "axios";
 import React, { useState } from "react";
 import useSWR from "swr";
 import { baseURL, containerMargin } from "../../helpers/constants";
 import { withAuth } from "../../HOC/withAuth";
 import TasksCard from "../../components/Cards/TasksCard";
-import { Box, CircularProgress, Stack, Typography, Backdrop, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography, Backdrop, } from "@mui/material";
 import fetchData from "../../controllers/fetchData";
 import FilterByDate from "../../components/FilterByDate";
-import handleDateChange from "../../controllers/handleDateChange";
 import AssignTasks from "../../components/FullScreenModal/AssignTasks";
-import axios from "axios";
 import Cookies from "js-cookie";
 import parseJwt from "../../controllers/parseJwt";
 import Head from "next/head";
 import LinearProgressBar from "../../components/ProgressBar/LinearProgress";
+import handleDateChangeClick from "../../controllers/handelDateChangeClick";
+import handleMutateData from "../../controllers/handleMutateData";
+import FilterByEmp from "../../components/FilterByEmp";
 
 function Tasks() {
     const [activeBtn, setActiveBtn] = useState('today');
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
     const [dateTo, setDateTo] = useState(new Date().setHours(24));
     const [backdropOpen, setBackdropOpen] = useState(false);
-    const [assignToEmp, setAssignToEmp] = useState('');
+    const [toEmp, setToEmp] = useState('');
 
-    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), assignToEmp };
-    // const pendingParams = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), assignToEmp }
+    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), dealAyoId:toEmp };
+    // const pendingParams = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), toEmp }
 
     const {
         data,
@@ -47,56 +45,23 @@ function Tasks() {
     } = useSWR(`${baseURL}/api/employees`, fetchData)
 
     const handleDateClick = async (d, df, dt) => {
-        if (d == 'thisWeek') {
-            setBackdropOpen(true);
-            const date = new Date();
-            const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
-            const commingSat = new Date(date.setDate(new Date(lastSun).getDate() + 6)).setHours(24)
-            setDateFrom(lastSun);
-            setDateTo(commingSat)
-            await handleDateChange(params, mutate, mutateUpdateTasks)
-            setActiveBtn('thisWeek')
-            setBackdropOpen(false)
-        } else if (d == 'prevWeek') {
-            setBackdropOpen(true);
-            const date = new Date();
-            const prevWeekSun = new Date(date.setDate(date.getDate() - date.getDay() - 7)).setHours(0, 0, 0, 0);
-            const prevWeekCommingSat = new Date(date.setDate(new Date(prevWeekSun).getDate() + 6)).setHours(24)
-            setDateFrom(prevWeekSun);
-            setDateTo(prevWeekCommingSat)
-            await handleDateChange(params, mutate, mutateUpdateTasks)
-            setActiveBtn('prevWeek')
-            setBackdropOpen(false)
-        } else if (d == 'thisMonth') {
-            setBackdropOpen(true);
-            const thisYear = new Date().getFullYear();
-            const thisMonth = new Date().getMonth(); //month starts from 0-11
-            setDateFrom(new Date(thisYear, thisMonth, 1));
-            setDateTo(new Date(thisYear, thisMonth + 1, 0));
-            await handleDateChange(params, mutate, mutateUpdateTasks);
-            setActiveBtn('thisMonth');
-            setBackdropOpen(false);
-        } else if (d == 'customDate') {
-            setBackdropOpen(true);
-            setDateFrom(new Date(df).setHours(0, 0, 0, 0));
-            setDateTo(new Date(dt).setHours(24));
-            await handleDateChange(params, mutate, () => { });
-            setActiveBtn('customDate');
-            setBackdropOpen(false);
-        } else {
-            setBackdropOpen(true);
-            setDateFrom(new Date().setHours(0, 0, 0, 0));
-            setDateTo(new Date().setHours(24));
-            await handleDateChange(params, mutate, mutateUpdateTasks);
-            setActiveBtn('today')
-            setBackdropOpen(false);
-        }
+        setBackdropOpen(true)
+        const { dateFrom, dateTo, activeBtn } = handleDateChangeClick(d, df, dt)
+        setDateFrom(dateFrom);
+        setDateTo(dateTo);
+        await handleMutateData(`${baseURL}/api/attendance`, params)
+        mutate();
+        mutateUpdateTasks()
+        setBackdropOpen(false);
+        setActiveBtn(activeBtn)
     }
-    const handleFilterChange = async (event) => {
-        setAssignToEmp(event.target.value)
+    const handleEmpChange = async (e) => {
         setBackdropOpen(true);
-        await axios.get(`${baseURL}/api/tasks`, params)
-            .then(() => { mutate(); mutateUpdateTasks(); setBackdropOpen(false) })
+        setToEmp(e.target.value);
+        await handleMutateData(`${baseURL}/api/attendance`, params,);
+        mutate();
+        mutateUpdateTasks();
+        setBackdropOpen(false);
     }
 
     function sortDescFunc(a, b) {
@@ -152,22 +117,11 @@ function Tasks() {
                 />
                 <Stack direction="row" alignItems="center">
                     <Typography variant='h6'>SortBy</Typography>
-                    <FormControl size="small" fullWidth>
-                        <InputLabel id="demo-simple-select-label">Assign To</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={assignToEmp}
-                            sx={{ width: 150, }}
-                            label="Assign To"
-                            onChange={handleFilterChange}
-                        >
-                            <MenuItem value=''>None</MenuItem>
-                            {employees.data.map((emp) => (
-                                <MenuItem value={emp.dealAyoId} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <FilterByEmp
+                        onChange={handleEmpChange}
+                        toEmp={toEmp}
+                        employees={employees.data}
+                    />
                 </Stack>
             </Stack>
             <Stack spacing={2}>

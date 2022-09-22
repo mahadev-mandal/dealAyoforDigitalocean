@@ -53,6 +53,7 @@
 
 import nextConnect from 'next-connect';
 import multer from 'multer';
+import uploadFileModel from '../../../models/uploadFileSchema';
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -72,9 +73,21 @@ const apiRoute = nextConnect({
 
 apiRoute.use(upload.array('theFiles'));
 
-apiRoute.post((req, res) => {
-    console.log(req.body.theFiles)
-    res.status(200).json({ data: 'success', body: req.body });
+apiRoute.post(async (req, res) => {
+    try {
+        let newFile = new uploadFileModel({
+            fileName: req.files[0].filename,
+            path: req.files[0].path,
+            workType: 'update',
+            supplier: req.body.supplier,
+            additionalDetails: req.body.additionalDetails,
+        });
+        await newFile.save();
+        res.send('file uploaded');
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Error occured while uplaoding file');
+    }
 });
 
 export default apiRoute;

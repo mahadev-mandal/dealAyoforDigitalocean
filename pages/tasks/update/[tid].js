@@ -25,7 +25,6 @@ function Tasks() {
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [endWork, setEndWork] = useState(false);
     const [comment, setComment] = useState('');
-    const [assigning, setAssigning] = useState(false);
     const [disableClick, setDisableClick] = useState(false);
     const params = { page, rowsPerPage };
     const { tid } = router.query;
@@ -65,69 +64,33 @@ function Tasks() {
         handleRowsPageChange(`${baseURL}/api/tasks/${tid}`, { page, rowsPerPage }, mutateTasks)
     }
 
-    const handleStartWork = async () => {
-        if (tasks.data.length < 1) {
-            setAssigning(true);
-            if (tasks.data.length < 1) {
-                await axios.put(`${baseURL}/api/mark-attendance/`, {
-                    date: new Date(),
-                    dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
-                    name: parsejwt(Cookies.get('token')).name,
-                    entryTime: new Date(),
-                }).then(async () => {
-                    await axios.post(`${baseURL}/api/tasks/${parsejwt(Cookies.get('token')).dealAyoId}`)
-                        .then(() => {
-                            setAssigning(false);
-                            mutateTasks();
-                        })
-                }).catch((err) => { throw new Error(err); })
-            }
-        }
-    }
-    const handleEndWork = async () => {
-        if (!endWork) {
-            await axios.put(`${baseURL}/api/mark-attendance`, {
-                date: new Date(),
-                dealAyoId: parsejwt(Cookies.get('token')).dealAyoId,
-                exitTime: new Date(),
-            }).then(() => {
-                setEndWork(true)
-            })
-        }
-    }
-
     const handleStatusChange = async (event, _id, updateField) => {
-        //only allow to tick check box if work in not ended
-        if (!endWork) {
-            setDisableClick(true);
-            let date = null;
-            if (event.target.checked) {
-                date = new Date();
-            } else {
-                date = ''
-            }
-            let update;
-
-            if (updateField === 'entryStatus') {
-                update = {
-                    updateStatus: event.target.checked,
-                    date: date,
-                }
-            } else {
-                update = {
-                    errorTask: event.target.checked,
-                }
-            }
-            await axios.put(`${baseURL}/api/product-update/${_id}`, { ...update, taskId: tid })
-                .then(() => {
-                    mutateTasks()
-                    setDisableClick(false);
-                }).catch((err) => {
-                    console.log(err)
-                })
+        setDisableClick(true);
+        let date = null;
+        if (event.target.checked) {
+            date = new Date();
         } else {
-            alert("After Work Ended You are not allow to edit. Please contact admin")
+            date = ''
         }
+        let update;
+
+        if (updateField === 'entryStatus') {
+            update = {
+                updateStatus: event.target.checked,
+                date: date,
+            }
+        } else {
+            update = {
+                errorTask: event.target.checked,
+            }
+        }
+        await axios.put(`${baseURL}/api/product-update/${_id}`, { ...update, taskId: tid })
+            .then(() => {
+                mutateTasks()
+                setDisableClick(false);
+            }).catch((err) => {
+                console.log(err)
+            })
     }
 
     if (error1) {
@@ -139,7 +102,7 @@ function Tasks() {
         return (
             <Box textAlign="center">
                 <Typography variant="h5">No Tasks Found</Typography>
-                <Button variant='outlined' sx={{ my: 1 }} disabled onClick={handleStartWork}>Get Random Task</Button>
+                <Button variant='outlined' sx={{ my: 1 }} disabled>Get Random Task</Button>
             </Box>
         )
     }
@@ -174,10 +137,7 @@ function Tasks() {
                     />
                     <FormControlLabel
                         control={
-                            <Checkbox
-                                checked={endWork}
-                                onChange={handleEndWork}
-                            />
+                            <Checkbox />
                         }
                         label="End Work"
                     />
@@ -190,26 +150,24 @@ function Tasks() {
                     />
                 </Stack>
             </Stack>
-            {(assigning) ?
-                <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
-                    <CircularProgress color="secondary" />
-                    Assigning Tasks...
-                </Stack> :
-                <TasksTable
-                    tableHeading={tableHeading}
-                    dataHeading={dataHeading}
-                    data={tasks.data}
-                    onStatusChange={handleStatusChange}
-                    page={page}
-                    totalCount={tasks.totalCount}
-                    rowsPerPage={rowsPerPage}
-                    handleChangePage={handleChangePage}
-                    handleChangeRowsPerPage={handleChangeRowsPerPage}
-                    disableClick={disableClick}
-                // sku={sku}
-                // handleSkuChange={handleSkuChange}
-                />
-            }
+            <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
+                <CircularProgress color="secondary" />
+                Assigning Tasks...
+            </Stack> :
+            <TasksTable
+                tableHeading={tableHeading}
+                dataHeading={dataHeading}
+                data={tasks.data}
+                onStatusChange={handleStatusChange}
+                page={page}
+                totalCount={tasks.totalCount}
+                rowsPerPage={rowsPerPage}
+                handleChangePage={handleChangePage}
+                handleChangeRowsPerPage={handleChangeRowsPerPage}
+                disableClick={disableClick}
+            // sku={sku}
+            // handleSkuChange={handleSkuChange}
+            />
             <TextareaAutosize
                 minRows={3}
                 placeholder="your comment"

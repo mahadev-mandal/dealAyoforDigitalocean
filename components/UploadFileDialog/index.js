@@ -14,6 +14,7 @@ export default function UploadFileDialog() {
     const [files, setFile] = React.useState({});
     const [progress, setProgress] = React.useState(0);
     const [errMsg, setErrMsg] = React.useState(null);
+    const [msg, setMsg] = React.useState('');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -23,11 +24,13 @@ export default function UploadFileDialog() {
     const handleClose = () => {
         setOpen(false);
         setFile({});
+        setMsg('')
     };
 
     const handleFileChange = (event) => {
         setErrMsg(null)
         setProgress(0);
+        setMsg('')
         const files = event.target.files;
         const a = Object.keys(files).map((key) => {
             if (files[key].name.length > 30) {
@@ -45,6 +48,8 @@ export default function UploadFileDialog() {
     }
 
     const handleUploadClick = async () => {
+        setErrMsg(null)
+        setMsg('')
         const formData = new FormData();
         formData.append('theFiles', files[0]);
         await axios.post(`${baseURL}/api/product-update/upload`, formData,
@@ -53,7 +58,13 @@ export default function UploadFileDialog() {
                 onUploadProgress: (event) => {
                     setProgress(Math.round((event.loaded * 100) / event.total))
                 },
-            }).then((r) => console.log(r)).catch((err) => console.log(err))
+            }).then((r) => {
+                setMsg(r.data);
+                setErrMsg(null)
+            }).catch((err) => {
+                setErrMsg(err.response.data)
+                console.log(err)
+            })
     }
 
     return (
@@ -69,7 +80,7 @@ export default function UploadFileDialog() {
             >
                 <DialogTitle id="alert-dialog-title">
                     {"Upload multiple or Singe files"}
-                    <Typography variant="body2" textAlign="center" color='red'>{errMsg}</Typography>
+                    <Typography variant="body2" textAlign="center" color='red'>{errMsg}{msg}</Typography>
                 </DialogTitle>
                 <DialogContent sx={{ minWidth: 460 }}>
                     <input type="file" id="" onChange={handleFileChange} name="theFiles" />

@@ -8,6 +8,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
+import EditCommentModal from '../CommentModal/EditCommentModal';
+import Cookies from 'js-cookie';
+import parseJwt from '../../controllers/parseJwt';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -53,24 +56,35 @@ export default function AttendanceTable({ tableHeading, data, dataHeading, }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((attendances, index1) => (
-                            attendances.employees.map((attendance) => (
-                                <StyledTableRow key={attendance.dealAyoId}>
+                        {data.map((row, index1) => (
+                            row.employees.map((item) => (
+                                <StyledTableRow key={item.dealAyoId}>
                                     <StyledTableCell component="th" scope="row">
                                         {index1}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
-                                        {new Date(attendances.date).toLocaleDateString()}
+                                        {new Date(row.date).toLocaleDateString()}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
-                                        {/* new Date(attendances.date).toLocaleDateString('en-us', { weekday: 'long' }) */}
-                                        {days[new Date(attendances.date).getDay()]}
+                                        {/* new Date(row.date).toLocaleDateString('en-us', { weekday: 'long' }) */}
+                                        {days[new Date(row.date).getDay()]}
                                     </StyledTableCell>
                                     {dataHeading.map((head) => (
                                         <StyledTableCell key={head}>
-                                            {attendance[head]}
+                                            {item[head]}
                                         </StyledTableCell>
                                     ))}
+                                    <StyledTableCell >
+                                        {parseJwt(Cookies.get('token')).role == 'super-admin' ?
+                                            <EditCommentModal
+                                                data={row}
+                                            /> :
+                                            <EditCommentModal
+                                                data={row}
+                                                disabled={!(new Date(row.date).toDateString() == new Date().toDateString())}
+                                            />
+                                        }
+                                    </StyledTableCell>
                                 </StyledTableRow>
                             ))
                         ))}

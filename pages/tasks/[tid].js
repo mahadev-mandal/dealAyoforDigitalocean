@@ -1,4 +1,4 @@
-import { Button, Checkbox, FormControlLabel, Stack, TextareaAutosize, Typography, } from '@mui/material';
+import { Backdrop, Button, Checkbox, CircularProgress, FormControlLabel, Stack, TextareaAutosize, Typography, } from '@mui/material';
 import axios from 'axios';
 import React, { useState } from 'react'
 import useSWR from 'swr';
@@ -6,12 +6,12 @@ import { baseURL } from '../../helpers/constants';
 import TasksTable from '../../components/Table/TasksTable';
 import CommentModal from '../../components/CommentModal/CommentModal';
 import { withAuth } from '../../HOC/withAuth';
-import handleRowsPageChange from '../../controllers/handleRowsPageChange';
 import fetchData from '../../controllers/fetchData';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import moment from 'moment';
+import handleMutateData from '../../controllers/handleMutateData';
 
 const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'assignTo', 'Entry', 'error', 'Time', 'additional', 'remarks',];
 const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP', 'assignToName', 'entryStatus', 'errorTask', 'entryDate',]
@@ -22,6 +22,7 @@ function Tasks() {
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [comment, setComment] = useState('');
     const [disableClick, setDisableClick] = useState(false);
+    const [backdropOpen, setBackdropOpen] = useState(false);
     const params = { page, rowsPerPage };
     const { tid } = router.query;
 
@@ -33,14 +34,20 @@ function Tasks() {
         url => fetchData(url, params)
     );
 
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = async (event, newPage) => {
+        setBackdropOpen(true);
         setPage(parseInt(newPage))
-        handleRowsPageChange(`${baseURL}/api/tasks/${tid}`, { page, rowsPerPage }, mutateTasks)
+        await handleMutateData(`${baseURL}/api/tasks/${tid}`, params);
+        mutateTasks();
+        setBackdropOpen(false)
     }
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = async (event) => {
+        setBackdropOpen(true);
         setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0)
-        handleRowsPageChange(`${baseURL}/api/tasks/${tid}`, { page, rowsPerPage }, mutateTasks)
+        setPage(0);
+        await handleMutateData(`${baseURL}/api/tasks/${tid}`, params);
+        mutateTasks();
+        setBackdropOpen(false);
     }
 
     const handleStatusChange = async (event, _id, updateField) => {
@@ -92,6 +99,16 @@ function Tasks() {
             <Head>
                 <title>Tasks By DealAyo</title>
             </Head>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={backdropOpen}
+            // onClick={handleClose}
+            >
+                <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
+                    <CircularProgress color="secondary" />
+                    <Typography variant='h6'>loding...</Typography>
+                </Stack>
+            </Backdrop>
             <Stack justifyContent="space-between" sx={{ mb: 0.5 }} direction="row">
                 <Stack spacing={2} direction="row">
                     <Button variant="outlined">Get Extra 5 Tasks</Button>

@@ -6,7 +6,8 @@ import FilterByDate from '../../components/FilterByDate';
 import AddAttendanceDialog from '../../components/FullScreenModal/AddAttendaceDialog';
 import AttendanceTable from '../../components/Table/AttendanceTable';
 import fetchData from '../../controllers/fetchData';
-import handleDateChange from '../../controllers/handleDateChange';
+import handleDateChangeClick from '../../controllers/handelDateChangeClick';
+import handleMutateData from '../../controllers/handleMutateData';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 
@@ -23,51 +24,14 @@ function Attendance() {
     const { data: attendance, error, mutate } = useSWR(`${baseURL}/api/attendance`, url => fetchData(url, params));
 
     const handleDateClick = async (d, df, dt) => {
-        console.log(d)
-        if (d == 'thisWeek') {
-            setBackdropOpen(true);
-            const date = new Date();
-            const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
-            const commingSat = new Date(date.setDate(new Date(lastSun).getDate() + 6)).setHours(24)
-            setDateFrom(lastSun);
-            setDateTo(commingSat)
-            await handleDateChange(params, mutate, ()=>{})
-            setActiveBtn('thisWeek')
-            setBackdropOpen(false)
-        } else if (d == 'prevWeek') {
-            setBackdropOpen(true);
-            const date = new Date();
-            const prevWeekSun = new Date(date.setDate(date.getDate() - date.getDay() - 7)).setHours(0, 0, 0, 0);
-            const prevWeekCommingSat = new Date(date.setDate(new Date(prevWeekSun).getDate() + 6)).setHours(24)
-            setDateFrom(prevWeekSun);
-            setDateTo(prevWeekCommingSat)
-            await handleDateChange(params, mutate, ()=>{})
-            setActiveBtn('prevWeek')
-            setBackdropOpen(false)
-        } else if (d == 'thisMonth') {
-            setBackdropOpen(true);
-            const thisYear = new Date().getFullYear();
-            const thisMonth = new Date().getMonth(); //month starts from 0-11
-            setDateFrom(new Date(thisYear, thisMonth, 1));
-            setDateTo(new Date(thisYear, thisMonth + 1, 0));
-            await handleDateChange(params, mutate, ()=>{});
-            setActiveBtn('thisMonth');
-            setBackdropOpen(false);
-        }else if (d == 'customDate') {
-            setBackdropOpen(true);
-            setDateFrom(new Date(df).setHours(0,0,0,0));
-            setDateTo(new Date(dt).setHours(24));
-            await handleDateChange(params, mutate, ()=>{});
-            setActiveBtn('thisMonth');
-            setBackdropOpen(false);
-        } else {
-            setBackdropOpen(true);
-            setDateFrom(new Date().setHours(0, 0, 0, 0));
-            setDateTo(new Date().setHours(24));
-            await handleDateChange(params, mutate, ()=>{});
-            setActiveBtn('today')
-            setBackdropOpen(false);
-        }
+        setBackdropOpen(true)
+        const { dateFrom, dateTo, activeBtn } = handleDateChangeClick(d, df, dt)
+        setDateFrom(dateFrom);
+        setDateTo(dateTo);
+        await handleMutateData(`${baseURL}/api/attendance`, params)
+        mutate()
+        setBackdropOpen(false);
+        setActiveBtn(activeBtn)
     }
 
 
