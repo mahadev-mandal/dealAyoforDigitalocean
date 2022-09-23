@@ -14,6 +14,7 @@ import LinearProgressBar from "../../components/ProgressBar/LinearProgress";
 import handleDateChangeClick from "../../controllers/handelDateChangeClick";
 import handleMutateData from "../../controllers/handleMutateData";
 import FilterByEmp from "../../components/FilterByEmp";
+import AssignFileTasks from "../../components/FullScreenModal/AssignFileTasks";
 
 function Tasks() {
     const [activeBtn, setActiveBtn] = useState('today');
@@ -22,7 +23,7 @@ function Tasks() {
     const [backdropOpen, setBackdropOpen] = useState(false);
     const [toEmp, setToEmp] = useState('');
 
-    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), dealAyoId:toEmp };
+    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), dealAyoId: toEmp };
     // const pendingParams = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), toEmp }
 
     const {
@@ -102,7 +103,11 @@ function Tasks() {
             </Backdrop>
             <Stack direction="row" justifyContent="space-between">
                 <Stack>
-                    {parseJwt(Cookies.get('token')).role == 'super-admin' && <AssignTasks />}
+                    {parseJwt(Cookies.get('token')).role == 'super-admin' &&
+                        <Stack direction="row" spacing={1}>
+                            <AssignTasks />
+                            <AssignFileTasks />
+                        </Stack>}
                 </Stack>
                 <Stack>
                     <LinearProgressBar data={data.data} />
@@ -116,7 +121,7 @@ function Tasks() {
                     customOpen={backdropOpen}
                 />
                 <Stack direction="row" alignItems="center">
-                    <Typography variant='h6'>SortBy</Typography>
+                    <Typography variant='body1'>SortBy: </Typography>
                     <FilterByEmp
                         onChange={handleEmpChange}
                         toEmp={toEmp}

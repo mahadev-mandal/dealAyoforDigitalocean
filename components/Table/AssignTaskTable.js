@@ -8,7 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import PropTypes from "prop-types";
-import { Backdrop, Box, Checkbox, CircularProgress, FormControl, InputLabel, MenuItem, Select, TablePagination, Typography } from "@mui/material";
+import { Backdrop, Box, Checkbox, CircularProgress, FormControl, InputLabel, MenuItem, Select, Switch, TablePagination, Typography } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { baseURL, containerMargin } from "../../helpers/constants";
@@ -142,7 +142,7 @@ function AssignTasksTable({
     // };
     const handleAssignClick = async () => {
         setOpen(true)
-        await axios.post(`${baseURL}/api/${collectionName=='products'?'tasks':'update-tasks'}/assign`, {
+        await axios.post(`${baseURL}/api/${collectionName == 'products' ? 'tasks' : 'update-tasks'}/assign`, {
             selected,
             assignDate,
             assignToDealAyoId: assignToEmp.dealAyoId,
@@ -164,7 +164,7 @@ function AssignTasksTable({
         setOpen(true);
         if (selected.length > 0) {
             await axios
-                .post(`${baseURL}/api/${collectionName=='products'?'tasks':'update-tasks'}`, { selected })
+                .post(`${baseURL}/api/${collectionName == 'products' ? 'tasks' : 'update-tasks'}`, { selected })
                 .then(() => {
                     setErrMsg('')
                     mutateData();
@@ -214,6 +214,9 @@ function AssignTasksTable({
         setPage(1);
         handleRowsPageChange(`${baseURL}/api/${collectionName}`, params, mutateData)
             .then(() => setOpen(false));
+    }
+    const handleCollChange = () => {
+        
     }
     const handleClickYes = async (type) => {
         if (type === "delete") {
@@ -293,6 +296,11 @@ function AssignTasksTable({
                             >
                                 <RemoveCircleOutlineIcon /> Assign {selected.length}
                             </Button>
+                        </Stack>
+                        <Stack spacing={1} direction="row" alignItems="center">
+                            <Typography component="span">Excel data</Typography>
+                            <Switch color="warning" onChange={handleCollChange} />
+                            <Typography component="span">Files</Typography>
                         </Stack>
                         <Stack direction="row" spacing={1} alignItems="center">
                             <Typography variant="h6" component="span">SortBy:</Typography>

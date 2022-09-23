@@ -83,7 +83,13 @@ export default function UploadFileDialog() {
                     <Typography variant="body2" textAlign="center" color='red'>{errMsg}{msg}</Typography>
                 </DialogTitle>
                 <DialogContent sx={{ minWidth: 460 }}>
-                    <input type="file" id="" onChange={handleFileChange} name="theFiles" />
+                    <input
+                        type="file"
+                        id=""
+                        onChange={handleFileChange}
+                        name="theFiles"
+                        accept="image/jpeg,image/gif,image/png,application/pdf"
+                    />
                     <Stack spacing={1} sx={{ mt: 2 }}>
                         {Object.keys(files).map((key) => (
                             <Box key={files[key].name} sx={{ border: '2px dashed gray', p: 1 }}>

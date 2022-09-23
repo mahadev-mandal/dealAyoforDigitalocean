@@ -88,6 +88,7 @@ const getWorkSheet = async (req, res) => {
     const { dateFrom, dateTo, dealAyoId } = req.query;
     try {
         let data;
+        let a = [];
         if (tokenPayload(req.cookies.token).role == 'super-admin') {
             let query = {
                 date: {
@@ -126,25 +127,25 @@ const getWorkSheet = async (req, res) => {
             ).sort({ date: -1 });
             let l = new Date(dateFrom);
             let i = 0;
-            let a = [];
+
             let dateArr = data.map((d) => {
                 return new Date(d.date).toDateString();
             })
-            while (l < new Date(dateTo)) {
-                // console.log(l)
+            while (l <= new Date(dateTo)) {
+
                 if (dateArr.includes(l.toDateString())) {
-                    a = [...a, data[i]];
-                    // console.log(data[i]);
+                    a.push(data[i]);
                 } else {
-                    a = [...a, { date: l, employees: [] }]
-                    // console.log({ date: l, employees: [] })
+                    a.push({ date: l, employees: [{ dealAyoId: tokenPayload(req.cookies.token).dealAyoId }] })
+
                 }
-                l.setDate(l.getDate() + 1);
-                i++
+                let nd = l.setDate(l.getDate() + 1);
+                l = new Date(nd)
+
             }
-            // console.log(new Date(a[0].date).toDateString())
+            // console.log(a)
         }
-        res.json({ data });
+        res.json({ data: data });
     } catch (err) {
         console.log(err)
         res.status(500).send('Error while fetching worksheet')

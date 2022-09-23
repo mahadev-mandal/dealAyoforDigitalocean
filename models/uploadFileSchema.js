@@ -26,7 +26,7 @@ const uploadFileSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    doneBydealAyoId: String,
+    doneByDealAyoId: String,
     doneByName: String,
     doneDate: Date,
     remarks: String,

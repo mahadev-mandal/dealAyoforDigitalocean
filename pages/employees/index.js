@@ -6,7 +6,7 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import Table from '../../components/Table/Table'
 import countTotalData from '../../controllers/countTotalData';
-import handleRowsPageChange from '../../controllers/handleRowsPageChange';
+import handleMutateData from '../../controllers/handleMutateData';
 import parseJwt from '../../controllers/parseJwt';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
@@ -29,14 +29,16 @@ function Employees() {
     url => countTotalData(url, 'employees')
   )
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = async (event, newPage) => {
     setPage(parseInt(newPage));
-    handleRowsPageChange(`${baseURL}/api/employees`, params, mutateEmployees)
+    await handleMutateData(`${baseURL}/api/employees`, params);
+    mutateEmployees();
   }
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = async (event) => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(parseInt(0))
-    handleRowsPageChange(`${baseURL}/api/employees`, params, mutateEmployees)
+    await handleMutateData(`${baseURL}/api/employees`, params);
+    mutateEmployees();
   }
 
   if (error1 || error2) {

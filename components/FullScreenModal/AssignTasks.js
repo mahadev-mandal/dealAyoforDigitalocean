@@ -6,13 +6,13 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
-import AddIcon from "@mui/icons-material/Add";
 import { FormControl, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { baseURL } from "../../helpers/constants";
 import fetchData from "../../controllers/fetchData";
 import AssignTasksTable from "../Table/AssignTaskTable";
+import DataObjectIcon from '@mui/icons-material/DataObject';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -77,8 +77,14 @@ export default function AssignTasks() {
 
   return (
     <div>
-      <Button variant="contained" color="success" onClick={handleClickOpen} sx={{ mb: 1 }}>
-        <AddIcon /> Add
+      <Button
+        variant="contained"
+        color="success"
+        onClick={handleClickOpen}
+        sx={{ mb: 1 }}
+        startIcon={<DataObjectIcon />}
+      >
+        Add Data
       </Button>
       <Dialog
         fullScreen
