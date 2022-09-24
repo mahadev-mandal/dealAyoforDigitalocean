@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import PropTypes from 'prop-types';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { Box, Link, Pagination, Stack } from '@mui/material';
+import { Box, Pagination, Stack } from '@mui/material';
 import Image from 'next/image';
 
 
@@ -70,9 +70,9 @@ export default function SeeFileDialog({ data, open, onClose, }) {
                     }
                 </DialogContent>
                 <DialogActions>
-                    <Link href={`/uploaded-tasks/${data.fileName}`} download sx={{ textDecoration: 'none' }}>
+                    {/* <Link href={`/uploaded-tasks/${data.fileName}`} sx={{ textDecoration: 'none' }}>
                         <Button variant="outlined">Download</Button>
-                    </Link>
+                    </Link> */}
                     <Button onClick={onClose}>Close</Button>
 
                 </DialogActions>
