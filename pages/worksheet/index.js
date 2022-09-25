@@ -56,6 +56,46 @@ function WorkSheet() {
     } else if (!data || !employees) {
         return <div>Please wait fetching workSheet details</div>
     }
+    // const returnData = () => {
+
+    //     let l = new Date(dateFrom);
+    //     let dateArr = [];
+    //     let dataArr = [];
+    //     while (l < new Date(dateTo)) {
+    //         dateArr.push(l.toDateString());
+    //         let nd = l.setDate(l.getDate() + 1);
+    //         l = new Date(nd)
+
+    //     }
+    //     dateArr.pop();
+
+    //     let tempDateArr = dateArr;
+    //     data.data.map((d, i) => {
+    //         let da = ['e11', 'e12', 'd14', 'd15', 'd16', 'd17', 'd20', 'd21', 'd22', 'd23', 'd24', 'v11', 'v12', 'g11', 'c12']
+    //         if (!toEmp == '') {
+    //             da = [toEmp]
+    //         }
+    //         tempDateArr.splice(tempDateArr.indexOf(new Date(new Date(d.date)).toDateString()), 1)
+    //         dataArr.push({ date: d.date, employees: [] })
+    //         d.employees.map((emp) => {
+    //             dataArr[i].employees.push(emp)
+    //             const ind = da.indexOf(emp.dealAyoId)
+    //             if (ind > -1) {
+    //                 da.splice(ind, 1)
+    //             }
+    //         })
+    //         da.forEach((id) => {
+    //             dataArr[i].employees.push({ dealAyoId: id })
+    //         })
+    //     })
+    //     tempDateArr.forEach((dt) => {
+    //         dataArr.push({ date: dt, employees: [{ dealAyoId: toEmp }] })
+    //     })
+    //     console.log(dataArr)
+    //     console.log(tempDateArr)
+    //     return dataArr;
+    // }
+
     return (
         <div>
             <Backdrop

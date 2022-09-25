@@ -8,11 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
-import { IconButton, TablePagination } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useState } from 'react';
-import SeeFileDialog from '../SeeFilesDialog';
-
+import { TablePagination } from '@mui/material';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -49,23 +45,14 @@ export default function SimpleTable({
     rowsPerPage,
     totalCount,
     handleChangePage,
-    handleChangeRowsPerPage
+    handleChangeRowsPerPage,
+    ExtraCells
 }) {
-    const [fileDialogOpen, setFileDialogOpen] = useState(false);
-    const [fileDetails, setFileDetails] = useState(null);
 
-    const handleVisibilityClick = (e, row) => {
-        setFileDialogOpen(true);
-        setFileDetails(row);
-    }
+    const returnComp = (Comp, d) => <Comp data={d} />
 
     return (
         <>
-            <SeeFileDialog
-                open={fileDialogOpen}
-                onClose={() => setFileDialogOpen(false)}
-                data={fileDetails}
-            />
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 700 }} aria-label="customized table" size="small">
                     <TableHead>
@@ -82,17 +69,18 @@ export default function SimpleTable({
                                 <StyledTableCell component="th" scope="row">
                                     {index}
                                 </StyledTableCell>
-                                {dataHeading.map((head) => (
-                                    <StyledTableCell key={head}>
-                                        {(row[head])}
-                                    </StyledTableCell>
+                                {dataHeading.map((head, i) =>
+                                    !(head == '') ?
+                                        <StyledTableCell key={tableHeading[i]}>
+                                            {(row[head])}
+                                        </StyledTableCell> :
+                                        <StyledTableCell key={tableHeading[i]}>
+                                            {returnComp(ExtraCells[tableHeading[i]], row)}
+                                        </StyledTableCell>
 
-                                ))}
-                                <StyledTableCell>
-                                    <IconButton size="small" onClick={e => handleVisibilityClick(e, row)}>
-                                        <VisibilityIcon />
-                                    </IconButton>
-                                </StyledTableCell>
+
+                                )}
+
                             </StyledTableRow>
                         ))}
                     </TableBody>
@@ -120,5 +108,6 @@ SimpleTable.propTypes = {
     totalCount: PropTypes.number,
     handleChangePage: PropTypes.func,
     handleChangeRowsPerPage: PropTypes.func,
+    ExtraCells: PropTypes.object,
 }
 

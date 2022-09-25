@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material'
+import { IconButton, Stack } from '@mui/material'
 import React, { useState } from 'react'
 import FullScreenDialog from '../../components/FullScreenDialog/FullScreenDialog'
 import UploadFileDialog from '../../components/UploadFileDialog'
@@ -7,9 +7,12 @@ import useSWR from 'swr';
 import { baseURL } from '../../helpers/constants';
 import fetchData from '../../controllers/fetchData';
 import mutateData from '../../controllers/handleMutateData';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import SeeFileDialog from '../../components/SeeFilesDialog';
+import PropTypes from 'prop-types';
 
-const tableHeading = ['filename', 'work type', 'supplier', 'assign date', 'assign to', 'view'];
-const dataHeading = ['fileName', 'workType', 'supplier', 'assignDate', 'assignToName'];
+const tableHeading = ['filename', 'work type', 'supplier', 'assign date', 'assign to', 'view',];
+const dataHeading = ['fileName', 'workType', 'supplier', 'assignDate', 'assignToName', '',];
 
 function UpdateProduct() {
     const [page, setPage] = useState(0);
@@ -56,6 +59,7 @@ function UpdateProduct() {
                 totalCount={data.totalCount}
                 handleChangePage={handleChangePage}
                 handleChangeRowsPerPage={handleChangeRowsPerPage}
+                ExtraCells={{ view: ViewFile }}
             />
 
         </div>
@@ -63,3 +67,27 @@ function UpdateProduct() {
 }
 
 export default UpdateProduct
+
+function ViewFile({ data }) {
+    const [fileDialogOpen, setFileDialogOpen] = useState(false);
+    const handleVisibilityClick = () => {
+        setFileDialogOpen(true);
+    }
+
+    return (
+        <>
+            {<SeeFileDialog
+                open={fileDialogOpen}
+                onClose={() => setFileDialogOpen(false)}
+                data={data}
+            />}
+            <IconButton size="small" onClick={handleVisibilityClick}>
+                <VisibilityIcon />
+            </IconButton>
+        </>
+    )
+}
+
+ViewFile.propTypes = {
+    data: PropTypes.object
+}

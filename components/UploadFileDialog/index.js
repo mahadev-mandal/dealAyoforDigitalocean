@@ -1,13 +1,21 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import { Box, LinearProgress, Stack, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import {
+    Box,
+    LinearProgress,
+    MenuItem,
+    Select,
+    Stack,
+    TextareaAutosize,
+    TextField,
+    Typography,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Dialog,
+    Button
+} from '@mui/material';
 import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
-// import { baseURL } from '../../helpers/constants';
 
 export default function UploadFileDialog() {
     const [open, setOpen] = React.useState(false);
@@ -15,6 +23,7 @@ export default function UploadFileDialog() {
     const [progress, setProgress] = React.useState(0);
     const [errMsg, setErrMsg] = React.useState(null);
     const [msg, setMsg] = React.useState('');
+    const [workType, setWorkType] = useState('update');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -52,19 +61,18 @@ export default function UploadFileDialog() {
         setMsg('')
         const formData = new FormData();
         formData.append('theFiles', files[0]);
-        await axios.post(`${baseURL}/api/product-update/upload`, formData,
-            {
-                headers: { 'content-type': 'multipart/form-data' },
-                onUploadProgress: (event) => {
-                    setProgress(Math.round((event.loaded * 100) / event.total))
-                },
-            }).then((r) => {
-                setMsg(r.data);
-                setErrMsg(null)
-            }).catch((err) => {
-                setErrMsg(err.response.data)
-                console.log(err)
-            })
+        await axios.post(`${baseURL}/api/product-update/upload`, formData, {
+            headers: { 'content-type': 'multipart/form-data' },
+            onUploadProgress: (event) => {
+                setProgress(Math.round((event.loaded * 100) / event.total))
+            },
+        }).then((r) => {
+            setMsg(r.data);
+            setErrMsg(null)
+        }).catch((err) => {
+            setErrMsg(err.response.data)
+            console.log(err)
+        })
     }
 
     return (
@@ -79,28 +87,50 @@ export default function UploadFileDialog() {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Upload multiple or Singe files"}
+                    {"Upload Singe file"}
                     <Typography variant="body2" textAlign="center" color='red'>{errMsg}{msg}</Typography>
                 </DialogTitle>
                 <DialogContent sx={{ minWidth: 460 }}>
-                    <input
-                        type="file"
-                        id=""
-                        onChange={handleFileChange}
-                        name="theFiles"
-                        accept="image/jpeg,image/gif,image/png,application/pdf"
-                    />
-                    <Stack spacing={1} sx={{ mt: 2 }}>
-                        {Object.keys(files).map((key) => (
-                            <Box key={files[key].name} sx={{ border: '2px dashed gray', p: 1 }}>
-                                <Typography variant="body1">{files[key].name}</Typography>
-                                <LinearProgress
-                                    sx={{ height: 10, }}
-                                    value={progress}
-                                    variant="determinate"
-                                />
-                            </Box>
-                        ))}
+                    <Stack spacing={1}>
+                        <Select
+                            size="small"
+                            value={workType}
+                            onChange={e => setWorkType(e.target.value)}
+                        >
+                            <MenuItem value="entry">Product Entry</MenuItem>
+                            <MenuItem value="update">Product Update</MenuItem>
+                        </Select>
+                        <TextField variant="outlined" label="Supplier" size="small" />
+                        <TextareaAutosize
+                            minRows={3}
+                            placeholder="Additional details"
+                        />
+                        <input
+                            accept="image/*"
+                            // className={classes.input}
+                            style={{ display: 'none' }}
+                            id="raised-button-file"
+                            multiple
+                            type="file"
+                        />
+                        <Stack spacing={1} sx={{ mt: 2, border: '2px dashed gray', p: 1 }}>
+                            <input
+                                type="file"
+                                id=""
+                                onChange={handleFileChange}
+                                name="theFiles"
+                                accept="image/jpeg,image/gif,image/png,application/pdf"
+                            />
+                            {Object.keys(files).map((key) => (
+                                <Box key={files[key].name}>
+                                    <LinearProgress
+                                        sx={{ height: 10, }}
+                                        value={progress}
+                                        variant="determinate"
+                                    />
+                                </Box>
+                            ))}
+                        </Stack>
                     </Stack>
                 </DialogContent>
                 <DialogActions>

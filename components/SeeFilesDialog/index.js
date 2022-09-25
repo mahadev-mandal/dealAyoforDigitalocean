@@ -10,11 +10,10 @@ import { Box, Pagination, Stack } from '@mui/material';
 import Image from 'next/image';
 
 
-export default function SeeFileDialog({ data, open, onClose, }) {
+function SeeFileDialog({ data, open, onClose, }) {
     pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-    const [numPages, setNumPages] = React.useState(null);
+    const [numPages, setNumPages] = React.useState(0);
     const [pageNumber, setPageNumber] = React.useState(1);
-
     function onDocumentLoadSuccess({ numPages }) {
         setNumPages(numPages);
         setPageNumber(1);
@@ -23,6 +22,7 @@ export default function SeeFileDialog({ data, open, onClose, }) {
     if (!data) {
         return ''
     }
+    console.log('kjdks')
     const fileType = data.fileName.substr(data.fileName.lastIndexOf('.'))
     return (
         <div>
@@ -39,7 +39,7 @@ export default function SeeFileDialog({ data, open, onClose, }) {
                 }}
             >
                 <DialogTitle id="alert-dialog-title">
-                    {data.fileName}
+                    {data.fileName} 
                 </DialogTitle>
                 <Stack alignItems="center" sx={{ mb: 1 }} >
                     <Pagination
@@ -86,3 +86,5 @@ SeeFileDialog.propTypes = {
     open: PropTypes.bool,
     onClose: PropTypes.func,
 }
+
+export default SeeFileDialog
