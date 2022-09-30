@@ -3,20 +3,22 @@ import useSWR from "swr";
 import { baseURL, containerMargin } from "../../helpers/constants";
 import { withAuth } from "../../HOC/withAuth";
 import TasksCard from "../../components/Cards/TasksCard";
-import { Box, CircularProgress, Stack, Typography, Backdrop, } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography, Backdrop, Button, } from "@mui/material";
 import fetchData from "../../controllers/fetchData";
-import FilterByDate from "../../components/FilterByDate";
-import AssignTasks from "../../components/FullScreenModal/AssignTasks";
+import FilterByDate from "../../components/Filter/FilterByDate";
 import Cookies from "js-cookie";
 import parseJwt from "../../controllers/parseJwt";
 import Head from "next/head";
 import LinearProgressBar from "../../components/ProgressBar/LinearProgress";
 import handleDateChangeClick from "../../controllers/handelDateChangeClick";
 import handleMutateData from "../../controllers/handleMutateData";
-import FilterByEmp from "../../components/FilterByEmp";
-import AssignFileTasks from "../../components/FullScreenModal/AssignFileTasks";
+import FilterByEmp from "../../components/Filter/FilterProducts/FilterByEmp";
+import { useRouter } from "next/router";
+import AddIcon from '@mui/icons-material/Add';
+import CountTasks from "../../components/Dialogs/CountTasks";
 
 function Tasks() {
+    const router = useRouter()
     const [activeBtn, setActiveBtn] = useState('today');
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
     const [dateTo, setDateTo] = useState(new Date().setHours(24));
@@ -24,17 +26,13 @@ function Tasks() {
     const [toEmp, setToEmp] = useState('');
 
     const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), dealAyoId: toEmp };
-    // const pendingParams = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), toEmp }
 
     const {
         data,
         error,
         mutate
     } = useSWR(`${baseURL}/api/tasks`, url => fetchData(url, params));
-    // const {
-    //     data: pending,
-    //     error1,
-    // } = useSWR(`${baseURL}/api/tasks`, url => fetchData(url, params));
+
     const {
         data: updateTasks,
         error: error2,
@@ -63,6 +61,12 @@ function Tasks() {
         mutate();
         mutateUpdateTasks();
         setBackdropOpen(false);
+    }
+    const handleAddExcelTasks = () => {
+        router.push('/tasks/add-excel-task');
+    }
+    const handleAddFileTasks = () => {
+        router.push('/tasks/add-excel-task');
     }
 
     function sortDescFunc(a, b) {
@@ -94,25 +98,30 @@ function Tasks() {
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={backdropOpen}
-            // onClick={handleClose}
             >
                 <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
                     <CircularProgress color="secondary" />
-                    <Typography variant='h6'>loding...</Typography>
+                    <Typography variant='h6'>loading...</Typography>
                 </Stack>
             </Backdrop>
-            <Stack direction="row" justifyContent="space-between">
+            <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
                 <Stack>
                     {parseJwt(Cookies.get('token')).role == 'super-admin' &&
                         <Stack direction="row" spacing={1}>
-                            <AssignTasks />
-                            <AssignFileTasks />
+                            <Button variant="contained" color="success" onClick={handleAddExcelTasks}>
+                                <AddIcon /> Excel Tasks
+                            </Button>
+                            <Button variant="contained" color="success" onClick={handleAddFileTasks}>
+                                <AddIcon /> file Tasks
+                            </Button>
                         </Stack>}
                 </Stack>
                 <Stack>
                     <LinearProgressBar data={data.data} />
                 </Stack>
-                <Stack></Stack>
+                <Stack>
+                    <CountTasks />
+                </Stack>
             </Stack>
             <Stack direction="row" justifyContent="space-between">
                 <FilterByDate
@@ -184,6 +193,7 @@ function Tasks() {
                     </Stack>
                 </Box>
             </Stack>
+
         </Box>
 
     );

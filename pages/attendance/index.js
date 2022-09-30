@@ -2,8 +2,8 @@ import { Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
 import Head from 'next/head';
 import React, { useState } from 'react'
 import useSWR from 'swr';
-import FilterByDate from '../../components/FilterByDate';
-import AddAttendanceDialog from '../../components/FullScreenModal/AddAttendaceDialog';
+import FilterByDate from '../../components/Filter/FilterByDate';
+import AddAttendanceDialog from '../../components/Dialogs/FullScreenDialogs/AddAttendace';
 import AttendanceTable from '../../components/Table/AttendanceTable';
 import fetchData from '../../controllers/fetchData';
 import handleDateChangeClick from '../../controllers/handelDateChangeClick';
@@ -19,9 +19,14 @@ function Attendance() {
     const [backdropOpen, setBackdropOpen] = useState(false);
     const [activeBtn, setActiveBtn] = useState('today');
     const [dateTo, setDateTo] = useState(new Date().setHours(24))
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(20);
     const params = { dateFrom: new Date(dateFrom), dateTo: dateTo };
 
-    const { data: attendance, error, mutate } = useSWR(`${baseURL}/api/attendance`, url => fetchData(url, params));
+    const {
+        data: attendances,
+        error, mutate
+    } = useSWR(`${baseURL}/api/attendance`, url => fetchData(url, params));
 
     const handleDateClick = async (d, df, dt) => {
         setBackdropOpen(true)
@@ -33,13 +38,25 @@ function Attendance() {
         setBackdropOpen(false);
         setActiveBtn(activeBtn)
     }
+    const handleChangePage = async (event, newPage) => {
+        setPage(parseInt(newPage));
+        await handleMutateData(`${baseURL}/api/attendance`, params);
+        mutate();
+    }
+    const handleChangeRowsPerPage = async (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10))
+        setPage(parseInt(0))
+        await handleMutateData(`${baseURL}/api/attendance`, params);
+        mutate();
+    }
 
 
     if (error) {
         return <div color='red'>Failed to load Attendance</div>
-    } else if (!attendance) {
+    } else if (!attendances) {
         return <div>Please wait loading...</div>
     }
+    console.log(attendances)
     // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
     return (
@@ -50,7 +67,6 @@ function Attendance() {
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={backdropOpen}
-            // onClick={handleClose}
             >
                 <Stack alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
                     <CircularProgress color="secondary" />
@@ -69,8 +85,13 @@ function Attendance() {
             </Stack>
             <AttendanceTable
                 tableHeading={tableHeading}
-                data={attendance.length < 1 ? [] : attendance}
+                data={attendances.data}
                 dataHeading={dataHeading}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalCount={attendances.totalCount}
+                handleChangePage={handleChangePage}
+                handleChangeRowsPerPage={handleChangeRowsPerPage}
             />
         </div>
     )

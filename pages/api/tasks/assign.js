@@ -1,6 +1,7 @@
 import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema';
 import tasksModel from '../../../models/tasksSchema';
+import employeeModel from '../../../models/employeeSchema';
 // import attendanceModel from '../../../models/attendanceSchema';
 
 db_conn();
@@ -22,11 +23,13 @@ const AssignTasks = async (req, res) => {
         })
         const tasksId = await tasksModel.estimatedDocumentCount() + 1;
 
+        const employee = await employeeModel.findOne({ dealAyoId: req.body.assignToEmp })
+
         const newTask = new tasksModel({
             taskId: tasksId,
             date: req.body.assignDate,
-            assignToDealAyoId: req.body.assignToDealAyoId,
-            assignToName: req.body.assignToName,
+            assignToDealAyoId: employee.dealAyoId,
+            assignToName: employee.firstName,
             tasks: tasks, //productId, entryStatus, errorTask, disabled
         });
         await newTask.save();
@@ -35,8 +38,8 @@ const AssignTasks = async (req, res) => {
         const assignedTasks = await productModel.updateMany({ _id: req.body.selected }, {
             $set: {
                 assignDate: req.body.assignDate,
-                assignToDealAyoId: req.body.assignToDealAyoId,
-                assignToName: req.body.assignToName,
+                assignToDealAyoId: employee.dealAyoId,
+                assignToName: employee.firstName,
             },
         }, { new: true })
 

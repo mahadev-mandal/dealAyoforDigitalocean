@@ -1,10 +1,12 @@
 import { Backdrop, CircularProgress, Stack, Typography } from '@mui/material'
 import Cookies from 'js-cookie'
+import Head from 'next/head'
 import React, { useState } from 'react'
 import useSWR from 'swr'
-import CommentModal from '../../components/CommentModal/CommentModal'
-import FilterByDate from '../../components/FilterByDate'
-import FilterByEmp from '../../components/FilterByEmp'
+import CommentModal from '../../components/Dialogs/Comment';
+import FilterByDate from '../../components/Filter/FilterByDate';
+import EditComment from '../../components/ExtraCells/Dialogs/EditComment'
+import FilterByEmp from '../../components/Filter/FilterProducts/FilterByEmp'
 import AttendanceTable from '../../components/Table/AttendanceTable'
 import fetchData from '../../controllers/fetchData'
 import handleDateChangeClick from '../../controllers/handelDateChangeClick'
@@ -12,8 +14,8 @@ import handleMutateData from '../../controllers/handleMutateData'
 import parseJwt from '../../controllers/parseJwt'
 import { baseURL } from '../../helpers/constants'
 
-const tableHeading = ['date', 'day', '', 'name', 'Id', 'comment', 'Edit'];
-const dataHeading = ['date', 'name', 'dealAyoId', 'comment'];
+const tableHeading = ['date', 'day', 'name', 'Id', 'comment', 'edit'];
+const dataHeading = ['name', 'dealAyoId', 'comment', ''];
 
 function WorkSheet() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
@@ -21,7 +23,9 @@ function WorkSheet() {
     const [activeBtn, setActiveBtn] = useState('today');
     const [dateTo, setDateTo] = useState(new Date().setHours(24));
     const [toEmp, setToEmp] = useState('');
-    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), dealAyoId: toEmp };
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(20);
+    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), dealAyoId: toEmp, page, rowsPerPage };
     const {
         data,
         error,
@@ -39,7 +43,21 @@ function WorkSheet() {
         setBackdropOpen(false)
         mutate()
     }
-
+    const handleChangePage = async (event, newPage) => {
+        setBackdropOpen(true);
+        setPage(parseInt(newPage));
+        await handleMutateData(`${baseURL}/api/worksheet`, params);
+        mutate();
+        setBackdropOpen(false);
+    }
+    const handleChangeRowsPerPage = async (event) => {
+        setBackdropOpen(true);
+        setRowsPerPage(parseInt(event.target.value, 10))
+        setPage(parseInt(0))
+        await handleMutateData(`${baseURL}/api/worksheet`, params);
+        mutate();
+        setBackdropOpen(false);
+    }
     const handleDateClick = async (d, df, dt) => {
         setBackdropOpen(true)
         const { dateFrom, dateTo, activeBtn } = handleDateChangeClick(d, df, dt)
@@ -56,48 +74,15 @@ function WorkSheet() {
     } else if (!data || !employees) {
         return <div>Please wait fetching workSheet details</div>
     }
-    // const returnData = () => {
 
-    //     let l = new Date(dateFrom);
-    //     let dateArr = [];
-    //     let dataArr = [];
-    //     while (l < new Date(dateTo)) {
-    //         dateArr.push(l.toDateString());
-    //         let nd = l.setDate(l.getDate() + 1);
-    //         l = new Date(nd)
-
-    //     }
-    //     dateArr.pop();
-
-    //     let tempDateArr = dateArr;
-    //     data.data.map((d, i) => {
-    //         let da = ['e11', 'e12', 'd14', 'd15', 'd16', 'd17', 'd20', 'd21', 'd22', 'd23', 'd24', 'v11', 'v12', 'g11', 'c12']
-    //         if (!toEmp == '') {
-    //             da = [toEmp]
-    //         }
-    //         tempDateArr.splice(tempDateArr.indexOf(new Date(new Date(d.date)).toDateString()), 1)
-    //         dataArr.push({ date: d.date, employees: [] })
-    //         d.employees.map((emp) => {
-    //             dataArr[i].employees.push(emp)
-    //             const ind = da.indexOf(emp.dealAyoId)
-    //             if (ind > -1) {
-    //                 da.splice(ind, 1)
-    //             }
-    //         })
-    //         da.forEach((id) => {
-    //             dataArr[i].employees.push({ dealAyoId: id })
-    //         })
-    //     })
-    //     tempDateArr.forEach((dt) => {
-    //         dataArr.push({ date: dt, employees: [{ dealAyoId: toEmp }] })
-    //     })
-    //     console.log(dataArr)
-    //     console.log(tempDateArr)
-    //     return dataArr;
-    // }
-
+    function sortAscFunc(a, b) {
+        return new Date(b.date) - new Date(a.date);
+    }
     return (
         <div>
+            <Head>
+                <title>Tasks By DealAyo</title>
+            </Head>
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={backdropOpen}
@@ -128,7 +113,13 @@ function WorkSheet() {
             <AttendanceTable
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}
-                data={data.data}
+                data={data.data.sort(sortAscFunc)}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalCount={data.data.length}
+                handleChangePage={handleChangePage}
+                handleChangeRowsPerPage={handleChangeRowsPerPage}
+                ExtraCells={{ edit: EditComment }}
             />
         </div>
     )

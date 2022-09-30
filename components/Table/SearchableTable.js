@@ -40,7 +40,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 
-export default function SimpleTable({
+function SearchableTable({
     tableHeading,
     data,
     dataHeading,
@@ -53,9 +53,11 @@ export default function SimpleTable({
     type,
     selected,
     onSelectChange,
-    onAllSelectChange
-
+    onAllSelectChange,
+    onKeyPress,
+    inputRef
 }) {
+   
     const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
     const allSelectChecker = () => {
         if (selected.length > 0) {
@@ -72,6 +74,7 @@ export default function SimpleTable({
             }
         );
     }
+
     return (
         <>
             <TableContainer component={Paper}>
@@ -94,6 +97,24 @@ export default function SimpleTable({
                         </TableRow>
                     </TableHead>
                     <TableBody>
+                        <StyledTableRow>
+                            <StyledTableCell></StyledTableCell>
+                            <StyledTableCell></StyledTableCell>
+                            {tableHeading.map((d) => (
+                                <StyledTableCell key={d}>
+
+
+                                    <input
+                                        onKeyPress={onKeyPress}
+                                        type="text"
+                                        id={d}
+                                        ref={ref => inputRef.current[d] = ref}
+                                        style={{ width: '100%' }}
+                                    />
+
+                                </StyledTableCell>
+                            ))}
+                        </StyledTableRow>
                         {data.map((row, index) => (
                             <StyledTableRow key={row._id} style={returnStyle(row)}>
                                 <StyledTableCell component="th" scope="row">
@@ -146,7 +167,7 @@ export default function SimpleTable({
     );
 }
 
-SimpleTable.propTypes = {
+SearchableTable.propTypes = {
     tableHeading: PropTypes.array.isRequired,
     data: PropTypes.array.isRequired,
     dataHeading: PropTypes.array.isRequired,
@@ -159,6 +180,9 @@ SimpleTable.propTypes = {
     type: PropTypes.string,
     selected: PropTypes.array,
     onSelectChange: PropTypes.func,
-    onAllSelectChange: PropTypes.func
+    onAllSelectChange: PropTypes.func,
+    onKeyPress: PropTypes.func,
+    inputRef:PropTypes.object,
 }
 
+export default SearchableTable;

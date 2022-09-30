@@ -1,15 +1,19 @@
 import * as React from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import PropTypes from 'prop-types';
-import { ButtonBase } from '@mui/material';
-import styles from './TasksCard.module.css';
-import { green } from '@mui/material/colors';
-import EditTasksDialog from '../FullScreenModal/EditTasksDialog';
-import parseJwt from '../../controllers/parseJwt';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
+import PropTypes from 'prop-types';
+import Card from '@mui/material/Card';
+import styles from '../../styles/TasksCard.module.css';
+import parseJwt from '../../controllers/parseJwt';
+import { green } from '@mui/material/colors';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  ButtonBase,
+  CardContent,
+  IconButton,
+  Typography,
+} from '@mui/material';
+import { useRouter } from 'next/router';
 // import moment from 'moment';
 
 // import { styled } from '@mui/material/styles';
@@ -29,6 +33,7 @@ import Cookies from 'js-cookie';
 const arr = [0, 20, 40, 60, 80, 100];
 
 export default function TasksCard({ tasks, workType }) {
+  const router = useRouter();
   const completedTasks = tasks.tasks.filter(t => t.entryStatus).length;
   const errorTasks = tasks.tasks.filter(t => t.errorTask).length;
   const commonTasks = tasks.tasks.filter(t => t.entryStatus && t.errorTask).length;
@@ -78,7 +83,20 @@ export default function TasksCard({ tasks, workType }) {
               <Typography sx={{ fontSize: 13.5, fontWeight: 'bold' }} color="text.secondary" gutterBottom>
                 {new Date(tasks.date).toDateString()}
               </Typography>
-              {parseJwt(Cookies.get('token')).role == 'super-admin' && <EditTasksDialog />}
+              {parseJwt(Cookies.get('token')).role == 'super-admin' &&
+                <IconButton
+                  size="small"
+                  sx={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 0
+
+                  }}
+                  onClick={() => router.push(`/tasks/edit/${tasks.taskId}`)}
+                >
+                  <EditIcon />
+                </IconButton>
+              }
               <Typography
                 variant="body2"
                 component="div"

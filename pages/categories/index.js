@@ -1,15 +1,18 @@
+import { Button, Stack } from '@mui/material';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import Head from 'next/head';
 import React from 'react'
 import { useState } from 'react';
 import useSWR from 'swr';
-import Table from '../../components/Table/Table'
-import countTotalData from '../../controllers/countTotalData';
-import handleRowsPageChange from '../../controllers/handleRowsPageChange';
-import parseJwt from '../../controllers/parseJwt';
+import AddCategory from '../../components/Dialogs/CategoryDialogs/AddCategory';
+import EditCategory from '../../components/Dialogs/CategoryDialogs/EditCategory';
+import AreYouSureModal from '../../components/Dialogs/AreYouSure';
+import SimpleTable from '../../components/Table/SimpleTable';
+import fetchData from '../../controllers/fetchData';
+import handleMutateData from '../../controllers/handleMutateData';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
+import BlockIcon from "@mui/icons-material/Block";
 
 const tableHeading = ['Category Name', 'Time'];
 const dataHeading = ['category', 'time',]
@@ -18,60 +21,103 @@ const dataHeading = ['category', 'time',]
 function Categories() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
+    const [selected, setSelected] = useState([]);
     const params = { page, rowsPerPage }
 
-    const fetchData = async (url) => {
-        return await axios.get(url, { params })
-            .then((res) => res.data).catch((err) => { throw new Error(err) })
-    }
-    const { data: categories, error: error1, mutate: mutateCategories } = useSWR(`${baseURL}/api/categories`, fetchData)
-    const { data: totalCount, error: error2, mutate: mutateTotalCount } = useSWR(`${baseURL}/api/count-data`,
-        url => countTotalData(url, 'categories')
-    )
+    const {
+        data: categories,
+        error: error,
+        mutate
+    } = useSWR(`${baseURL}/api/categories`, url => fetchData(url, params))
 
-    const handleChangePage = (event, newPage) => {
-        setPage(parseInt(newPage));
-        handleRowsPageChange(`${baseURL}/api/categories`, params, mutateCategories)
+
+    const handleSelectChange = (event, row) => {
+        if (event.target.checked) {
+            setSelected([...selected, row]);
+        } else {
+            setSelected(selected.filter((p) => p._id !== row._id));
+        }
     }
-    const handleChangeRowsPerPage = (event) => {
+    const handleAllSelectChange = (event) => {
+        if (event.target.checked) {
+            setSelected([...new Set(selected.concat(categories.data.map((p) => p)))]);
+        } else {
+            setSelected(
+                selected.filter((s) => !categories.data.map((p) => p._id).includes(s._id))
+            );
+        }
+    }
+
+    const handleChangePage = async (event, newPage) => {
+        setPage(parseInt(newPage));
+        await handleMutateData(`${baseURL}/api/categories`, params);
+        mutate();
+    }
+    const handleChangeRowsPerPage = async (event) => {
         setRowsPerPage(parseInt(event.target.value, 10))
         setPage(parseInt(0))
-        handleRowsPageChange(`${baseURL}/api/categories`, params, mutateCategories)
+        await handleMutateData(`${baseURL}/api/categories`, params);
+        mutate();
     }
-
-    if (error1 || error2) {
-        return <div>Failed to load categories details</div>
-    } else if (!categories || !totalCount) {
-        if (totalCount < 1) {
-            return <div>categories not found</div>
+    const handleClickYes = async (type) => {
+        if (type === "delete") {
+            axios
+                .delete(`${baseURL}/api/categories`, {
+                    data: { _ids: selected },
+                })
+                .then(() => {
+                    mutate();
+                });
         }
+    };
+
+    if (error) {
+        return <div>Failed to load categories details</div>
+    } else if (!categories) {
         return <div>Please wait Loading...</div>
     }
-
-    if (parseJwt(Cookies.get('token')).role === 'admin' || parseJwt(Cookies.get('token')).role === 'super-admin') {
-        return (
-            <div>
-                <Head>
-                    <title>Tasks By DealAyo</title>
-                </Head>
-                <Table
-                    tableHeading={tableHeading}
-                    dataHeading={dataHeading}
-                    data={categories}
-                    page={page}
-                    rowsPerPage={rowsPerPage}
-                    totalCount={totalCount}
-                    handleChangePage={handleChangePage}
-                    handleChangeRowsPerPage={handleChangeRowsPerPage}
-                    collectionName="categories"
-                    mutateCounts={mutateTotalCount}
-                    mutateData={mutateCategories}
+    return (
+        <div>
+            <Head>
+                <title>Tasks By DealAyo</title>
+            </Head>
+            <Stack direction="row" spacing={1} sx={{ mb: 0.5 }}>
+                <Button
+                    size="small"
+                    variant="contained"
+                    color="warning"
+                    disabled={selected.length >= 1 ? false : true}
+                >
+                    <BlockIcon />
+                    Disable {selected.length}
+                </Button>
+                <AreYouSureModal
+                    title={`Are you sure want to delete ${selected.length} categories`}
+                    selected={selected}
+                    handleClickYes={() => handleClickYes("delete")}
                 />
-            </div>
-        )
-    } else {
-        return <div>Your are not Admin</div>
-    }
+                <EditCategory
+                    categoryDetails={selected.length === 1 ? selected[0] : {}}
+                    disabled={selected.length != 1}
+                />
+                <AddCategory />
+            </Stack>
+            <SimpleTable
+                tableHeading={tableHeading}
+                dataHeading={dataHeading}
+                data={categories.data}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalCount={categories.totalCount}
+                handleChangePage={handleChangePage}
+                handleChangeRowsPerPage={handleChangeRowsPerPage}
+                type='selectable'
+                onSelectChange={handleSelectChange}
+                onAllSelectChange={handleAllSelectChange}
+                selected={selected}
+            />
+        </div>
+    )
 }
 
 export default withAuth(Categories)

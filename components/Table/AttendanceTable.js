@@ -8,10 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
-import EditCommentModal from '../CommentModal/EditCommentModal';
-import Cookies from 'js-cookie';
-import parseJwt from '../../controllers/parseJwt';
-
+import { TablePagination } from '@mui/material';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -41,8 +38,18 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export default function AttendanceTable({ tableHeading, data, dataHeading, }) {
-
+function AttendanceTable({
+    tableHeading,
+    data,
+    dataHeading,
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    totalCount,
+    ExtraCells
+}) {
+    const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
     return (
         <>
             <TableContainer component={Paper}>
@@ -58,7 +65,12 @@ export default function AttendanceTable({ tableHeading, data, dataHeading, }) {
                     <TableBody>
                         {data.map((row, index1) => (
                             row.employees.map((item) => (
-                                <StyledTableRow key={item.dealAyoId}>
+                                <StyledTableRow key={item.dealAyoId}
+                                    style={{
+                                        background: new Date(row.date).getDay() == 6 && 'green',
+                                        pointerEvents: new Date(row.date).getDay() == 6 && 'none'
+                                    }}
+                                >
                                     <StyledTableCell component="th" scope="row">
                                         {index1}
                                     </StyledTableCell>
@@ -69,28 +81,34 @@ export default function AttendanceTable({ tableHeading, data, dataHeading, }) {
                                         {/* new Date(row.date).toLocaleDateString('en-us', { weekday: 'long' }) */}
                                         {days[new Date(row.date).getDay()]}
                                     </StyledTableCell>
-                                    {dataHeading.map((head) => (
-                                        <StyledTableCell key={head}>
-                                            {item[head]}
-                                        </StyledTableCell>
+                                    {dataHeading.map((head, i) => (
+                                        !(head == '') ?
+                                            <StyledTableCell
+                                                key={tableHeading[i]}
+                                            >
+                                                {item[head]}
+                                            </StyledTableCell> :
+                                            <StyledTableCell key={tableHeading[i + 2]}>
+                                                {returnComp(ExtraCells[tableHeading[i + 2]],
+                                                    { ...item, date: row.date }, tableHeading[i]
+                                                )}
+                                            </StyledTableCell>
                                     ))}
-                                    <StyledTableCell >
-                                        {parseJwt(Cookies.get('token')).role == 'super-admin' ?
-                                            <EditCommentModal
-                                                data={row}
-                                            /> :
-                                            <EditCommentModal
-                                                data={row}
-                                                disabled={!(new Date(row.date).toDateString() == new Date().toDateString())}
-                                            />
-                                        }
-                                    </StyledTableCell>
                                 </StyledTableRow>
                             ))
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[20, 30, 50]}
+                component="div"
+                count={totalCount}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
         </>
     );
 }
@@ -99,7 +117,12 @@ AttendanceTable.propTypes = {
     tableHeading: PropTypes.array,
     data: PropTypes.array,
     dataHeading: PropTypes.array,
-    onEntryChange: PropTypes.array,
-    onExitChange: PropTypes.array,
+    page: PropTypes.number,
+    rowsPerPage: PropTypes.number,
+    totalCount: PropTypes.number,
+    handleChangePage: PropTypes.func,
+    handleChangeRowsPerPage: PropTypes.func,
+    ExtraCells: PropTypes.object,
 }
 
+export default AttendanceTable;

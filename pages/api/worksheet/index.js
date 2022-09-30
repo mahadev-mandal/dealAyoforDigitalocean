@@ -2,7 +2,7 @@ import db_conn from '../../../helpers/db_conn';
 import worksheetModel from '../../../models/worksheetSchema';
 // import jwt from 'jsonwebtoken';
 import tokenPayload from '../../../controllers/tokenPayload';
-// import employeeModal from '../../../models/employeeSchema';
+import employeeModal from '../../../models/employeeSchema';
 
 db_conn();
 
@@ -18,40 +18,47 @@ export default function verifyToken(req, res) {
 }
 
 const saveOrUpdateWorksheet = async (req, res) => {
+    let dealAyoId = req.body.dealAyoId;
+    let name = req.body.name;
+    if (!req.body.dealAyoId) {
+        dealAyoId = tokenPayload(req.cookies.token).dealAyoId;
+        name = tokenPayload(req.cookies.token).name;
+    }
+    console.log(req.body.date)
     try {
         const foundWorksheet = await worksheetModel.find({
             date: {
-                "$gte": new Date().setHours(0, 0, 0, 0),
-                "$lt": new Date().setHours(24)
-            }
+                "$gte": new Date(req.body.date).setHours(0, 0, 0, 0),
+                "$lt": new Date(req.body.date).setHours(24)
+            },
         })
 
         const updateWorksheet = async (req, res, found) => {
-            if (found[0].employees.find(e => e.dealAyoId === tokenPayload(req.cookies.token).dealAyoId)) {
+            if (found[0].employees.find(e => e.dealAyoId === dealAyoId)) {
                 await worksheetModel.updateOne({
                     date: {
-                        "$gte": new Date().setHours(0, 0, 0, 0),
-                        "$lt": new Date().setHours(24)
+                        "$gte": new Date(req.body.date).setHours(0, 0, 0, 0),
+                        "$lt": new Date(req.body.date).setHours(24)
                     },
-                    "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId
+                    "employees.dealAyoId": dealAyoId
                 }, {
                     $set: {
-                        "employees.$.name": tokenPayload(req.cookies.token).name,
                         "employees.$.comment": req.body.comment,
                     }
                 })
             } else {
 
+                console.log(name, dealAyoId)
                 await worksheetModel.findOneAndUpdate({
                     date: {
-                        "$gte": new Date(new Date().setHours(0, 0, 0, 0)),
-                        "$lt": new Date().setHours(24)
+                        "$gte": new Date(req.body.date).setHours(0, 0, 0, 0),
+                        "$lt": new Date(req.body.date).setHours(24)
                     }
                 }, {
                     $push: {
                         employees: {
-                            dealAyoId: tokenPayload(req.cookies.token).dealAyoId,
-                            name: tokenPayload(req.cookies.token).name,
+                            dealAyoId: dealAyoId,
+                            name: name,
                             comment: req.body.comment,
                         }
                     }
@@ -60,11 +67,11 @@ const saveOrUpdateWorksheet = async (req, res) => {
         }
         const saveWorksheet = async (req) => {
             const worksheet = new worksheetModel({
-                date: new Date().setHours(0, 0, 0, 0),
+                date: new Date(req.body.date).setHours(0, 0, 0, 0),
                 employees: [
                     {
-                        dealAyoId: tokenPayload(req.cookies.token).dealAyoId,
-                        name: tokenPayload(req.cookies.token).name,
+                        dealAyoId: dealAyoId,
+                        name: name,
                         comment: req.body.comment,
                     }
                 ]
@@ -86,10 +93,16 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 const getWorkSheet = async (req, res) => {
     const { dateFrom, dateTo, dealAyoId } = req.query;
+
     try {
         let data;
-        let a = [];
+        let employees;
         if (tokenPayload(req.cookies.token).role == 'super-admin') {
+            if (dealAyoId == '') {
+                employees = await employeeModal.find({ role: { $ne: 'super-admin' } });
+            } else {
+                employees = await employeeModal.find({ dealAyoId });
+            }
             let query = {
                 date: {
                     $gte: new Date(dateFrom),
@@ -111,6 +124,7 @@ const getWorkSheet = async (req, res) => {
 
             ).sort({ date: -1 })
         } else {
+            employees = await employeeModal.find({ dealAyoId: tokenPayload(req.cookies.token).dealAyoId });
             data = await worksheetModel.find(
                 {
                     date: {
@@ -125,27 +139,48 @@ const getWorkSheet = async (req, res) => {
                 }
 
             ).sort({ date: -1 });
-            let l = new Date(dateFrom);
-            let i = 0;
 
-            let dateArr = data.map((d) => {
-                return new Date(d.date).toDateString();
-            })
-            while (l <= new Date(dateTo)) {
-
-                if (dateArr.includes(l.toDateString())) {
-                    a.push(data[i]);
-                } else {
-                    a.push({ date: l, employees: [{ dealAyoId: tokenPayload(req.cookies.token).dealAyoId }] })
-
-                }
-                let nd = l.setDate(l.getDate() + 1);
-                l = new Date(nd)
-
-            }
-            // console.log(a)
         }
-        res.json({ data: data });
+
+        let l = new Date(dateFrom);
+        let dateArr = [];
+        let dataArr = [];
+        while (l < new Date(dateTo)) {
+            dateArr.push(l.toDateString());
+            let nd = l.setDate(l.getDate() + 1);
+            l = new Date(nd)
+        }
+        dateArr.pop();
+
+        let tempDateArr = dateArr;
+
+        data.forEach((d, i) => {
+            let tempEmployees = [...employees];
+            tempDateArr.splice(tempDateArr.indexOf(new Date(new Date(d.date)).toDateString()), 1);
+            dataArr.push({ date: d.date, employees: [] });
+            d.employees.forEach((emp) => {
+                dataArr[i].employees.push(emp);
+                const indx = tempEmployees.findIndex(obj => obj.dealAyoId == emp.dealAyoId);
+                if (indx > -1) {
+                    tempEmployees.splice(indx, 1)
+                }
+            })
+            tempEmployees.forEach((obj) => {
+                dataArr[i].employees.push({ dealAyoId: obj.dealAyoId, name: obj.firstName })
+            });
+
+        })
+
+        tempDateArr.forEach((dt) => {
+            dataArr.push({
+                date: new Date(dt),
+                employees: employees.map((emp) => {
+                    return { dealAyoId: emp.dealAyoId, name: emp.firstName }
+                })
+            })
+        })
+
+        res.json({ data: dataArr.filter((d) => new Date(d.date) <= new Date()) });
     } catch (err) {
         console.log(err)
         res.status(500).send('Error while fetching worksheet')

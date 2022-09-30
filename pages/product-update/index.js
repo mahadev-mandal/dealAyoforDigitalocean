@@ -1,15 +1,13 @@
-import { IconButton, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import React, { useState } from 'react'
-import FullScreenDialog from '../../components/FullScreenDialog/FullScreenDialog'
-import UploadFileDialog from '../../components/UploadFileDialog'
-import FilesTable from '../../components/Table/FilesTable';
+import FullScreenDialog from '../../components/Dialogs/FullScreenDialogs/AddProducts'
+import UploadFileDialog from '../../components/Dialogs/UploadFile'
 import useSWR from 'swr';
 import { baseURL } from '../../helpers/constants';
 import fetchData from '../../controllers/fetchData';
 import mutateData from '../../controllers/handleMutateData';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import SeeFileDialog from '../../components/SeeFilesDialog';
-import PropTypes from 'prop-types';
+import SimpleTable from '../../components/Table/SimpleTable';
+import ViewFile from '../../components/ExtraCells/Dialogs/ViewFile';
 
 const tableHeading = ['filename', 'work type', 'supplier', 'assign date', 'assign to', 'view',];
 const dataHeading = ['fileName', 'workType', 'supplier', 'assignDate', 'assignToName', '',];
@@ -50,7 +48,7 @@ function UpdateProduct() {
                 />
                 <UploadFileDialog />
             </Stack>
-            <FilesTable
+            <SimpleTable
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}
                 data={data.data}
@@ -68,26 +66,3 @@ function UpdateProduct() {
 
 export default UpdateProduct
 
-function ViewFile({ data }) {
-    const [fileDialogOpen, setFileDialogOpen] = useState(false);
-    const handleVisibilityClick = () => {
-        setFileDialogOpen(true);
-    }
-
-    return (
-        <>
-            {<SeeFileDialog
-                open={fileDialogOpen}
-                onClose={() => setFileDialogOpen(false)}
-                data={data}
-            />}
-            <IconButton size="small" onClick={handleVisibilityClick}>
-                <VisibilityIcon />
-            </IconButton>
-        </>
-    )
-}
-
-ViewFile.propTypes = {
-    data: PropTypes.object
-}

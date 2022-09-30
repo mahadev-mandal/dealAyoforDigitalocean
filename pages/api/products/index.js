@@ -10,7 +10,7 @@ export default function products(req, res) {
         case 'POST':
             return saveProducts(req, res);
         case 'PUT':
-            return updateProduct(req, res);
+            return updateProducts(req, res);
         case 'DELETE':
             return deleteProducts(req, res);
         default: {
@@ -22,32 +22,56 @@ export default function products(req, res) {
 }
 
 const getProducts = async (req, res) => {
+    const {
+        page,
+        rowsPerPage,
+        statusFilter,
+        empFilter,
+        date,
+        title,
+        supplier,
+        brand,
+        category,
+        model,
+        remarks,
+    } = req.query;
     try {
-        const { page, rowsPerPage, assignFilter, empFilter } = req.query;
         const query = {
             assignToDealAyoId: empFilter,
         }
-        if (assignFilter == '') {
+        if (statusFilter == '') {
             delete query['assignDate'];
-        } else if (assignFilter == 'assigned') {
+        } else if (statusFilter == 'assigned') {
             query.assignDate = { $ne: null }
-        } else if (assignFilter == 'unassigned') {
+        } else if (statusFilter == 'unassigned') {
             query.assignDate = null
-        } else if (assignFilter == 'entry-done') {
+        } else if (statusFilter == 'entry-done') {
             query.entryStatus = true;
             query.assignDate = { $ne: null }
-        } else if (assignFilter == 'entry-not-done') {
+        } else if (statusFilter == 'entry-not-done') {
             query.entryStatus = false;
             query.assignDate = { $ne: null }
-        } else if (assignFilter == 'error-tasks') {
+        } else if (statusFilter == 'error-tasks') {
             query.errorTask = true;
         }
         if (empFilter == '') {
             delete query['assignToDealAyoId'];
         }
-        
+        if (date) {
+            query.entryDate = {
+                "$gte": new Date(date).setHours(0, 0, 0, 0),
+                "$lt": new Date(date).setHours(24)
+            };
+        }
+        [{ remarks }, { category }, { title }, { supplier }, { brand }, { model }].forEach((d) => {
+            for (let key in d) {
+                if (d[key]) {
+                    query[key] = { $regex: d[key].trim(), '$options': 'i' }
+                }
+            }
+        })
         const totalCount = await productModel.countDocuments(query);
-
+        // { category: { $regex: category ? 'electrical' : 'accessories', '$options': 'i' } }
         const data = await productModel.find(query)
             .skip((parseInt(page)) * parseInt(rowsPerPage)
             ).limit(parseInt(rowsPerPage))
@@ -69,18 +93,40 @@ const saveProducts = async (req, res) => {
         })
 }
 
-const updateProduct = async (req, res) => {
-    const updateDetails = req.body.updateDetails;
-    await productModel.updateOne({ _id: req.body._id }, {
-        $set: {
-            lastUpdateDetails: updateDetails
-        }
-    }).then(() => {
-        res.status(200).send('product updated');
-    }).catch(() => {
-        res.status(500).send('Product updation failed');
-    })
+const updateProducts = async (req, res) => {
+    try {
+        const products = req.body;
+        products.map(async (p) => {
+            let modifiedData = [];
+            await productModel.updateOne({
+                model: p.model,
+                supplier: p.supplier
+            },
+                p,
+            )
+            modifiedData = [...modifiedData, { model: p.model }]
+            return modifiedData;
+        })
+
+        res.send('updated')
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err)
+    }
 }
+
+// const updateProduct = async (req, res) => {
+//     const updateDetails = req.body.updateDetails;
+//     await productModel.updateOne({ _id: req.body._id }, {
+//         $set: {
+//             lastUpdateDetails: updateDetails
+//         }
+//     }).then(() => {
+//         res.status(200).send('product updated');
+//     }).catch(() => {
+//         res.status(500).send('Product updation failed');
+//     })
+// }
 
 const deleteProducts = async (req, res) => {
     await productModel.deleteMany({ _id: { $in: req.body._ids } })
