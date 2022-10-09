@@ -143,6 +143,7 @@ const getWorkSheet = async (req, res) => {
         }
 
         let l = new Date(dateFrom);
+
         let dateArr = [];
         let dataArr = [];
         while (l < new Date(dateTo)) {
@@ -172,9 +173,9 @@ const getWorkSheet = async (req, res) => {
         })
 
         tempDateArr.forEach((dt) => {
-            console.log(new Date(`${dt} GMT`))
+            console.log(dt)
             dataArr.push({
-                date: new Date(`${dt} GMT`),
+                date: new Date(dt),
                 employees: employees.map((emp) => {
                     return { dealAyoId: emp.dealAyoId, name: emp.firstName }
                 })

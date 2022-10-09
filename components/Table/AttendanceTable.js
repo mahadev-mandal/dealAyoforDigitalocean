@@ -50,7 +50,7 @@ function AttendanceTable({
     ExtraCells
 }) {
     const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
-    console.log(new Date(data[0].date))
+    console.log(new Date(data[0].date).getUTCDate())
     return (
         <>
             <TableContainer component={Paper}>
