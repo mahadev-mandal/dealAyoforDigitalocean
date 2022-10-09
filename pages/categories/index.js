@@ -41,6 +41,7 @@ function Categories() {
     const handleAllSelectChange = (event) => {
         if (event.target.checked) {
             setSelected([...new Set(selected.concat(categories.data.map((p) => p)))]);
+            
         } else {
             setSelected(
                 selected.filter((s) => !categories.data.map((p) => p._id).includes(s._id))
@@ -76,6 +77,7 @@ function Categories() {
     } else if (!categories) {
         return <div>Please wait Loading...</div>
     }
+    console.log(selected)
     return (
         <div>
             <Head>
