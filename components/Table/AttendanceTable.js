@@ -50,7 +50,7 @@ function AttendanceTable({
     ExtraCells
 }) {
     const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
-    console.log(new Date(data[0].date).getUTCDate())
+    console.log(new Date(data[0].date).getDate())
     return (
         <>
             <TableContainer component={Paper}>
@@ -76,7 +76,7 @@ function AttendanceTable({
                                         {index1}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
-                                        {new Date(row.date).toLocaleDateString()}
+                                        {new Date(row.date).toDateString()}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
                                         {/* new Date(row.date).toLocaleDateString('en-us', { weekday: 'long' }) */}
