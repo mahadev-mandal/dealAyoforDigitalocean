@@ -172,8 +172,9 @@ const getWorkSheet = async (req, res) => {
         })
 
         tempDateArr.forEach((dt) => {
+            console.log(new Date(`${dt} GMT`))
             dataArr.push({
-                date: new Date(dt),
+                date: new Date(`${dt} GMT`),
                 employees: employees.map((emp) => {
                     return { dealAyoId: emp.dealAyoId, name: emp.firstName }
                 })
