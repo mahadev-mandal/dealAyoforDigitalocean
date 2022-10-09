@@ -74,7 +74,7 @@ function WorkSheet() {
     } else if (!data || !employees) {
         return <div>Please wait fetching workSheet details</div>
     }
-    new Date('6/29/2011 4:52:48 PM UTC');
+    
 console.log(new Date(data.data[0].date))
     function sortAscFunc(a, b) {
         return new Date(b.date) - new Date(a.date);

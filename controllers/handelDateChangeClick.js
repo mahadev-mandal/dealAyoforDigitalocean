@@ -23,7 +23,7 @@ const handleDateChangeClick = (d, df, dt) => {
         dateFrom = new Date(df).setHours(0, 0, 0, 0);
         dateTo = new Date(dt).setHours(24);
     } else {
-        dateFrom = new Date().setHours(0, 0, 0, 0);
+        dateFrom = new Date().setHours(0, 0, 0, 1);
         dateTo = new Date().setHours(24);
     }
     return { dateFrom, dateTo, activeBtn }
