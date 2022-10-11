@@ -91,7 +91,7 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 const getWorkSheet = async (req, res) => {
     const { dateFrom, dateTo, dealAyoId } = req.query;
-
+console.log(dateFrom, dateTo)
     try {
         let data;
         let employees;
