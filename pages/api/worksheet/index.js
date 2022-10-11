@@ -24,7 +24,7 @@ const saveOrUpdateWorksheet = async (req, res) => {
         dealAyoId = tokenPayload(req.cookies.token).dealAyoId;
         name = tokenPayload(req.cookies.token).name;
     }
-    console.log(req.body.date)
+    
     try {
         const foundWorksheet = await worksheetModel.find({
             date: {
@@ -47,8 +47,6 @@ const saveOrUpdateWorksheet = async (req, res) => {
                     }
                 })
             } else {
-
-                console.log(name, dealAyoId)
                 await worksheetModel.findOneAndUpdate({
                     date: {
                         "$gte": new Date(req.body.date).setHours(0, 0, 0, 0),
@@ -181,7 +179,6 @@ const getWorkSheet = async (req, res) => {
                 })
             })
         })
-
         res.json({ data: dataArr.filter((d) => new Date(d.date) <= new Date()) });
     } catch (err) {
         console.log(err)

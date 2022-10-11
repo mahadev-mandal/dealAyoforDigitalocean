@@ -1,4 +1,4 @@
-import { Button, TextField, } from '@mui/material'
+import { Button, Stack, TextField, } from '@mui/material'
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
@@ -19,7 +19,7 @@ export default function CustomDate({ open, handleClose, handleApply }) {
     const day = String("0" + date.getDate()).slice(-2);
     const [dateFrom, setDateFrom] = React.useState(`${year}-${month}-${day}`)
     const [dateTo, setDateTo] = React.useState(`${year}-${month}-${day}`)
-
+    
     return (
         <div>
             <Dialog
@@ -31,19 +31,23 @@ export default function CustomDate({ open, handleClose, handleApply }) {
             >
                 <DialogTitle>{"Select Date Range"}</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        type="date"
-                        variant="outlined"
-                        sx={{ mr: 1 }}
-                        value={dateFrom}
-                        onChange={e => setDateFrom(e.target.value)}
-                    />
-                    <TextField
-                        type="date"
-                        variant="outlined"
-                        value={dateTo}
-                        onChange={e => setDateTo(e.target.value)}
-                    />
+                    <Stack direction="row" alignItems="center">
+                        <TextField
+                            type="date"
+                            variant="outlined"
+                            sx={{ mr: 1 }}
+                            value={dateFrom}
+                            onChange={e => setDateFrom(e.target.value)}
+                        />
+                        to &nbsp;
+                        <TextField
+                            type="date"
+                            variant="outlined"
+                            value={dateTo}
+                            onChange={e => setDateTo(e.target.value)}
+                        />
+                       
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleApply('customDate', dateFrom, dateTo)}>Apply</Button>

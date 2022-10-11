@@ -60,7 +60,7 @@ function Products() {
   const {
     data: employees,
     error: error1,
-  } = useSWR(`${baseURL}/api/employees`, url => fetchData(url, params));
+  } = useSWR(`${baseURL}/api/employees`, fetchData);
 
   const handleSelectChange = (event, row) => {
     if (event.target.checked) {
@@ -121,7 +121,7 @@ function Products() {
     mutate()
     setBackdropOpen(false);
   }
-  
+
   const handleKeyPress = async (e) => {
     if (e.key == 'Enter') {
       setBackdropOpen(true);
@@ -203,6 +203,7 @@ function Products() {
             toEmp={toEmp}
             onChange={handleEmpChange}
             disabled={statusFilter == 'unassigned'}
+            width="150px"
           />
           <Button onClick={handleResetFilter}>Reset</Button>
         </Stack>

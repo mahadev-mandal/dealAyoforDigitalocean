@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Box, Pagination, Stack } from '@mui/material';
 import Image from 'next/image';
+import Link from 'next/link';
 
 
 function ViewFile({ data, open, onClose, }) {
@@ -22,7 +23,7 @@ function ViewFile({ data, open, onClose, }) {
     if (!data) {
         return ''
     }
-    console.log('kjdks')
+    
     const fileType = data.fileName.substr(data.fileName.lastIndexOf('.'))
     return (
         <div>
@@ -70,9 +71,9 @@ function ViewFile({ data, open, onClose, }) {
                     }
                 </DialogContent>
                 <DialogActions>
-                    {/* <Link href={`/uploaded-tasks/${data.fileName}`} sx={{ textDecoration: 'none' }}>
-                        <Button variant="outlined">Download</Button>
-                    </Link> */}
+                    <Link href={`/uploaded-tasks/${data.fileName}`} download sx={{ textDecoration: 'none' }}>
+                        <Button variant="">Download</Button>
+                    </Link>
                     <Button onClick={onClose}>Close</Button>
 
                 </DialogActions>

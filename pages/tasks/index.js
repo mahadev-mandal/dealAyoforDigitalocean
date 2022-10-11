@@ -66,7 +66,7 @@ function Tasks() {
         router.push('/tasks/add-excel-task');
     }
     const handleAddFileTasks = () => {
-        router.push('/tasks/add-excel-task');
+        router.push('/tasks/add-file-task');
     }
 
     function sortDescFunc(a, b) {
@@ -135,6 +135,7 @@ function Tasks() {
                         onChange={handleEmpChange}
                         toEmp={toEmp}
                         employees={employees.data}
+                        width="150px"
                     />
                 </Stack>
             </Stack>
@@ -149,18 +150,20 @@ function Tasks() {
                     }}
                     spacing={1.5}
                 >
-                    {data.data.sort(sortDescFunc).map((tasks) => (
+                    {data.data.sort(sortDescFunc).map((task) => (
                         <TasksCard
                             workType="Data Entry"
-                            key={tasks.taskId}
-                            tasks={tasks}
+                            key={task.taskId}
+                            tasks={task}
+                            link={`${baseURL}/tasks/${task.taskId}`}
                         />
                     ))}
-                    {updateTasks.data.sort(sortDescFunc).map((tasks) => (
+                    {data.fileTasks.sort(sortDescFunc).map((task) => (
                         <TasksCard
                             workType="Product Update"
-                            key={tasks.taskId}
-                            tasks={tasks}
+                            key={task.taskId}
+                            tasks={task}
+                            link={`${baseURL}/tasks/file-tasks/${task.taskId}`}
                         />
                     ))}
                 </Stack>
@@ -181,6 +184,7 @@ function Tasks() {
                                 workType="Data Entry"
                                 key={tasks.taskId}
                                 tasks={tasks}
+                                link={`${baseURL}/tasks/${tasks.taskId}`}
                             />
                         ))}
                         {updateTasks.data.sort(sortDescFunc).map((tasks) => (
@@ -188,6 +192,7 @@ function Tasks() {
                                 workType="Product Update"
                                 key={tasks.taskId}
                                 tasks={tasks}
+                                link={`${baseURL}/tasks/file-tasks/${tasks.taskId}`}
                             />
                         ))}
                     </Stack>

@@ -1,21 +1,20 @@
-import { Backdrop, Button, CircularProgress, Stack, TextField, Typography, } from '@mui/material';
+import { Backdrop, Button,  CircularProgress, Stack, Typography, } from '@mui/material';
 import React, { useState } from 'react'
-import useSWR from 'swr';
-import { baseURL } from '../../../helpers/constants';
-import { withAuth } from '../../../HOC/withAuth';
-import fetchData from '../../../controllers/fetchData';
+import useSWR  from 'swr';
+import { baseURL } from '../../helpers/constants';
+import CommentModal from '../../components/Dialogs/Comment';
+import { withAuth } from '../../HOC/withAuth';
+import fetchData from '../../controllers/fetchData';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import moment from 'moment';
-import handleMutateData from '../../../controllers/handleMutateData';
-import SimpleTable from '../../../components/Table/SimpleTable';
-import Remarks from '../../../components/ExtraCells/Dialogs/Remarks';
-import EntryOrError from '../../../components/ExtraCells/EntryOrError';
-import ReturnTime from '../../../components/ExtraCells/ReturnTime';
-import AdditionalDetails from '../../../components/ExtraCells/Dialogs/AdditionalDetails';
-import FilterByEmp from '../../../components/Filter/FilterProducts/FilterByEmp';
-import axios from 'axios';
+import handleMutateData from '../../controllers/handleMutateData';
+import SimpleTable from '../../components/Table/SimpleTable';
+import Remarks from '../../components/ExtraCells/Dialogs/Remarks';
+import EntryOrError from '../../components/ExtraCells/EntryOrError';
+import ReturnTime from '../../components/ExtraCells/ReturnTime';
+import AdditionalDetails from '../../components/ExtraCells/Dialogs/AdditionalDetails';
 
 const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'assignTo', 'entry', 'error', 'time', 'more', 'remarks',];
 const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP', 'assignToName', '', '', '', '', '']
@@ -25,13 +24,6 @@ function Tasks() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
     const [backdropOpen, setBackdropOpen] = useState(false);
-    const [assignToEmp, setAssignToEmp] = useState('');
-    const date = new Date();
-    const year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    month = String("0" + month).slice(-2);
-    const day = String("0" + date.getDate()).slice(-2);
-    const [assignDate, setAssignDate] = useState(`${year}-${month}-${day}`)
     const params = { page, rowsPerPage };
     const { tid } = router.query;
 
@@ -42,10 +34,6 @@ function Tasks() {
     } = useSWR(`${baseURL}/api/tasks/${tid}`,
         url => fetchData(url, params)
     );
-    const {
-        data: employees,
-        error
-    } = useSWR(`${baseURL}/api/employees`, fetchData);
 
     const handleChangePage = async (event, newPage) => {
         setBackdropOpen(true);
@@ -62,25 +50,18 @@ function Tasks() {
         mutateTasks();
         setBackdropOpen(false);
     }
-    const handleTaskEdit = async () => {
-        setBackdropOpen(true);
-        await axios.put(`${baseURL}/api/tasks/edit/${tid}`, {
-            toEmp: assignToEmp,
-            date: assignDate,
-        }).then(() => {
-            setBackdropOpen(false);
-            mutateTasks()
-        })
-    }
 
-    if (error1 || error) {
+
+    if (error1) {
         return <div>Failed to load Tasks</div>
-    } else if (!tasks || !employees) {
+    } else if (!tasks) {
+
         return <div>Please wait getting Tasks...</div>
     } else if (tasks.data.length == 0) {
         return (
             <Box textAlign="center">
-                Please wait Loading...
+                <Typography variant="h5">No Tasks Found</Typography>
+                <Button variant='outlined' sx={{ my: 1 }} disabled >Get Random Task</Button>
             </Box>
         )
     }
@@ -100,21 +81,8 @@ function Tasks() {
                 </Stack>
             </Backdrop>
             <Stack justifyContent="space-between" sx={{ mb: 0.5 }} direction="row">
-                <Stack direction="row" spacing={5} >
-                    <TextField
-                        type="date"
-                        variant="standard"
-                        sx={{ width: 125 }}
-                        value={assignDate}
-                        onChange={e => setAssignDate(e.target.value)}
-                    />
-                    <FilterByEmp
-                        employees={employees.data}
-                        toEmp={assignToEmp}
-                        onChange={e => setAssignToEmp(e.target.value)}
-                        width="150px"
-                    />
-                    <Button onClick={handleTaskEdit}>Save</Button>
+                <Stack spacing={2} direction="row">
+                    <Button variant="outlined">Get Extra 5 Tasks</Button>
                 </Stack>
                 <Stack spacing={2} direction="row" alignItems="center">
                     <Typography variant='body1' component="span">
@@ -127,7 +95,7 @@ function Tasks() {
                     </Typography>
                 </Stack>
                 <Stack>
-                   
+                    <CommentModal />
                 </Stack>
             </Stack>
             <SimpleTable

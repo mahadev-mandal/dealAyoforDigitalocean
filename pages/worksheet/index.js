@@ -75,10 +75,10 @@ function WorkSheet() {
         return <div>Please wait fetching workSheet details</div>
     }
     
-console.log(new Date(data.data[0].date))
     function sortAscFunc(a, b) {
         return new Date(b.date) - new Date(a.date);
     }
+    console.log((new Date()).getTimezoneOffset())
     return (
         <div>
             <Head>
@@ -104,6 +104,7 @@ console.log(new Date(data.data[0].date))
                         onChange={handleEmpChange}
                         toEmp={toEmp}
                         employees={employees.data}
+                        width="150px"
                     />
                 }
                 <CommentModal

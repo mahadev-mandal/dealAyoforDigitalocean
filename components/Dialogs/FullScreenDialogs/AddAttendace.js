@@ -17,6 +17,7 @@ import PropTypes from 'prop-types';
 
 const allFieldsArr = ['date', 'dealAyoId', 'name', 'attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime']
 const reqFieldsArr = ['date', 'dealAyoId', 'name'];
+const id = ['', '', 'e11', 'v11', 'd14', 'p11', 'g11', 'c12', 'd14', 'v12', 'd16', 'd15', 'r11', '', 'd20', 'd22', 'd21', '', '18', 'd24'];
 
 const checkReqFields = (dataArr, reqArr) => {
     return reqArr.every(field => dataArr.includes(field))
@@ -44,7 +45,11 @@ const finalDataArr = (dataArr, allFieldsArr) => {
         for (const key in obj) {
             if (!(key == 'date')) {
                 if (allFieldsArr.includes(key)) {
-                    tempEmp[key] = obj[key];
+                    if (key == 'dealAyoId') {
+                        tempEmp[key] = id[parseInt(obj[key])];
+                    } else {
+                        tempEmp[key] = obj[key];
+                    }
                 } else {
                     tempEmp.additionalDetails[key] = obj[key];
                 }
@@ -56,6 +61,7 @@ const finalDataArr = (dataArr, allFieldsArr) => {
             }
         })
     })
+    console.log(data)
     return data
 
 }
@@ -158,7 +164,6 @@ export default function AddAttendanceDialog({ collName }) {
     //     return i === Object.keys(obj)[index]
     // })
     // console.log(a)
-    
     return (
         <div>
             <Button variant="contained" color="success" onClick={handleClickOpen}>

@@ -14,6 +14,9 @@ const uploadFileSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    time: {
+        Type: Number,
+    },
     supplier: String,
     additionalDetails: {
         type: Object,

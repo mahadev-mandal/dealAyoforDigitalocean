@@ -3,7 +3,7 @@ import db_conn from "../helpers/db_conn";
 
 db_conn();
 
-const tasksSchema = new mongoose.Schema({
+const fileTasksSchema = new mongoose.Schema({
     taskId: {
         type: Number,
         required: true,
@@ -17,6 +17,9 @@ const tasksSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    time:{
+        type:Number,
+    },
     assignToDealAyoId: String,
     assignToName: String,
     comment: String,
@@ -27,13 +30,14 @@ const tasksSchema = new mongoose.Schema({
                 type: String,
                 required: true,
             },
-            entryStatus: {
-                type: Boolean,
-                required: true
+            totalTasks:{
+                type:Number,
             },
-            errorTask: {
-                type: Boolean,
-                required: true
+            completed: {
+                type: Number,
+            },
+            errors: {
+                type: Number,
             },
             status: {
                 type: Boolean,
@@ -44,4 +48,4 @@ const tasksSchema = new mongoose.Schema({
     ]
 })
 
-export default mongoose.models.tasks || mongoose.model('tasks', tasksSchema);
+export default mongoose.models.fileTasks || mongoose.model('fileTasks', fileTasksSchema);

@@ -1,5 +1,6 @@
 import db_conn from "../../../helpers/db_conn";
 import attendaceModel from '../../../models/attendanceSchema';
+import tokenPayload from '../../../controllers/tokenPayload'
 
 db_conn();
 
@@ -15,16 +16,36 @@ export default function attend(req, res) {
 }
 
 async function getAttendance(req, res) {
-    // const { dateFrom, dateTo } = req.query;
+    const {  dealAyoId, page, rowsPerPage } = req.query;
     try {
-        const data = await attendaceModel.find({
+        let query = {
             // date: {
             //     "$gte": new Date(dateFrom),
             //     "$lt": new Date(dateTo)
             // },
-        }).sort({ date: -1 })
+            "employees.dealAyoId": dealAyoId
+        }
+        if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
+            query = { ...query, "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId }
+        }
 
-        const totalCount = await attendaceModel.estimatedDocumentCount();
+        const data = await attendaceModel.find(
+            query,
+            {
+                date: 1,
+                'employees.$': 1
+            }
+        ).skip(parseInt(rowsPerPage) * parseInt(page))
+            .limit(parseInt(rowsPerPage))
+            .sort({ date: -1 })
+
+        const totalCount = await attendaceModel.countDocuments({
+            "employees.dealAyoId": dealAyoId
+        },
+            {
+                date: 1,
+                'employees.$': 1
+            });
 
         res.status(200).json({ data, totalCount })
     } catch (err) {
@@ -36,8 +57,7 @@ async function getAttendance(req, res) {
 const saveAttendance = async (req, res) => {
     const attendances = req.body;
     try {
-        const result = await attendaceModel.insertMany(attendances);
-        console.log(result)
+        await attendaceModel.insertMany(attendances);
         res.send('Saved sucessfully')
     } catch (err) {
         console.log(err);

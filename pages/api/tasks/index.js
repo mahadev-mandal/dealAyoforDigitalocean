@@ -2,6 +2,7 @@ import db_conn from "../../../helpers/db_conn";
 import productModel from '../../../models/productSchema'
 import tasksModel from '../../../models/tasksSchema'
 import tokenPayload from '../../../controllers/tokenPayload'
+import fileTaskModel from '../../../models/fileTasksSchema';
 
 db_conn();
 
@@ -19,31 +20,30 @@ export default function Tasks(req, res) {
 const getAllAssignedTasks = async (req, res) => {
     const { dateFrom, dateTo, dealAyoId } = req.query;
     let query = {};
-    if (Object.keys(req.query).length > 0) {
-        query = {
-            date: {
-                "$gte": new Date(dateFrom),
-                "$lt": new Date(dateTo),
-            },
-            assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
-        }
+    try {
+        if (Object.keys(req.query).length > 0) {
+            query = {
+                date: {
+                    "$gte": new Date(dateFrom),
+                    "$lt": new Date(dateTo),
+                },
+                assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
+            }
 
-    }
-    if (tokenPayload(req.cookies.token).role === 'super-admin') {
-        if (!dealAyoId == '') {
-            query.assignToDealAyoId = dealAyoId
-        } else {
-            delete query['assignToDealAyoId'];
         }
+        if (tokenPayload(req.cookies.token).role === 'super-admin') {
+            if (!dealAyoId == '') {
+                query.assignToDealAyoId = dealAyoId
+            } else {
+                delete query['assignToDealAyoId'];
+            }
+        }
+        const tasks = await tasksModel.find(query);
+        const fileTasks = await fileTaskModel.find(query);
+        res.json({ data: tasks, fileTasks })
+    } catch (err) {
+        res.status(500).send('Error while fetching tasks')
     }
-    
-    await tasksModel.find(query)
-        .then((data) => {
-            res.status(200).json({ data })
-        }).catch((e) => {
-            console.log(e)
-            res.status(500).send('Error occured while fetching assigned tasks')
-        })
 }
 
 const unAssignTasks = async (req, res) => {

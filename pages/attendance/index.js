@@ -10,9 +10,12 @@ import handleDateChangeClick from '../../controllers/handelDateChangeClick';
 import handleMutateData from '../../controllers/handleMutateData';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
+import FilterByEmp from '../../components/Filter/FilterProducts/FilterByEmp';
+import parseJwt from '../../controllers/parseJwt'
+import Cookies from 'js-cookie';
 
-const tableHeading = ['Date', 'Day', 'Emp Id', 'Name', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time',];
-const dataHeading = ['dealAyoId', 'name', 'attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime'];
+const tableHeading = ['Date', 'Day', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time',];
+const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime'];
 
 function Attendance() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
@@ -21,12 +24,18 @@ function Attendance() {
     const [dateTo, setDateTo] = useState(new Date().setHours(24))
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
-    const params = { dateFrom: new Date(dateFrom), dateTo: dateTo };
+    const [toEmp, setToEmp] = useState('');
+    const params = { dateFrom: new Date(dateFrom), dateTo: new Date(dateTo), dealAyoId: toEmp, page, rowsPerPage };
 
     const {
         data: attendances,
-        error, mutate
+        error,
+        mutate
     } = useSWR(`${baseURL}/api/attendance`, url => fetchData(url, params));
+    const {
+        data: employees,
+        error: error1,
+    } = useSWR(`${baseURL}/api/employees`, fetchData);
 
     const handleDateClick = async (d, df, dt) => {
         setBackdropOpen(true)
@@ -49,14 +58,27 @@ function Attendance() {
         await handleMutateData(`${baseURL}/api/attendance`, params);
         mutate();
     }
+    const handleEmpChange = async (e) => {
+        setBackdropOpen(true);
+        setToEmp(e.target.value);
+        await handleMutateData(`${baseURL}/api/attendance`, params,);
+        mutate();
+        setBackdropOpen(false);
+    }
 
-
-    if (error) {
+    if (error || error1) {
         return <div color='red'>Failed to load Attendance</div>
-    } else if (!attendances) {
+    } else if (!attendances || !employees) {
         return <div>Please wait loading...</div>
     }
-    console.log(attendances)
+    const emp = employees.data.filter((e) => e.dealAyoId == toEmp)
+    if (!(parseJwt(Cookies.get('token')).role == 'super-admin')) {
+        emp[0] = {
+            firstName: parseJwt(Cookies.get('token')).name,
+            dealAyoId: parseJwt(Cookies.get('token')).dealAyoId,
+        }
+    }
+   
     // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
     return (
@@ -75,12 +97,27 @@ function Attendance() {
             </Backdrop>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
-                    <AddAttendanceDialog collName="attendance" />
+                    {parseJwt(Cookies.get('token')).role == 'super-admin' &&
+                        <AddAttendanceDialog collName="attendance" />
+                    }
                     <FilterByDate
                         activeBtn={activeBtn}
                         onClick={handleDateClick}
                     />
-
+                </Stack>
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography>Id: {emp.length > 0 && emp[0].dealAyoId}</Typography>
+                    <Typography>Name: {emp.length > 0 && emp[0].firstName}</Typography>
+                </Stack>
+                <Stack>
+                    {parseJwt(Cookies.get('token')).role == 'super-admin' &&
+                        <FilterByEmp
+                            employees={employees.data}
+                            toEmp={toEmp}
+                            onChange={handleEmpChange}
+                            width="150px"
+                        />
+                    }
                 </Stack>
             </Stack>
             <AttendanceTable

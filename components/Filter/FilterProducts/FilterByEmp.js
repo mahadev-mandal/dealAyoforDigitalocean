@@ -2,16 +2,16 @@ import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react'
 import PropTypes from 'prop-types';
 
-function FilterByEmp({ onChange, toEmp, employees, disabled }) {
+function FilterByEmp({ onChange, toEmp, employees, disabled, width }) {
     return (
         <div>
-            <FormControl size="small" fullWidth>
+            <FormControl size="small" fullWidth >
                 <InputLabel id="demo-simple-select-label">Employee</InputLabel>
                 <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={toEmp}
-                    sx={{ width: 150, }}
+                    sx={{ width }}
                     label="Assign To"
                     onChange={onChange}
                     disabled={disabled}
@@ -31,5 +31,6 @@ FilterByEmp.propTypes = {
     toEmp: PropTypes.string,
     employees: PropTypes.array,
     disabled: PropTypes.bool,
+    width: PropTypes.string,
 }
 export default FilterByEmp

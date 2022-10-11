@@ -32,7 +32,7 @@ import { useRouter } from 'next/router';
 
 const arr = [0, 20, 40, 60, 80, 100];
 
-export default function TasksCard({ tasks, workType }) {
+export default function TasksCard({ tasks, workType, link }) {
   const router = useRouter();
   const completedTasks = tasks.tasks.filter(t => t.entryStatus).length;
   const errorTasks = tasks.tasks.filter(t => t.errorTask).length;
@@ -49,10 +49,13 @@ export default function TasksCard({ tasks, workType }) {
   const returnColorNum = () => {
     return arr.filter(a => a >= ((completedTasks + errorTasks - commonTasks) / total) * 100)[0] * 5
   }
-
+  const handleEditClick = (event) => {
+    event.stopPropagation();
+    router.push(`/tasks/edit/${tasks.taskId}`)
+  }
   return (
     // <CustomWidthTooltip arrow title={<TooltipComp />}>
-    <Link href={`/tasks/${workType == 'Data Entry' ? tasks.taskId : 'update/' + tasks.taskId}`}>
+    <Link href={link}>
       <a>
         <ButtonBase>
           <Card elevation={2}
@@ -92,7 +95,7 @@ export default function TasksCard({ tasks, workType }) {
                     top: 0
 
                   }}
-                  onClick={() => router.push(`/tasks/edit/${tasks.taskId}`)}
+                  onClick={handleEditClick}
                 >
                   <EditIcon />
                 </IconButton>
@@ -129,6 +132,7 @@ export default function TasksCard({ tasks, workType }) {
 TasksCard.propTypes = {
   tasks: PropTypes.object,
   workType: PropTypes.string,
+  link:PropTypes.string,
 }
 
 // function TooltipComp() {

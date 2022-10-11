@@ -212,10 +212,8 @@ function AddExcelTask() {
             employees={employees.data}
             toEmp={assignToEmp}
             onChange={e => setAssignToEmp(e.target.value)}
+            width="150px"
           />
-          <Button onClick={handleResetFilter}>
-            Reset
-          </Button>
         </Stack>
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="row" spacing={1}>
@@ -257,7 +255,11 @@ function AddExcelTask() {
               toEmp={empFilter}
               onChange={handleEmpFilterChange}
               disabled={statusFilter == 'unassigned'}
+              width="150px"
             />
+            <Button onClick={handleResetFilter}>
+              Reset
+            </Button>
           </Stack>
         </Stack>
       </Stack>

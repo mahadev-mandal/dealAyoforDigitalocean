@@ -76,7 +76,7 @@ function AttendanceTable({
                                         {index1}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
-                                        {new Date(row.date).toDateString()}
+                                        {new Date(row.date).toLocaleDateString()}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
                                         {/* new Date(row.date).toLocaleDateString('en-us', { weekday: 'long' }) */}
