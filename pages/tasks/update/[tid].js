@@ -1,20 +1,20 @@
 import { Backdrop, Button,  CircularProgress, Stack, Typography, } from '@mui/material';
 import React, { useState } from 'react'
 import useSWR  from 'swr';
-import { baseURL } from '../../helpers/constants';
-import CommentModal from '../../components/Dialogs/Comment';
-import { withAuth } from '../../HOC/withAuth';
-import fetchData from '../../controllers/fetchData';
+import { baseURL } from '../../../helpers/constants';
+import CommentModal from '../../../components/Dialogs/Comment';
+import { withAuth } from '../../../HOC/withAuth';
+import fetchData from '../../../controllers/fetchData';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import moment from 'moment';
-import handleMutateData from '../../controllers/handleMutateData';
-import SimpleTable from '../../components/Table/SimpleTable';
-import Remarks from '../../components/ExtraCells/Dialogs/Remarks';
-import EntryOrError from '../../components/ExtraCells/EntryOrError';
-import ReturnTime from '../../components/ExtraCells/ReturnTime';
-import AdditionalDetails from '../../components/ExtraCells/Dialogs/AdditionalDetails';
+import handleMutateData from '../../../controllers/handleMutateData';
+import SimpleTable from '../../../components/Table/SimpleTable';
+import Remarks from '../../../components/ExtraCells/Dialogs/Remarks';
+import EntryOrError from '../../../components/ExtraCells/EntryOrError';
+import ReturnTime from '../../../components/ExtraCells/ReturnTime';
+import AdditionalDetails from '../../../components/ExtraCells/Dialogs/AdditionalDetails';
 
 const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'assignTo', 'entry', 'error', 'time', 'more', 'remarks',];
 const dataHeading = ['model', 'title', 'brand', 'supplier', 'category', 'MRP', 'SP', 'assignToName', '', '', '', '', '']
