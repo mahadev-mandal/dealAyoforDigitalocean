@@ -141,7 +141,7 @@ console.log(dateFrom, dateTo)
         }
 
         let l = new Date(dateFrom);
-        console.log(dateFrom, dateTo)
+        
         // 1970-01-01T12:00
         let dateArr = [];
         let dataArr = [];

@@ -76,11 +76,11 @@ function AttendanceTable({
                                         {index1}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
-                                        {new Date().toLocaleDateString()}
+                                        {new Date(row.date).toLocaleDateString()}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
                                         {/* new Date(row.date).toLocaleDateString('en-us', { weekday: 'long' }) */}
-                                        {days[new Date().getDay()]}
+                                        {days[new Date(row.date).getDay()]}
                                     </StyledTableCell>
                                     {dataHeading.map((head, i) => (
                                         !(head == '') ?

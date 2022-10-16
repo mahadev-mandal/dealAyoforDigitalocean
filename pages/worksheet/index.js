@@ -19,9 +19,9 @@ const dataHeading = ['name', 'dealAyoId', 'comment', ''];
 
 function WorkSheet() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
+    const [dateTo, setDateTo] = useState(new Date().setHours(24));
     const [backdropOpen, setBackdropOpen] = useState(false);
     const [activeBtn, setActiveBtn] = useState('today');
-    const [dateTo, setDateTo] = useState(new Date().setHours(24));
     const [toEmp, setToEmp] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
