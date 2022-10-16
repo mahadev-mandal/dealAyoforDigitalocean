@@ -18,10 +18,13 @@ const tableHeading = ['date', 'day', 'name', 'Id', 'comment', 'edit'];
 const dataHeading = ['name', 'dealAyoId', 'comment', ''];
 
 function WorkSheet() {
-    const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
-    const [dateTo, setDateTo] = useState(new Date().setHours(24));
+    const date = new Date();
+    const lastSun = new Date(date.setDate(date.getDate() - date.getDay())).setHours(0, 0, 0, 0);
+    const commingSat = new Date(date.setDate(new Date(lastSun).getDate() + 6)).setHours(24)
+    const [dateFrom, setDateFrom] = useState(lastSun);
+    const [dateTo, setDateTo] = useState(commingSat);
     const [backdropOpen, setBackdropOpen] = useState(false);
-    const [activeBtn, setActiveBtn] = useState('today');
+    const [activeBtn, setActiveBtn] = useState('thisWeek');
     const [toEmp, setToEmp] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(20);
@@ -74,7 +77,7 @@ function WorkSheet() {
     } else if (!data || !employees) {
         return <div>Please wait fetching workSheet details</div>
     }
-    
+
     function sortAscFunc(a, b) {
         return new Date(b.date) - new Date(a.date);
     }
