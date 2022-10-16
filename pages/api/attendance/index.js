@@ -10,19 +10,21 @@ export default function attend(req, res) {
             return getAttendance(req, res);
         case "POST":
             return saveAttendance(req, res);
+        case "PUT":
+            return updateAttendance(req, res);
         default:
             res.status(405).send('Use proper method')
     }
 }
 
 async function getAttendance(req, res) {
-    const {  dealAyoId, page, rowsPerPage } = req.query;
+    const {  dealAyoId, page, rowsPerPage, dateFrom, dateTo } = req.query;
     try {
         let query = {
-            // date: {
-            //     "$gte": new Date(dateFrom),
-            //     "$lt": new Date(dateTo)
-            // },
+            date: {
+                "$gte": new Date(dateFrom),
+                "$lt": new Date(dateTo)
+            },
             "employees.dealAyoId": dealAyoId
         }
         if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
@@ -62,5 +64,24 @@ const saveAttendance = async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).send('error  while saving attendance');
+    }
+}
+
+const updateAttendance = async (req, res) =>{
+    try{
+        await attendaceModel.updateOne(
+            {
+            date:req.body.date,
+            "employees.dealAyoId":req.body.dealAyoId
+        },
+        {
+            $set:{
+                
+            }
+        }
+        )
+    }catch(err){
+        console.log(err);
+        res.status(500).send('error  while updating attendance');
     }
 }

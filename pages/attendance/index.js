@@ -13,9 +13,10 @@ import { withAuth } from '../../HOC/withAuth';
 import FilterByEmp from '../../components/Filter/FilterProducts/FilterByEmp';
 import parseJwt from '../../controllers/parseJwt'
 import Cookies from 'js-cookie';
+import EditAttendance from '../../components/ExtraCells/Dialogs/EditAttendance';
 
-const tableHeading = ['Date', 'Day', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time',];
-const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime'];
+const tableHeading = ['Date', 'Day', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time','edit'];
+const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
 
 function Attendance() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
@@ -78,7 +79,7 @@ function Attendance() {
             dealAyoId: parseJwt(Cookies.get('token')).dealAyoId,
         }
     }
-   
+
     // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
     return (
@@ -129,6 +130,7 @@ function Attendance() {
                 totalCount={attendances.totalCount}
                 handleChangePage={handleChangePage}
                 handleChangeRowsPerPage={handleChangeRowsPerPage}
+                ExtraCells={{edit:EditAttendance}}
             />
         </div>
     )

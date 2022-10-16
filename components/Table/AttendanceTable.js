@@ -22,6 +22,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+
     },
 }));
 
@@ -50,7 +51,7 @@ function AttendanceTable({
     ExtraCells
 }) {
     const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
-    
+
     return (
         <>
             <TableContainer component={Paper}>
