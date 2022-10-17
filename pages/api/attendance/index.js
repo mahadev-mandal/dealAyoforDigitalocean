@@ -77,7 +77,7 @@ async function getAttendance(req, res) {
 
         let l = new Date(dateFrom);
         while (l < new Date(dateTo)) {
-            if (new Date(l).getDay() == 6) {
+            if (new Date(l).getDay() == 4) {
                 data.push({
                     date: l,
                     type: 'saturday',
