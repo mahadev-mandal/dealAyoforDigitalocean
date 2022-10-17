@@ -14,8 +14,9 @@ import FilterByEmp from '../../components/Filter/FilterProducts/FilterByEmp';
 import parseJwt from '../../controllers/parseJwt'
 import Cookies from 'js-cookie';
 import EditAttendance from '../../components/ExtraCells/Dialogs/EditAttendance';
+import AddHoliday from '../../components/Dialogs/AddHolidays';
 
-const tableHeading = ['Date', 'Day', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time','edit'];
+const tableHeading = ['Date', 'Day', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
 const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
 
 function Attendance() {
@@ -98,8 +99,9 @@ function Attendance() {
             </Backdrop>
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
-                    {parseJwt(Cookies.get('token')).role == 'super-admin' &&
+                    {parseJwt(Cookies.get('token')).role == 'super-admin' && <>
                         <AddAttendanceDialog collName="attendance" />
+                        <AddHoliday /></>
                     }
                     <FilterByDate
                         activeBtn={activeBtn}
@@ -130,7 +132,7 @@ function Attendance() {
                 totalCount={attendances.totalCount}
                 handleChangePage={handleChangePage}
                 handleChangeRowsPerPage={handleChangeRowsPerPage}
-                ExtraCells={{edit:EditAttendance}}
+                ExtraCells={{ edit: EditAttendance }}
             />
         </div>
     )

@@ -52,6 +52,24 @@ function AttendanceTable({
 }) {
     const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
 
+    const returnStyle = (row) => {
+        if (row.type == 'holiday') {
+            return {
+                background: 'rgba(3, 161, 252,0.5)'
+            }
+        } else if (row.type == 'saturday' || new Date(row.date).getDay() == 6) {
+            return {
+                background: 'rgba(227, 77, 77, 0.7)'
+            }
+        } else {
+            return {}
+        }
+    }
+
+    function sortAscFunc(a, b) {
+        return new Date(b.date) - new Date(a.date);
+    }
+
     return (
         <>
             <TableContainer component={Paper}>
@@ -65,13 +83,14 @@ function AttendanceTable({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((row, index1) => (
+                        {data.sort(sortAscFunc).map((row, index1) => (
                             row.employees.map((item) => (
                                 <StyledTableRow key={item.dealAyoId}
-                                    style={{
-                                        background: new Date(row.date).getDay() == 6 && 'green',
-                                        pointerEvents: new Date(row.date).getDay() == 6 && 'none'
-                                    }}
+                                    // style={{
+                                    //     background: new Date(row.date).getDay() == 6 && 'green',
+                                    //     pointerEvents: new Date(row.date).getDay() == 6 && 'none'
+                                    // }}
+                                    style={returnStyle(row)}
                                 >
                                     <StyledTableCell component="th" scope="row">
                                         {index1}

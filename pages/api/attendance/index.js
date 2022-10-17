@@ -1,5 +1,6 @@
 import db_conn from "../../../helpers/db_conn";
 import attendaceModel from '../../../models/attendanceSchema';
+import holidayModel from '../../../models/holidaysSchema';
 import tokenPayload from '../../../controllers/tokenPayload'
 
 db_conn();
@@ -18,18 +19,29 @@ export default function attend(req, res) {
 }
 
 async function getAttendance(req, res) {
-    const {  dealAyoId, page, rowsPerPage, dateFrom, dateTo } = req.query;
+    let DA;
+    const { dealAyoId, page, rowsPerPage, dateFrom, dateTo } = req.query;
+    if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
+        DA = tokenPayload(req.cookies.token).dealAyoId
+    } else {
+        DA = dealAyoId
+    }
     try {
         let query = {
             date: {
                 "$gte": new Date(dateFrom),
                 "$lt": new Date(dateTo)
             },
-            "employees.dealAyoId": dealAyoId
+            "employees.dealAyoId": DA
         }
-        if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
-            query = { ...query, "employees.dealAyoId": tokenPayload(req.cookies.token).dealAyoId }
-        }
+
+
+        const holidays = await holidayModel.find({
+            date: {
+                "$gte": new Date(dateFrom),
+                "$lt": new Date(dateTo)
+            },
+        })
 
         const data = await attendaceModel.find(
             query,
@@ -49,6 +61,39 @@ async function getAttendance(req, res) {
                 'employees.$': 1
             });
 
+        holidays.forEach((item) => {
+            data.push({
+                date: item.date,
+                type:item.type,
+                details:item.details,
+                employees: [
+                    {
+                        dealAyoId: DA
+                    }
+                ]
+
+            })
+        })
+
+        let l = new Date(dateFrom);
+        while (l < new Date(dateTo)) {
+            if (new Date(l).getDay() == 5) {
+                data.push({
+                    date: l,
+                    type: 'saturday',
+                    details: 'Saturday',
+                    employees: [
+                        {
+                            dealAyoId: DA
+                        }
+                    ]
+
+                })
+            }
+            let nd = l.setDate(l.getDate() + 1);
+            l = new Date(nd)
+        }
+
         res.status(200).json({ data, totalCount })
     } catch (err) {
         res.status(500).send('Error occured while fetching attendance details')
@@ -67,20 +112,20 @@ const saveAttendance = async (req, res) => {
     }
 }
 
-const updateAttendance = async (req, res) =>{
-    try{
+const updateAttendance = async (req, res) => {
+    try {
         await attendaceModel.updateOne(
             {
-            date:req.body.date,
-            "employees.dealAyoId":req.body.dealAyoId
-        },
-        {
-            $set:{
-                
+                date: req.body.date,
+                "employees.dealAyoId": req.body.dealAyoId
+            },
+            {
+                $set: {
+
+                }
             }
-        }
         )
-    }catch(err){
+    } catch (err) {
         console.log(err);
         res.status(500).send('error  while updating attendance');
     }
