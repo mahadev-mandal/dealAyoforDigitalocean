@@ -21,7 +21,7 @@ const getEmployees = async (req, res) => {
 
     const totalCount = await employeeModel.countDocuments();
 
-    await employeeModel.find({ role: 'data-entry' }, { password: 0 })
+    await employeeModel.find({ role: { $ne: 'super-admin' } }, { password: 0 })
         .skip(parseInt(rowsPerPage) * parseInt(page))
         .limit(parseInt(rowsPerPage))
         .then((employees) => {
