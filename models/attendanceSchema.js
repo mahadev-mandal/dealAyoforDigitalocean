@@ -7,6 +7,10 @@ const attendanceSchema = new mongoose.Schema({
         unique: true,
         index: true,
     },
+    nepaliDate: {
+        type: String,
+        unique:true,
+    },
     employees: [
         {
             _id: false,

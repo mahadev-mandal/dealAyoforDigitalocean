@@ -9,6 +9,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
 import { TablePagination } from '@mui/material';
+import NepaliDate from 'nepali-date-converter'
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -37,7 +39,7 @@ const StyledTableRow = styled(TableRow)(() => ({
     },
 }));
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 function AttendanceTable({
     tableHeading,
@@ -101,14 +103,13 @@ function AttendanceTable({
 
                                 >
                                     <StyledTableCell component="th" scope="row">
-                                        {index1}
+                                        {index1+1}
+                                    </StyledTableCell>
+                                    <StyledTableCell component="th" scope="row">
+                                        {new NepaliDate(new Date(row.date)).format('ddd, DD MMMM YYYY')}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
                                         {new Date(row.date).toLocaleDateString()}
-                                    </StyledTableCell>
-                                    <StyledTableCell component="th" scope="row">
-                                        {/* new Date(row.date).toLocaleDateString('en-us', { weekday: 'long' }) */}
-                                        {days[new Date(row.date).getDay()]}
                                     </StyledTableCell>
                                     {dataHeading.map((head, i) => (
                                         !(head == '') ?

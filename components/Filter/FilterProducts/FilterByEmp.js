@@ -18,7 +18,7 @@ function FilterByEmp({ onChange, toEmp, employees, disabled, width }) {
                 >
                     <MenuItem value=''>None</MenuItem>
                     {employees.map((emp) => (
-                        <MenuItem value={emp.dealAyoId} key={emp.dealAyoId}>{emp.firstName}</MenuItem>
+                        <MenuItem value={emp.dealAyoId} key={emp.dealAyoId}>{`${emp.firstName} ${emp.lastName}`}</MenuItem>
                     ))}
                 </Select>
             </FormControl>

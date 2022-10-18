@@ -16,8 +16,8 @@ import Cookies from 'js-cookie';
 import EditAttendance from '../../components/ExtraCells/Dialogs/EditAttendance';
 import AddHoliday from '../../components/Dialogs/AddHolidays';
 
-const tableHeading = ['Date', 'Day', 'Id','status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
-const dataHeading = ['dealAyoId','attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
+const tableHeading = ['nepali Date','Date','status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
+const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
 
 function Attendance() {
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
@@ -80,7 +80,7 @@ function Attendance() {
             dealAyoId: parseJwt(Cookies.get('token')).dealAyoId,
         }
     }
-
+    
     // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
     return (
