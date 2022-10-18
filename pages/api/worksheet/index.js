@@ -155,7 +155,6 @@ const getWorkSheet = async (req, res) => {
                                 dealAyoId: DA
                             }
                         ]
-
                     })
                 }
             }
@@ -169,21 +168,23 @@ const getWorkSheet = async (req, res) => {
                             dealAyoId: DA
                         }
                     ]
-
                 })
             }
             let nd = l.setDate(l.getDate() + 1);
             l = new Date(nd)
         }
-        data.push({
-            date: new Date(),
-            employees: [
-                {
-                    dealAyoId: DA
-                }
-            ]
 
-        })
+        var index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date().toLocaleDateString());
+        if (index === -1) {
+            data.push({
+                date: new Date(),
+                employees: [
+                    {
+                        dealAyoId: DA
+                    }
+                ]
+            })
+        }
 
         res.json({ data: data.filter((d) => new Date(d.date) <= new Date()) });
     } catch (err) {
