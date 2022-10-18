@@ -35,7 +35,6 @@ async function getAttendance(req, res) {
             "employees.dealAyoId": DA
         }
 
-
         const holidays = await holidayModel.find({
             date: {
                 "$gte": new Date(dateFrom),

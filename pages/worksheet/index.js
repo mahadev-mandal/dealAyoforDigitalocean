@@ -14,8 +14,8 @@ import handleMutateData from '../../controllers/handleMutateData'
 import parseJwt from '../../controllers/parseJwt'
 import { baseURL } from '../../helpers/constants'
 
-const tableHeading = ['nepali Date', 'date', 'name', 'Id', 'comment', 'edit'];
-const dataHeading = ['name', 'dealAyoId', 'comment', ''];
+const tableHeading = ['nepali Date', 'date', 'Id', 'comment', 'edit'];
+const dataHeading = ['dealAyoId', 'comment', ''];
 
 function WorkSheet() {
     const date = new Date();
