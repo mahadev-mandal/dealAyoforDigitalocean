@@ -159,6 +159,7 @@ const getWorkSheet = async (req, res) => {
                 }
             }
             if (new Date(l).getDay() == 4) {
+                console.log(l)
                 data.push({
                     date: l,
                     type: 'saturday',
@@ -170,6 +171,7 @@ const getWorkSheet = async (req, res) => {
                     ]
                 })
             } else {
+                console.log(l)
                 const index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date(l).toLocaleDateString());
                 if (index === -1) {
                     data.push({
@@ -186,7 +188,19 @@ const getWorkSheet = async (req, res) => {
             l = new Date(nd)
         }
 
-        
+        // if (new Date(dateFrom).toLocaleDateString() == new Date().toLocaleDateString()) {
+        //     const index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date().toLocaleDateString());
+        //     if (index === -1) {
+        //         data.push({
+        //             date: new Date(),
+        //             employees: [
+        //                 {
+        //                     dealAyoId: DA
+        //                 }
+        //             ]
+        //         })
+        //     }
+        // }
         res.json({ data: data.filter((d) => new Date(d.date) <= new Date()) });
     } catch (err) {
         console.log(err)

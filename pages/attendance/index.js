@@ -16,7 +16,7 @@ import Cookies from 'js-cookie';
 import EditAttendance from '../../components/ExtraCells/Dialogs/EditAttendance';
 import AddHoliday from '../../components/Dialogs/AddHolidays';
 
-const tableHeading = ['nepali Date','Date','status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
+const tableHeading = ['nepali Date', 'Date', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
 const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
 
 function Attendance() {
@@ -80,7 +80,17 @@ function Attendance() {
             dealAyoId: parseJwt(Cookies.get('token')).dealAyoId,
         }
     }
-    
+    const countData = () => {
+        const absent = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Absence');
+        const half = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Half');
+        return {
+            totalAbsent: absent.length + half.length * 0.5
+        }
+    }
+    const getEmpDetails = () => {
+        const empDetails = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Normal')
+        return empDetails[0].employees[0];
+    }
     // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
     return (
@@ -108,10 +118,6 @@ function Attendance() {
                         onClick={handleDateClick}
                     />
                 </Stack>
-                <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography>Id: {emp.length > 0 && emp[0].dealAyoId}</Typography>
-                    <Typography>Name: {emp.length > 0 && emp[0].firstName}</Typography>
-                </Stack>
                 <Stack>
                     {parseJwt(Cookies.get('token')).role == 'super-admin' &&
                         <FilterByEmp
@@ -122,6 +128,12 @@ function Attendance() {
                         />
                     }
                 </Stack>
+            </Stack>
+            <Stack direction="row" sx={{ border: '1px solid green', p: 1, my: 1 }} spacing={2}>
+                <Typography><span>Total Absent: </span><span style={{ fontWeight: 'bold' }}>{countData().totalAbsent} days</span></Typography>
+                <Typography><span>Id: </span><span style={{ fontWeight: 'bold' }}>{emp.length > 0 && emp[0].dealAyoId}</span></Typography>
+                <Typography><span>Name: </span><span style={{ fontWeight: 'bold' }}>{emp.length > 0 && emp[0].firstName}</span></Typography>
+                <Typography><span>Shift: </span><span style={{ fontWeight: 'bold' }}>{getEmpDetails().additionalDetails.Shift}</span></Typography>
             </Stack>
             <AttendanceTable
                 tableHeading={tableHeading}
