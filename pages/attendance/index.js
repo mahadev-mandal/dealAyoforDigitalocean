@@ -88,16 +88,20 @@ function Attendance() {
         }
     }
     const getEmpDetails = () => {
-        if (attendances.data.length > 0) {
-            const empDetails = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Normal')
+
+        const empDetails = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Normal')
+        console.log(empDetails)
+        if (empDetails.length > 0) {
             return empDetails[0].employees[0];
+
         } else {
             return {
-                additionalDetails:{
-                    Shift:''
+                additionalDetails: {
+                    Shift: ''
                 }
             }
         }
+
     }
     // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
