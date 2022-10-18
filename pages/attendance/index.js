@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress, Stack, Typography } from '@mui/material';
+import { Backdrop, Button, CircularProgress, Stack, Typography } from '@mui/material';
 import Head from 'next/head';
 import React, { useState } from 'react'
 import useSWR from 'swr';
@@ -15,6 +15,7 @@ import parseJwt from '../../controllers/parseJwt'
 import Cookies from 'js-cookie';
 import EditAttendance from '../../components/ExtraCells/Dialogs/EditAttendance';
 import AddHoliday from '../../components/Dialogs/AddHolidays';
+import attendanceDownload from '../../controllers/attendanceDownload';
 
 const tableHeading = ['nepali Date', 'Date', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
 const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
@@ -90,7 +91,7 @@ function Attendance() {
     const getEmpDetails = () => {
 
         const empDetails = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Normal')
-        console.log(empDetails)
+
         if (empDetails.length > 0) {
             return empDetails[0].employees[0];
 
@@ -122,6 +123,12 @@ function Attendance() {
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
                     {parseJwt(Cookies.get('token')).role == 'super-admin' && <>
+                        <Button
+                            variant='outlined'
+                            onClick={() => attendanceDownload(attendances.data, emp[0].firstName)}
+                        >
+                            download
+                        </Button>
                         <AddAttendanceDialog collName="attendance" />
                         <AddHoliday /></>
                     }
