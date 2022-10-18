@@ -2,7 +2,7 @@ import db_conn from '../../../helpers/db_conn';
 import worksheetModel from '../../../models/worksheetSchema';
 // import jwt from 'jsonwebtoken';
 import tokenPayload from '../../../controllers/tokenPayload';
-import employeeModal from '../../../models/employeeSchema';
+import holidayModel from '../../../models/holidaysSchema';
 
 db_conn();
 
@@ -24,7 +24,7 @@ const saveOrUpdateWorksheet = async (req, res) => {
         dealAyoId = tokenPayload(req.cookies.token).dealAyoId;
         name = tokenPayload(req.cookies.token).name;
     }
-    
+
     try {
         const foundWorksheet = await worksheetModel.find({
             date: {
@@ -90,96 +90,96 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 
 const getWorkSheet = async (req, res) => {
+    let DA;
     const { dateFrom, dateTo, dealAyoId } = req.query;
-
+    if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
+        DA = tokenPayload(req.cookies.token).dealAyoId
+    } else {
+        DA = dealAyoId
+    }
     try {
-        let data;
-        let employees;
-        if (tokenPayload(req.cookies.token).role == 'super-admin') {
-            if (dealAyoId == '') {
-                employees = await employeeModal.find({ role: { $ne: 'super-admin' } });
-            } else {
-                employees = await employeeModal.find({ dealAyoId });
-            }
-            let query = {
-                date: {
-                    $gte: new Date(dateFrom),
-                    $lt: new Date(dateTo),
-                },
-                'employees.dealAyoId': dealAyoId,
-            }
-            let abc = {
+        let query = {
+            date: {
+                "$gte": new Date(dateFrom),
+                "$lt": new Date(dateTo)
+            },
+            "employees.dealAyoId": DA
+        }
+
+
+        const holidays = await holidayModel.find({
+            date: {
+                "$gte": new Date(dateFrom),
+                "$lt": new Date(dateTo)
+            },
+        })
+
+        const data = await worksheetModel.find(
+            query,
+            {
                 date: 1,
                 'employees.$': 1
             }
-            if (!dealAyoId) {
-                delete query['employees.dealAyoId'];
-                abc = {};
+        ).sort({ date: -1 })
+
+        holidays.forEach((item) => {
+            var index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date(item.date).toLocaleDateString());
+            if (index != -1) {
+                data.splice(index, 1);
+
             }
-            data = await worksheetModel.find(
-                query,
-                abc
+            data.push({
+                date: item.date,
+                type: item.type,
+                details: item.details,
+                employees: [
+                    {
+                        dealAyoId: DA
+                    }
+                ]
 
-            ).sort({ date: -1 })
-        } else {
-            employees = await employeeModal.find({ dealAyoId: tokenPayload(req.cookies.token).dealAyoId });
-            data = await worksheetModel.find(
-                {
-                    date: {
-                        $gte: new Date(dateFrom),
-                        $lt: new Date(dateTo),
-                    },
-                    'employees.dealAyoId': tokenPayload(req.cookies.token).dealAyoId
-                },
-                {
-                    date: 1,
-                    'employees.$': 1
-                }
-
-            ).sort({ date: -1 });
-
-        }
+            })
+        })
 
         let l = new Date(dateFrom);
-        
-        // 1970-01-01T12:00
-        let dateArr = [];
-        let dataArr = [];
+        const sunHolidayEmp = ['r11']
         while (l < new Date(dateTo)) {
-            dateArr.push(l.toDateString());
+            if (sunHolidayEmp.includes(DA)) {
+                if (new Date(l).getDay() == 5) {
+                    data.push({
+                        date: l,
+                        type: 'saturday',
+                        details: 'Sunday',
+                        employees: [
+                            {
+                                dealAyoId: DA
+                            }
+                        ]
+
+                    })
+                }
+            }
+            if (new Date(l).getDay() == 4) {
+                data.push({
+                    date: l,
+                    type: 'saturday',
+                    details: 'Saturday',
+                    employees: [
+                        {
+                            dealAyoId: DA
+                        }
+                    ]
+
+                })
+            }
             let nd = l.setDate(l.getDate() + 1);
             l = new Date(nd)
         }
-        dateArr.pop();
 
-        let tempDateArr = dateArr;
 
-        data.forEach((d, i) => {
-            let tempEmployees = [...employees];
-            tempDateArr.splice(tempDateArr.indexOf(new Date(new Date(d.date)).toDateString()), 1);
-            dataArr.push({ date: d.date, employees: [] });
-            d.employees.forEach((emp) => {
-                dataArr[i].employees.push(emp);
-                const indx = tempEmployees.findIndex(obj => obj.dealAyoId == emp.dealAyoId);
-                if (indx > -1) {
-                    tempEmployees.splice(indx, 1)
-                }
-            })
-            tempEmployees.forEach((obj) => {
-                dataArr[i].employees.push({ dealAyoId: obj.dealAyoId, name: obj.firstName })
-            });
 
-        })
 
-        tempDateArr.forEach((dt) => {
-            dataArr.push({
-                date: new Date(dt),
-                employees: employees.map((emp) => {
-                    return { dealAyoId: emp.dealAyoId, name: emp.firstName }
-                })
-            })
-        })
-        res.json({ data: dataArr.filter((d) => new Date(d.date) <= new Date()) });
+        res.json({ data: data.filter((d) => new Date(d.date) <= new Date()) });
     } catch (err) {
         console.log(err)
         res.status(500).send('Error while fetching worksheet')
