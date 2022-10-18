@@ -10,7 +10,7 @@ const holidaysSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    saturday: {
+    details: {
         type: String
     }
 })

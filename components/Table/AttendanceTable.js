@@ -26,9 +26,9 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+const StyledTableRow = styled(TableRow)(() => ({
     '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
+        // backgroundColor: theme.palette.action.hover,
 
     },
     // hide last border
@@ -62,14 +62,17 @@ function AttendanceTable({
                 background: 'rgba(227, 77, 77, 0.7)'
             }
         } else {
-            return {}
+            return {
+                '&:nth-of-type(odd)': {
+                    backgroundColor: '#F5F5F5',
+                }
+            }
         }
     }
 
     function sortAscFunc(a, b) {
         return new Date(b.date) - new Date(a.date);
     }
-
     return (
         <>
             <TableContainer component={Paper}>
@@ -85,12 +88,17 @@ function AttendanceTable({
                     <TableBody>
                         {data.sort(sortAscFunc).map((row, index1) => (
                             row.employees.map((item) => (
-                                <StyledTableRow key={item.dealAyoId}
-                                    // style={{
-                                    //     background: new Date(row.date).getDay() == 6 && 'green',
-                                    //     pointerEvents: new Date(row.date).getDay() == 6 && 'none'
-                                    // }}
-                                    style={returnStyle(row)}
+                                <StyledTableRow
+                                    title={row.details}
+                                    sx={{
+                                        ...returnStyle(row),
+                                        transition:'0.3s',
+                                        '&:hover': {
+                                            background: 'rgba(3, 119, 252,0.5)'
+                                        }
+                                    }}
+                                    key={item.dealAyoId}
+
                                 >
                                     <StyledTableCell component="th" scope="row">
                                         {index1}

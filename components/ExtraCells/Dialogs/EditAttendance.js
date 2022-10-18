@@ -10,6 +10,9 @@ import axios from 'axios';
 import { baseURL } from '../../../helpers/constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { mutate } from 'swr';
+import parseJwt from '../../../controllers/parseJwt';
+import Cookies from 'js-cookie';
+import { useState } from 'react';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -18,6 +21,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function EditAttendance({ row, disabled }) {
     const [open, setOpen] = React.useState(false);
     const [attendanceStatus, setAttendanceStatus] = React.useState('');
+    const [entryTime, setEntryTime] = useState(row.entryTime);
+    const [exitTime, setExitTime] = useState(row.exitTime);
+    const [worked, setWorked] = useState(row.worked)
+
     const handleClickOpen = () => {
         setOpen(true);
         setAttendanceStatus(row.attendanceStatus);
@@ -26,10 +33,13 @@ export default function EditAttendance({ row, disabled }) {
     const handleClose = () => {
         setOpen(false);
     };
-    const handleSaveComment = async () => {
-        await axios.post(`${baseURL}/api/attendance`, {
+    const handleSaveAttendance = async () => {
+        await axios.put(`${baseURL}/api/attendance`, {
             date: row.date,
             attendanceStatus,
+            entryTime,
+            exitTime,
+            worked,
             dealAyoId: row.dealAyoId,
         }).then(() => {
             mutate(`${baseURL}/api/attendance`);
@@ -39,13 +49,16 @@ export default function EditAttendance({ row, disabled }) {
 
     return (
         <div>
-            <IconButton size="small"
-                disabled={disabled}
-                onClick={handleClickOpen}
-                sx={{ p: 0, }}
-            >
-                <EditIcon />
-            </IconButton>
+            {parseJwt(Cookies.get('token')).role == 'super-admin' ?
+                <IconButton size="small"
+                    disabled={disabled}
+                    onClick={handleClickOpen}
+                    sx={{ p: 0, }}
+                >
+                    <EditIcon />
+                </IconButton>
+                : ''
+            }
             <Dialog
                 open={open}
                 TransitionComponent={Transition}
@@ -55,21 +68,45 @@ export default function EditAttendance({ row, disabled }) {
             >
                 <DialogTitle>{"Edit Attendance"}</DialogTitle>
                 <DialogContent>
-                    <Stack spacing={1}>
+                    <Stack spacing={1.5} sx={{ width: 300 }}>
                         <TextField
+                            disabled
                             variant="outlined"
                             size="small"
                             value={new Date(row.date).toDateString()}
                         />
                         <TextField
+                            label="Status"
                             variant="outlined"
                             size="small"
-                            defaultValue={row.attendanceStatus}
+                            value={attendanceStatus}
+                            onChange={e => setAttendanceStatus(e.target.value)}
+                        />
+                        <TextField
+                            label="entryTime"
+                            variant="outlined"
+                            size="small"
+                            value={entryTime}
+                            onChange={e => setEntryTime(e.target.value)}
+                        />
+                        <TextField
+                            label="exitTime"
+                            variant="outlined"
+                            size="small"
+                            value={exitTime}
+                            onChange={e => setExitTime(e.target.value)}
+                        />
+                        <TextField
+                            label="worked"
+                            variant="outlined"
+                            size="small"
+                            value={worked}
+                            onChange={e => setWorked(e.target.value)}
                         />
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleSaveComment}>Save</Button>
+                    <Button onClick={handleSaveAttendance}>Save</Button>
                     <Button onClick={handleClose}>Close</Button>
                 </DialogActions>
             </Dialog>

@@ -64,8 +64,8 @@ async function getAttendance(req, res) {
         holidays.forEach((item) => {
             data.push({
                 date: item.date,
-                type:item.type,
-                details:item.details,
+                type: item.type,
+                details: item.details,
                 employees: [
                     {
                         dealAyoId: DA
@@ -76,7 +76,23 @@ async function getAttendance(req, res) {
         })
 
         let l = new Date(dateFrom);
+        const sunHolidayEmp = ['r11']
         while (l < new Date(dateTo)) {
+            if (sunHolidayEmp.includes(DA)) {
+                if (new Date(l).getDay() == 5) {
+                    data.push({
+                        date: l,
+                        type: 'saturday',
+                        details: 'Sunday',
+                        employees: [
+                            {
+                                dealAyoId: DA
+                            }
+                        ]
+
+                    })
+                }
+            }
             if (new Date(l).getDay() == 4) {
                 data.push({
                     date: l,
@@ -121,10 +137,14 @@ const updateAttendance = async (req, res) => {
             },
             {
                 $set: {
-
+                    "employees.$.entryTime": req.body.entryTime,
+                    "employees.$.exitTime": req.body.exitTime,
+                    "employees.$.worked": req.body.worked,
+                    "employees.$.attendanceStatus": req.body.attendanceStatus
                 }
             }
         )
+        res.send('Saved');
     } catch (err) {
         console.log(err);
         res.status(500).send('error  while updating attendance');
