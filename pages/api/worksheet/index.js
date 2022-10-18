@@ -143,7 +143,7 @@ const getWorkSheet = async (req, res) => {
 
         let l = new Date(dateFrom);
         const sunHolidayEmp = ['r11']
-        while (l < new Date(dateTo)) {
+        while (l <= new Date(dateTo)) {
             if (sunHolidayEmp.includes(DA)) {
                 if (new Date(l).getDay() == 5) {
                     data.push({
@@ -169,23 +169,24 @@ const getWorkSheet = async (req, res) => {
                         }
                     ]
                 })
+            } else {
+                const index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date(l).toLocaleDateString());
+                if (index === -1) {
+                    data.push({
+                        date: l,
+                        employees: [
+                            {
+                                dealAyoId: DA
+                            }
+                        ]
+                    })
+                }
             }
             let nd = l.setDate(l.getDate() + 1);
             l = new Date(nd)
         }
 
-        var index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date().toLocaleDateString());
-        if (index === -1) {
-            data.push({
-                date: new Date(),
-                employees: [
-                    {
-                        dealAyoId: DA
-                    }
-                ]
-            })
-        }
-
+        
         res.json({ data: data.filter((d) => new Date(d.date) <= new Date()) });
     } catch (err) {
         console.log(err)
