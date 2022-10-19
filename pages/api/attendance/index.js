@@ -42,7 +42,7 @@ async function getAttendance(req, res) {
             },
         })
 
-        const data = await attendaceModel.find(
+        var data = await attendaceModel.find(
             query,
             {
                 date: 1,
@@ -52,7 +52,7 @@ async function getAttendance(req, res) {
             .limit(parseInt(rowsPerPage))
             .sort({ date: -1 })
 
-        const totalCount = await attendaceModel.countDocuments({
+        var totalCount = await attendaceModel.countDocuments({
             "employees.dealAyoId": dealAyoId
         },
             {
@@ -78,7 +78,7 @@ async function getAttendance(req, res) {
         const sunHolidayEmp = ['r11']
         while (l < new Date(dateTo)) {
             if (sunHolidayEmp.includes(DA)) {
-                if (new Date(l).getDay() == 5) {
+                if (new Date(l).getDay() == 0) {
                     data.push({
                         date: new Date(l).toLocaleDateString(),
                         type: 'saturday',
@@ -108,7 +108,10 @@ async function getAttendance(req, res) {
             let nd = l.setDate(l.getDate() + 1);
             l = new Date(nd)
         }
-
+        if (dealAyoId == '') {
+            data = [];
+            totalCount=0;
+        }
         res.status(200).json({ data: data.filter((d) => new Date(d.date) <= new Date()), totalCount })
     } catch (err) {
         res.status(500).send('Error occured while fetching attendance details')

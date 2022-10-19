@@ -92,7 +92,6 @@ const saveOrUpdateWorksheet = async (req, res) => {
 const getWorkSheet = async (req, res) => {
     let DA;
     const { dateFrom, dateTo, dealAyoId, } = req.query;
-   
     if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
         DA = tokenPayload(req.cookies.token).dealAyoId
     } else {
@@ -115,7 +114,7 @@ const getWorkSheet = async (req, res) => {
             },
         })
 
-        const data = await worksheetModel.find(
+        var data = await worksheetModel.find(
             query,
             {
                 date: 1,
@@ -186,7 +185,9 @@ const getWorkSheet = async (req, res) => {
             let nd = l.setDate(l.getDate() + 1);
             l = new Date(nd)
         }
-
+        if (dealAyoId == '') {
+            data = []
+        }
         res.json({ data: data.filter((d) => new Date(d.date) <= new Date()) });
     } catch (err) {
         console.log(err)

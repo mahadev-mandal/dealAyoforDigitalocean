@@ -24,11 +24,11 @@ const getEmployees = async (req, res) => {
     await employeeModel.find(
         {
             role: { $ne: 'super-admin' },
-            status:true,
+            status: true,
         },
         { password: 0 })
         .skip(parseInt(rowsPerPage) * parseInt(page))
-        .limit(parseInt(rowsPerPage))
+        .limit(parseInt(rowsPerPage)).sort({ firstName: 1 })
         .then((employees) => {
             res.status(200).json({ data: employees, totalCount });
         }).catch(() => {

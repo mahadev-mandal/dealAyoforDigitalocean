@@ -8,7 +8,7 @@ import AttendanceTable from '../../components/Table/AttendanceTable';
 import fetchData from '../../controllers/fetchData';
 import handleDateChangeClick from '../../controllers/handelDateChangeClick';
 import handleMutateData from '../../controllers/handleMutateData';
-import { baseURL } from '../../helpers/constants';
+import { absenceBg, baseURL, halfBg, holidayBg, satBg } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 import FilterByEmp from '../../components/Filter/FilterProducts/FilterByEmp';
 import parseJwt from '../../controllers/parseJwt'
@@ -16,6 +16,7 @@ import Cookies from 'js-cookie';
 import EditAttendance from '../../components/ExtraCells/Dialogs/EditAttendance';
 import AddHoliday from '../../components/Dialogs/AddHolidays';
 import attendanceDownload from '../../controllers/attendanceDownload';
+import ColorBox from '../../components/ColorBox';
 
 const tableHeading = ['nepali Date', 'Date', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
 const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
@@ -82,10 +83,18 @@ function Attendance() {
         }
     }
     const countData = () => {
-        const absent = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Absence');
-        const half = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Half');
+        const absent = attendances.data.filter((d) => {
+            if (d.employees[0].attendanceStatus) {
+                return d.employees[0].attendanceStatus.trim().toLowerCase() == 'absence'
+            }
+        });
+        const half = attendances.data.filter((d) => {
+            if (d.employees[0].attendanceStatus) {
+                return d.employees[0].attendanceStatus.trim().toLowerCase() == 'half'
+            }
+        });
         return {
-            totalAbsent: absent.length + half.length * 0.5
+            totalAbsents: absent.length + half.length * 0.5
         }
     }
     const getEmpDetails = () => {
@@ -120,7 +129,7 @@ function Attendance() {
                     <Typography variant='h6'>Loading...</Typography>
                 </Stack>
             </Backdrop>
-            
+
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
                     {parseJwt(Cookies.get('token')).role == 'super-admin' && <>
@@ -149,11 +158,24 @@ function Attendance() {
                     }
                 </Stack>
             </Stack>
-            <Stack direction="row" sx={{ border: '1px solid green', p: 1, my: 1 }} spacing={2}>
-                <Typography><span>Total Absent: </span><span style={{ fontWeight: 'bold' }}>{countData().totalAbsent} days</span></Typography>
-                <Typography><span>Id: </span><span style={{ fontWeight: 'bold' }}>{emp.length > 0 && emp[0].dealAyoId}</span></Typography>
-                <Typography><span>Name: </span><span style={{ fontWeight: 'bold' }}>{emp.length > 0 && emp[0].firstName}</span></Typography>
-                <Typography><span>Shift: </span><span style={{ fontWeight: 'bold' }}>{getEmpDetails().additionalDetails.Shift}</span></Typography>
+            <Stack direction="row"
+                sx={{ border: '1px solid green', p: 1, my: 1 }}
+                spacing={2}
+                alignItems="center"
+                justifyContent="space-between"
+            >
+                <Stack direction="row" spacing={2}>
+                    <Typography><span>Total Absents: </span><span style={{ fontWeight: 'bold' }}>{countData().totalAbsents} days</span></Typography>
+                    <Typography><span>Id: </span><span style={{ fontWeight: 'bold' }}>{emp.length > 0 && emp[0].dealAyoId}</span></Typography>
+                    <Typography><span>Name: </span><span style={{ fontWeight: 'bold' }}>{emp.length > 0 && emp[0].firstName}</span></Typography>
+                    <Typography><span>Shift: </span><span style={{ fontWeight: 'bold' }}>{getEmpDetails().additionalDetails.Shift}</span></Typography>
+                </Stack>
+                <Stack direction="row" spacing={1.3}>
+                    <ColorBox bgColor={satBg} label="Saturday" />
+                    <ColorBox bgColor={halfBg} label="Half Day" />
+                    <ColorBox bgColor={absenceBg} label="Absence" />
+                    <ColorBox bgColor={holidayBg} label="Holiday" />
+                </Stack>
             </Stack>
             <AttendanceTable
                 tableHeading={tableHeading}

@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types'
 import { TablePagination } from '@mui/material';
 import NepaliDate from 'nepali-date-converter'
+import returnAttendanceStyle from '../../controllers/returnAttendanceStyle';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -54,23 +55,7 @@ function AttendanceTable({
 }) {
     const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
 
-    const returnStyle = (row) => {
-        if (row.type == 'holiday') {
-            return {
-                background: 'rgba(3, 161, 252,0.5)'
-            }
-        } else if (row.type == 'saturday' || new Date(row.date).getDay() == 6) {
-            return {
-                background: 'rgba(227, 77, 77, 0.7)'
-            }
-        } else {
-            return {
-                '&:nth-of-type(odd)': {
-                    backgroundColor: '#F5F5F5',
-                }
-            }
-        }
-    }
+
 
     function sortAscFunc(a, b) {
         return new Date(b.date) - new Date(a.date);
@@ -93,8 +78,8 @@ function AttendanceTable({
                                 <StyledTableRow
                                     title={row.details}
                                     sx={{
-                                        ...returnStyle(row),
-                                        transition:'0.3s',
+                                        ...returnAttendanceStyle(row),
+                                        transition: '0.3s',
                                         '&:hover': {
                                             background: 'rgba(3, 119, 252,0.5)'
                                         }
@@ -103,7 +88,7 @@ function AttendanceTable({
 
                                 >
                                     <StyledTableCell component="th" scope="row">
-                                        {index1+1}
+                                        {index1 + 1}
                                     </StyledTableCell>
                                     <StyledTableCell component="th" scope="row">
                                         {new NepaliDate(new Date(row.date)).format('ddd, DD MMMM YYYY')}
