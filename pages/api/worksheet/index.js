@@ -158,10 +158,9 @@ const getWorkSheet = async (req, res) => {
                     })
                 }
             }
-            if (new Date(l).getDay() == 4) {
-                console.log(l)
+            if (new Date(l).getDay() == 6) {
                 data.push({
-                    date: l,
+                    date:new Date(l).toLocaleDateString(),
                     type: 'saturday',
                     details: 'Saturday',
                     employees: [
@@ -171,11 +170,10 @@ const getWorkSheet = async (req, res) => {
                     ]
                 })
             } else {
-                console.log(l)
                 const index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date(l).toLocaleDateString());
                 if (index === -1) {
                     data.push({
-                        date: l,
+                        date: new Date(l).toLocaleDateString(),
                         employees: [
                             {
                                 dealAyoId: DA
