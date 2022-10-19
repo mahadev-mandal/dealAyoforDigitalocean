@@ -1,4 +1,4 @@
-import { Backdrop, Button, CircularProgress, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Backdrop, Button, CircularProgress, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Paper, Stack, TextField, Typography } from '@mui/material'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -8,6 +8,8 @@ import { useState } from 'react';
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router';
 import parseJwt from '../controllers/parseJwt';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export default function Home() {
   const router = useRouter();
@@ -15,6 +17,7 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const [Msg, setMsg] = useState('');
   const [logging, setLogging] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const login = async (event) => {
     setLogging(true);
@@ -69,15 +72,29 @@ export default function Home() {
               autoComplete="off"
               onChange={(e) => setEmpId(e.target.value)}
             /> <br /><br />
-            <TextField
-              fullWidth
-              variant='outlined'
-              label="Password"
-              type="password"
-              autoComplete="off"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            /><br /><br />
+            <FormControl fullWidth variant="outlined">
+              <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={e => e.preventDefault()}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
+            <br /><br />
             <Button fullWidth variant="outlined" type='submit'>Login</Button><br /><br />
             <Typography color="red">{Msg}</Typography>
           </form>

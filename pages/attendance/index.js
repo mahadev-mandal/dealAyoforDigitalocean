@@ -120,6 +120,7 @@ function Attendance() {
                     <Typography variant='h6'>Loading...</Typography>
                 </Stack>
             </Backdrop>
+            
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
                     {parseJwt(Cookies.get('token')).role == 'super-admin' && <>

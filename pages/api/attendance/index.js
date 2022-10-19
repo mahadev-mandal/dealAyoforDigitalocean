@@ -62,7 +62,7 @@ async function getAttendance(req, res) {
 
         holidays.forEach((item) => {
             data.push({
-                date: item.date,
+                date: new Date(item.date).toLocaleDateString(),
                 type: item.type,
                 details: item.details,
                 employees: [
@@ -80,7 +80,7 @@ async function getAttendance(req, res) {
             if (sunHolidayEmp.includes(DA)) {
                 if (new Date(l).getDay() == 5) {
                     data.push({
-                        date: l,
+                        date: new Date(l).toLocaleDateString(),
                         type: 'saturday',
                         details: 'Sunday',
                         employees: [
@@ -92,9 +92,9 @@ async function getAttendance(req, res) {
                     })
                 }
             }
-            if (new Date(l).getDay() == 4) {
+            if (new Date(l).getDay() == 6) {
                 data.push({
-                    date: l,
+                    date: new Date(l).toLocaleDateString(),
                     type: 'saturday',
                     details: 'Saturday',
                     employees: [
@@ -109,7 +109,7 @@ async function getAttendance(req, res) {
             l = new Date(nd)
         }
 
-        res.status(200).json({ data, totalCount })
+        res.status(200).json({ data: data.filter((d) => new Date(d.date) <= new Date()), totalCount })
     } catch (err) {
         res.status(500).send('Error occured while fetching attendance details')
     }

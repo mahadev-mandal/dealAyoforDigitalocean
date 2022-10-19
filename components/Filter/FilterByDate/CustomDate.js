@@ -1,4 +1,4 @@
-import { Button, Stack, TextField, } from '@mui/material'
+import { Button, Stack, } from '@mui/material'
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
@@ -6,6 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
+import Calendar from '@sbmdkl/nepali-datepicker-reactjs';
+import '@sbmdkl/nepali-datepicker-reactjs/dist/index.css';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -19,10 +21,16 @@ export default function CustomDate({ open, handleClose, handleApply }) {
     const day = String("0" + date.getDate()).slice(-2);
     const [dateFrom, setDateFrom] = React.useState(`${year}-${month}-${day}`)
     const [dateTo, setDateTo] = React.useState(`${year}-${month}-${day}`)
-    
     return (
         <div>
             <Dialog
+                sx={{
+                    "& .MuiDialog-container": {
+                        alignItems: "flex-start",
+
+                    }
+                }}
+                PaperProps={{ style: { overflowY: 'visible' } }}
                 open={open}
                 TransitionComponent={Transition}
                 keepMounted
@@ -30,9 +38,20 @@ export default function CustomDate({ open, handleClose, handleApply }) {
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>{"Select Date Range"}</DialogTitle>
-                <DialogContent>
-                    <Stack direction="row" alignItems="center">
-                        <TextField
+
+                <DialogContent style={{ overflowY: 'visible', }} >
+                    <Stack alignItems="center" spacing={0.2} >
+
+
+                        <Calendar language="en" style={{ width: 300 }}
+                            onChange={({ adDate }) => setDateFrom(adDate)}
+                        />
+                        <span>to</span>
+                        <Calendar language="en" style={{ width: 300 }}
+                            onChange={({ adDate }) => setDateTo(adDate)}
+                        />
+
+                        {/* <TextField
                             type="date"
                             variant="outlined"
                             sx={{ mr: 1 }}
@@ -45,8 +64,8 @@ export default function CustomDate({ open, handleClose, handleApply }) {
                             variant="outlined"
                             value={dateTo}
                             onChange={e => setDateTo(e.target.value)}
-                        />
-                       
+                        /> */}
+
                     </Stack>
                 </DialogContent>
                 <DialogActions>
@@ -54,7 +73,7 @@ export default function CustomDate({ open, handleClose, handleApply }) {
                     <Button onClick={handleClose}>Close</Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </div >
     );
 }
 CustomDate.propTypes = {

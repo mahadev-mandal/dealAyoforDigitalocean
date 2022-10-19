@@ -65,7 +65,7 @@ const saveOrUpdateWorksheet = async (req, res) => {
         }
         const saveWorksheet = async (req) => {
             const worksheet = new worksheetModel({
-                date: new Date(req.body.date).setHours(0, 0, 0, 0),
+                date: new Date(req.body.date).toLocaleDateString(),
                 employees: [
                     {
                         dealAyoId: dealAyoId,
@@ -91,7 +91,8 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 const getWorkSheet = async (req, res) => {
     let DA;
-    const { dateFrom, dateTo, dealAyoId } = req.query;
+    const { dateFrom, dateTo, dealAyoId, } = req.query;
+   
     if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
         DA = tokenPayload(req.cookies.token).dealAyoId
     } else {
@@ -101,7 +102,7 @@ const getWorkSheet = async (req, res) => {
         let query = {
             date: {
                 "$gte": new Date(dateFrom),
-                "$lt": new Date(dateTo)
+                "$lte": new Date(dateTo)
             },
             "employees.dealAyoId": DA
         }
@@ -152,7 +153,7 @@ const getWorkSheet = async (req, res) => {
                         details: 'Sunday',
                         employees: [
                             {
-                                dealAyoId: DA
+                                dealAyoId: ''
                             }
                         ]
                     })
@@ -160,12 +161,12 @@ const getWorkSheet = async (req, res) => {
             }
             if (new Date(l).getDay() == 6) {
                 data.push({
-                    date:new Date(l).toLocaleDateString(),
+                    date: new Date(l).toLocaleDateString(),
                     type: 'saturday',
                     details: 'Saturday',
                     employees: [
                         {
-                            dealAyoId: DA
+                            dealAyoId: ''
                         }
                     ]
                 })
@@ -186,19 +187,6 @@ const getWorkSheet = async (req, res) => {
             l = new Date(nd)
         }
 
-        // if (new Date(dateFrom).toLocaleDateString() == new Date().toLocaleDateString()) {
-        //     const index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date().toLocaleDateString());
-        //     if (index === -1) {
-        //         data.push({
-        //             date: new Date(),
-        //             employees: [
-        //                 {
-        //                     dealAyoId: DA
-        //                 }
-        //             ]
-        //         })
-        //     }
-        // }
         res.json({ data: data.filter((d) => new Date(d.date) <= new Date()) });
     } catch (err) {
         console.log(err)
