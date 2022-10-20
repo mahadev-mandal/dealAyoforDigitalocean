@@ -185,7 +185,7 @@ const getWorkSheet = async (req, res) => {
             let nd = l.setDate(l.getDate() + 1);
             l = new Date(nd)
         }
-        if (dealAyoId == '') {
+        if (DA == '') {
             data = []
         }
         res.json({ data: data.filter((d) => new Date(d.date) <= new Date()) });

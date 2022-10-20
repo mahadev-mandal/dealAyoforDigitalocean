@@ -108,7 +108,7 @@ async function getAttendance(req, res) {
             let nd = l.setDate(l.getDate() + 1);
             l = new Date(nd)
         }
-        if (dealAyoId == '') {
+        if (DA == '') {
             data = [];
             totalCount=0;
         }
