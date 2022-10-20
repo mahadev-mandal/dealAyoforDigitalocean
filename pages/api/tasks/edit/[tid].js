@@ -11,6 +11,8 @@ export default function Tasks(req, res) {
             return getTasks(req, res);
         case 'PUT':
             return EditTask(req, res);
+        case 'DELETE':
+            return deleteTask(req, res);
         default:
             res.status(404).send('use proper method')
     }
@@ -67,5 +69,34 @@ const EditTask = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(500).send('Error while updating task')
+    }
+}
+
+const deleteTask = async (req, res) => {
+    const { tid } = req.query;
+    try {
+        const tasks = await tasksModel.findOneAndUpdate(
+            {
+                taskId: tid
+            },
+            {
+                $unset: {
+                    assignToDealAyoId: '',
+                    assignToName: '',
+                }
+            }
+        )
+        await productModel.updateMany({ _id: tasks.tasks.map((t) => t.tid) }, {
+            $unset: {
+                assignDate: '',
+                assignToDealAyoId: '',
+                assignToName: '',
+                tasksId: ''
+            }
+        }, { new: true })
+        
+        res.send('deleted')
+    } catch (err) {
+        res.status(500).send('error while deleting task');
     }
 }

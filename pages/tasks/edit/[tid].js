@@ -15,6 +15,7 @@ import EntryOrError from '../../../components/ExtraCells/EntryOrError';
 import ReturnTime from '../../../components/ExtraCells/ReturnTime';
 import AdditionalDetails from '../../../components/ExtraCells/Dialogs/AdditionalDetails';
 import FilterByEmp from '../../../components/Filter/FilterProducts/FilterByEmp';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 
 const tableHeading = ['model', 'Title', 'brand', 'supplier', 'Category', 'MRP', 'SP', 'assignTo', 'entry', 'error', 'time', 'more', 'remarks',];
@@ -72,6 +73,15 @@ function Tasks() {
             mutateTasks()
         })
     }
+    const handleDeleteTask = async () => {
+        setBackdropOpen(true);
+        await axios.delete(`${baseURL}/api/tasks/edit/${tid}`)
+            .then(() => {
+                setBackdropOpen(false);
+                router.push(`${baseURL}/tasks`)
+                mutateTasks()
+            })
+    }
 
     if (error1 || error) {
         return <div>Failed to load Tasks</div>
@@ -127,7 +137,14 @@ function Tasks() {
                     </Typography>
                 </Stack>
                 <Stack>
-                   
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleDeleteTask}
+                        startIcon={<DeleteIcon />}
+                    >
+                        Delete
+                    </Button>
                 </Stack>
             </Stack>
             <SimpleTable

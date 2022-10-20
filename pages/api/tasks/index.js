@@ -27,6 +27,7 @@ const getAllAssignedTasks = async (req, res) => {
                     "$gte": new Date(dateFrom),
                     "$lt": new Date(dateTo),
                 },
+
                 assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
             }
 
@@ -35,7 +36,8 @@ const getAllAssignedTasks = async (req, res) => {
             if (!dealAyoId == '') {
                 query.assignToDealAyoId = dealAyoId
             } else {
-                delete query['assignToDealAyoId'];
+                // delete query['assignToDealAyoId'];
+                query.assignToDealAyoId = { $exists: true }
             }
         }
         const tasks = await tasksModel.find(query);
