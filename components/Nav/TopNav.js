@@ -49,7 +49,7 @@ function TopNav() {
       })
   }
 
-  const { data } = useSWR(`${baseURL}/api/search?searchText=${searchText}`, fetchData)
+  const { data } = useSWR(!(searchText == '') ? `${baseURL}/api/search?searchText=${searchText}` : null, fetchData)
 
   const handleSearchClick = () => {
     router.push(`${baseURL}/search?searchText=${searchText}&pid`)

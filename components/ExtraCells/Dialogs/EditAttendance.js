@@ -46,10 +46,20 @@ export default function EditAttendance({ row, disabled }) {
             setOpen(false)
         })
     }
-
+    const showEdit = () => {
+        if ((parseJwt(Cookies.get('token')).role == 'super-admin')) {
+            if (row.type == 'saturday' || row.type=='holiday' ) {
+                return false
+            }else{
+                return true
+            }
+        } else {
+            return false
+        }
+    }
     return (
         <div>
-            {parseJwt(Cookies.get('token')).role == 'super-admin' ?
+            {showEdit() ?
                 <IconButton size="small"
                     disabled={disabled}
                     onClick={handleClickOpen}

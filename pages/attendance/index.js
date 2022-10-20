@@ -50,6 +50,7 @@ function Attendance() {
         mutate()
         setBackdropOpen(false);
         setActiveBtn(activeBtn)
+        return false;
     }
     const handleChangePage = async (event, newPage) => {
         setPage(parseInt(newPage));

@@ -55,10 +55,8 @@ function AttendanceTable({
 }) {
     const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
 
-
-
-    function sortAscFunc(a, b) {
-        return new Date(b.date) - new Date(a.date);
+    function sortByDateFunct(a, b) {
+        return new Date(a.date) - new Date(b.date);
     }
     return (
         <>
@@ -73,7 +71,7 @@ function AttendanceTable({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.sort(sortAscFunc).map((row, index1) => (
+                        {data.sort(sortByDateFunct).map((row, index1) => (
                             row.employees.map((item) => (
                                 <StyledTableRow
                                     title={row.details}
@@ -81,11 +79,10 @@ function AttendanceTable({
                                         ...returnAttendanceStyle(row),
                                         transition: '0.3s',
                                         '&:hover': {
-                                            background: 'rgba(3, 119, 252,0.5)'
+                                            background: 'rgba(190, 193, 196,0.8)'
                                         }
                                     }}
                                     key={item.dealAyoId}
-
                                 >
                                     <StyledTableCell component="th" scope="row">
                                         {index1 + 1}
@@ -105,7 +102,7 @@ function AttendanceTable({
                                             </StyledTableCell> :
                                             <StyledTableCell key={tableHeading[i + 2]}>
                                                 {returnComp(ExtraCells[tableHeading[i + 2]],
-                                                    { ...item, date: row.date }, tableHeading[i]
+                                                    { ...item, date: row.date, type: row.type }, tableHeading[i]
                                                 )}
                                             </StyledTableCell>
                                     ))}

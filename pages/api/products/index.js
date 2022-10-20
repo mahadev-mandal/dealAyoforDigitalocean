@@ -48,8 +48,13 @@ const getProducts = async (req, res) => {
         } else if (statusFilter == 'entry-done') {
             query.entryStatus = true;
             query.assignDate = { $ne: null }
+        } else if (statusFilter == 'entry-but-error') {
+            query.entryStatus = true;
+            query.errorTask = true;
+            query.assignDate = { $ne: null }
         } else if (statusFilter == 'entry-not-done') {
             query.entryStatus = false;
+            query.errorTask = false;
             query.assignDate = { $ne: null }
         } else if (statusFilter == 'error-tasks') {
             query.errorTask = true;

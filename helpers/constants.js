@@ -12,7 +12,7 @@ export const tasksColor = {
     60: 'pink',
     50: 'red',
 }
-export const absenceBg = 'rgba(235, 52, 88,0.5)';
+export const absenceBg = 'rgba(235, 52, 88,0.7)';
 export const halfBg = 'rgba(235, 52, 88,0.3)';
 export const satBg = 'rgba(227, 77, 77, 0.9)';
 export const holidayBg = 'rgba(3, 161, 252,0.5)';

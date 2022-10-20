@@ -25,7 +25,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function AddHoliday() {
     const [open, setOpen] = React.useState(false);
-    const [type, setType] = useState('saturday');
+    const [type, setType] = useState('holiday');
     const [details, setDetails] = useState('');
     const [date, setDate] = useState('');
     const [msg, setMsg] = useState('');
@@ -88,7 +88,7 @@ export default function AddHoliday() {
                                 label="Type"
                                 onChange={e => setType(e.target.value)}
                             >
-                                <MenuItem value="saturday">Saturday</MenuItem>
+                                {/* <MenuItem value="saturday">Saturday</MenuItem> */}
                                 <MenuItem value="holiday">Holiday</MenuItem>
                             </Select>
                         </FormControl>

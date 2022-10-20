@@ -20,6 +20,7 @@ function FilterByStatus({ statusFilter, onChange }) {
                     <MenuItem value="assigned" >Assigned</MenuItem>
                     <MenuItem value="unassigned" >Unassigned</MenuItem>
                     <MenuItem value="entry-done" >Entry Done</MenuItem>
+                    <MenuItem value="entry-but-error" >Entry But Error</MenuItem>
                     <MenuItem value="entry-not-done" >Entry not Done</MenuItem>
                     <MenuItem value="error-tasks" >Error Tasks</MenuItem>
 
