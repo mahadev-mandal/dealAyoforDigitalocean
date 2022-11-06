@@ -11,6 +11,7 @@ import axios from 'axios';
 import { baseURL } from '../../../helpers/constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { mutate } from 'swr';
+import showWorksheetEdit from '../../../controllers/showWorksheetEdit';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -32,7 +33,7 @@ export default function EditComment({ row, disabled }) {
             date: row.date,
             comment: comment,
             dealAyoId: row.dealAyoId,
-            name:row.name
+            name: row.name
         }).then(() => {
             mutate(`${baseURL}/api/worksheet`);
             setOpen(false)
@@ -41,13 +42,16 @@ export default function EditComment({ row, disabled }) {
 
     return (
         <div>
-            <IconButton size="small"
-                disabled={disabled}
-                onClick={handleClickOpen}
-                sx={{ p: 0, }}
-            >
-                <EditIcon />
-            </IconButton>
+            {showWorksheetEdit(row) ?
+                <IconButton size="small"
+                    disabled={disabled}
+                    onClick={handleClickOpen}
+                    sx={{ p: 0, }}
+                >
+                    <EditIcon />
+                </IconButton>
+                : ''
+            }
             <Dialog
                 open={open}
                 TransitionComponent={Transition}

@@ -72,6 +72,7 @@ export default function SimpleTable({
             }
         );
     }
+    console.log(data)
     return (
         <>
             <TableContainer component={Paper}>
@@ -116,6 +117,7 @@ export default function SimpleTable({
                                                 userSelect: 'all'
                                             }}
                                             onClick={(e) => copyToClipboard(e.target.innerText)}
+                                            title={row[head]}
                                         >
                                             {typeof (row[head]) == 'string' ?
                                                 head == 'title' ?

@@ -61,7 +61,7 @@ function Tasks() {
         return (
             <Box textAlign="center">
                 <Typography variant="h5">No Tasks Found</Typography>
-                <Button variant='outlined' sx={{ my: 1 }} disabled >Get Random Task</Button>
+                <Button variant='outlined' sx={{ my: 1 }} disabled>Get Random Task</Button>
             </Box>
         )
     }

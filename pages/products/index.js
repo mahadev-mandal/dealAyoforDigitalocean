@@ -96,11 +96,12 @@ function Products() {
   }
   const handleClickYes = async (type) => {
     if (type === "delete") {
-      await axios.delete(`${baseURL}/api/products`, {
+      return await axios.delete(`${baseURL}/api/products`, {
         data: { _ids: selected },
       })
         .then(() => {
           mutate();
+          return true
         });
     }
   };

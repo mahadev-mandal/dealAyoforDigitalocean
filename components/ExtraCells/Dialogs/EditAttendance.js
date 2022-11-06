@@ -10,9 +10,8 @@ import axios from 'axios';
 import { baseURL } from '../../../helpers/constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { mutate } from 'swr';
-import parseJwt from '../../../controllers/parseJwt';
-import Cookies from 'js-cookie';
 import { useState } from 'react';
+import showAttendEdit from '../../../controllers/showAttendEdit';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -46,20 +45,10 @@ export default function EditAttendance({ row, disabled }) {
             setOpen(false)
         })
     }
-    const showEdit = () => {
-        if ((parseJwt(Cookies.get('token')).role == 'super-admin')) {
-            if (row.type == 'saturday' || row.type=='holiday' ) {
-                return false
-            }else{
-                return true
-            }
-        } else {
-            return false
-        }
-    }
+
     return (
         <div>
-            {showEdit() ?
+            {showAttendEdit(row,'super-admin') ?
                 <IconButton size="small"
                     disabled={disabled}
                     onClick={handleClickOpen}

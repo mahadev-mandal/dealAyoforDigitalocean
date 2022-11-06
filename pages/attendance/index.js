@@ -18,7 +18,7 @@ import AddHoliday from '../../components/Dialogs/AddHolidays';
 import attendanceDownload from '../../controllers/attendanceDownload';
 import ColorBox from '../../components/ColorBox';
 
-const tableHeading = ['nepali Date', 'Date', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
+const tableHeading = ['Nepali date', 'Date', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
 const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
 
 function Attendance() {

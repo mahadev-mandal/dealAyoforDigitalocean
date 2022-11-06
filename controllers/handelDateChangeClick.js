@@ -1,3 +1,4 @@
+import NepaliDate from 'nepali-date-converter'
 
 const handleDateChangeClick = (d, df, dt) => {
     const date = new Date();
@@ -15,10 +16,13 @@ const handleDateChangeClick = (d, df, dt) => {
         dateFrom = prevWeekSun;
         dateTo = prevWeekCommingSat;
     } else if (d == 'thisMonth') {
-        const thisYear = new Date().getFullYear();
-        const thisMonth = new Date().getMonth(); //month starts from 0-11
-        dateFrom = new Date(thisYear, thisMonth, 1);
-        dateTo = new Date(thisYear, thisMonth + 1, 0);
+        // const thisYear = new Date().getFullYear();
+        // const thisMonth = new Date().getMonth(); //month starts from 0-11
+        // dateFrom = new Date(thisYear, thisMonth, 1);
+        const nepaliDateFrom = new NepaliDate()
+        nepaliDateFrom.setDate(1)
+        dateFrom = nepaliDateFrom.toJsDate()
+        dateTo = new Date();
     } else if (d == 'customDate') {
         dateFrom = new Date(df).setHours(0, 0, 0, 0);
         dateTo = new Date(dt).setHours(24);
