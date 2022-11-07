@@ -4,7 +4,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Box, LinearProgress, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import { employeeValidationEditSchema, } from '../../../utils/validationSchema';
 import axios from 'axios';
@@ -33,6 +33,8 @@ export default function EditEmployee({ empDetails, disabled }) {
     const [msg, setMsg] = React.useState('');
     const [level, setLevel] = React.useState(1);
     const [role, setRole] = useState('data-entry')
+    const [progress, setProgress] = useState(0);
+    const [profilePicPath, setProfilePicPath] = useState();
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -55,7 +57,7 @@ export default function EditEmployee({ empDetails, disabled }) {
         },
         validationSchema: employeeValidationEditSchema,
         async onSubmit() {
-            await axios.put(`${baseURL}/api/employees/${empDetails._id}`, { ...values, role, level })
+            await axios.put(`${baseURL}/api/employees/${empDetails._id}`, { ...values, role, level, profilePicPath })
                 .then(() => {
                     setOpen(false);
                     setMsg('');
@@ -66,6 +68,29 @@ export default function EditEmployee({ empDetails, disabled }) {
                 })
         }
     })
+    const handleFileChange = async (event) => {
+        // setErrMsg(null)
+        setProgress(0);
+        setMsg('')
+        const formData = new FormData();
+        const file = event.target.files[0];
+        var ext = file.name.substr(file.name.lastIndexOf('.') + 1);
+        const fileName = `${values.firstName}_${values.dealAyoId}.${ext}`
+        formData.append('theFiles', file, fileName);
+        await axios.post(`${baseURL}/api/uploadProfilePic`, formData, {
+            headers: { 'content-type': 'multipart/form-data' },
+            onUploadProgress: (event) => {
+                setProgress(Math.round((event.loaded * 100) / event.total))
+            },
+        }).then((r) => {
+            setMsg(r.data);
+            setProfilePicPath(`/profilePic/${fileName}`)
+            // setErrMsg(null)
+        }).catch((err) => {
+            // setErrMsg(err.response.data)
+            console.log(err)
+        })
+    }
 
     return (
         <div>
@@ -130,6 +155,26 @@ export default function EditEmployee({ empDetails, disabled }) {
                             }}
                         />
                     ))}
+                    {values.firstName && values.dealAyoId &&
+                        <Stack spacing={1} sx={{ mt: 2, border: '2px dashed gray', p: 1 }}>
+                            <input
+                                type="file"
+                                id=""
+                                onChange={handleFileChange}
+                                name="theFiles"
+                                accept="image/jpeg,image/gif,image/png"
+                            />
+                            {progress > 0 &&
+                                <Box>
+                                    <LinearProgress
+                                        sx={{ height: 10, }}
+                                        value={progress}
+                                        variant="determinate"
+                                    />
+                                </Box>
+                            }
+                        </Stack>
+                    }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>

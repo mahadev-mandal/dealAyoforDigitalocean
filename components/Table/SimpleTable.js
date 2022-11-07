@@ -72,7 +72,6 @@ export default function SimpleTable({
             }
         );
     }
-    console.log(data)
     return (
         <>
             <TableContainer component={Paper}>

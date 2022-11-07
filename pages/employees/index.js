@@ -12,9 +12,10 @@ import SimpleTable from '../../components/Table/SimpleTable';
 import handleMutateData from '../../controllers/handleMutateData';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
+import ShowProfile from '../../components/ExtraCells/showProfile';
 
-const tableHeading = ['DealAyoId', 'mobile', 'email', 'start time', 'end time', 'tasks decr',];
-const dataHeading = ['dealAyoId', 'mobile', 'email', 'startTime', 'endTime', 'decreaseTask']
+const tableHeading = ['DealAyoId', 'mobile', 'email', 'start time', 'end time', 'tasks decr', 'profile'];
+const dataHeading = ['dealAyoId', 'mobile', 'email', 'startTime', 'endTime', 'decreaseTask', '']
 
 
 function Employees() {
@@ -72,7 +73,7 @@ function Employees() {
         });
     }
   };
-  
+
   if (error) {
     return <div>Failed to load Employees details</div>
   } else if (!employees) {
@@ -118,6 +119,7 @@ function Employees() {
         onSelectChange={handleSelectChange}
         onAllSelectChange={handleAllSelectChange}
         selected={selected}
+        ExtraCells={{ profile: ShowProfile }}
       />
     </div>
   )

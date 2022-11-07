@@ -20,6 +20,7 @@ export default function attend(req, res) {
 
 async function getAttendance(req, res) {
     let DA;
+    const sunHolidayEmp = ['r11']
     const { dealAyoId, page, rowsPerPage, dateFrom, dateTo } = req.query;
     if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
         DA = tokenPayload(req.cookies.token).dealAyoId
@@ -35,7 +36,7 @@ async function getAttendance(req, res) {
             "employees.dealAyoId": DA
         }
 
-        const holidays = await holidayModel.find({
+        let holidays = await holidayModel.find({
             date: {
                 "$gte": new Date(dateFrom),
                 "$lt": new Date(dateTo)
@@ -59,7 +60,12 @@ async function getAttendance(req, res) {
                 date: 1,
                 'employees.$': 1
             });
-
+        
+        //remove sunday holiday for employee not working sunday    
+        if (sunHolidayEmp.includes(DA)) {
+            holidays = holidays.filter(h => new Date(h.date).getDay() != 0)
+        }
+        //push holiday to data
         holidays.forEach((item) => {
             data.push({
                 date: new Date(item.date).toLocaleDateString(),
@@ -75,8 +81,8 @@ async function getAttendance(req, res) {
         })
 
         let l = new Date(dateFrom);
-        const sunHolidayEmp = ['r11']
         while (l < new Date(dateTo)) {
+            // push sunday as holiday to data 
             if (sunHolidayEmp.includes(DA)) {
                 if (new Date(l).getDay() == 0) {
                     data.push({
@@ -92,6 +98,7 @@ async function getAttendance(req, res) {
                     })
                 }
             }
+            // push saturday to data
             if (new Date(l).getDay() == 6) {
                 data.push({
                     date: new Date(l).toLocaleDateString(),
@@ -110,7 +117,7 @@ async function getAttendance(req, res) {
         }
         if (DA == '') {
             data = [];
-            totalCount=0;
+            totalCount = 0;
         }
         res.status(200).json({ data: data.filter((d) => new Date(d.date) <= new Date()), totalCount })
     } catch (err) {

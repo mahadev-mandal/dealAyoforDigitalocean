@@ -6,6 +6,8 @@ db_conn();
 
 export default function employee(req, res) {
     switch (req.method) {
+        case 'GET':
+            return getEmployee(req, res);
         case 'PUT':
             return updateEmployee(req, res);
         case 'DELETE':
@@ -31,6 +33,9 @@ const updateEmployee = async (req, res) => {
         emp.startTime = req.body.startTime;
         emp.endTime = req.body.endTime;
         emp.decreaseTask = req.body.decreaseTask;
+        if (req.body.profilePicPath) {
+            emp.profilePicPath = req.body.profilePicPath
+        }
         const passwordMatch = await bcrypt.compare(req.body.password, emp.password);
         if (req.body.password != '' && !passwordMatch) {
             emp.password = req.body.password;
@@ -55,4 +60,23 @@ const deleteEmployee = async (req, res) => {
         }).catch(() => {
             res.status(500).send('Something went wrong')
         })
+}
+
+const getEmployee = async (req, res) => {
+    try {
+        const { empid } = req.query;
+        const employee = await employeeModel.findOne({
+            dealAyoId: empid
+        },
+            {
+                password: 0,
+                tokens: 0,
+                _id: 0,
+                __v: 0
+            }
+        )
+        res.json(employee)
+    } catch (err) {
+        res.status(500).send("error while getting employee details")
+    }
 }

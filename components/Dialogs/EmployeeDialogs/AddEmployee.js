@@ -4,7 +4,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { MenuItem, Select, TextField, Typography } from '@mui/material';
+import { LinearProgress, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import { employeeValidationSchema } from '../../../utils/validationSchema';
 import axios from 'axios';
@@ -13,6 +13,7 @@ import { mutate } from 'swr';
 import { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import PropTypes from 'prop-types';
+import { Box } from '@mui/system';
 
 
 const arr = [
@@ -31,12 +32,16 @@ export default function AddEmployee() {
     const [open, setOpen] = React.useState(false);
     const [msg, setMsg] = React.useState('');
     const [role, setRole] = useState('data-entry')
+    const [progress, setProgress] = useState(0);
+    const [profilePicPath, setProfilePicPath] = useState();
     const handleClickOpen = () => {
         setOpen(true);
     };
     const handleClose = () => {
         setOpen(false);
     };
+
+
 
     const { handleSubmit, handleChange, handleBlur, touched, errors, values } = useFormik({
         initialValues: {
@@ -52,7 +57,7 @@ export default function AddEmployee() {
         },
         validationSchema: employeeValidationSchema,
         async onSubmit() {
-            await axios.post(`${baseURL}/api/employees`, { ...values, role: role })
+            await axios.post(`${baseURL}/api/employees`, { ...values, role, profilePicPath })
                 .then(() => {
                     setOpen(false);
                     setMsg('');
@@ -63,6 +68,29 @@ export default function AddEmployee() {
         }
     })
 
+    const handleFileChange = async (event) => {
+        // setErrMsg(null)
+        setProgress(0);
+        setMsg('')
+        const formData = new FormData();
+        const file = event.target.files[0];
+        var ext = file.name.substr(file.name.lastIndexOf('.') + 1);
+        const fileName = `${values.firstName}_${values.dealAyoId}.${ext}`
+        formData.append('theFiles', file, fileName);
+        await axios.post(`${baseURL}/api/uploadProfilePic`, formData, {
+            headers: { 'content-type': 'multipart/form-data' },
+            onUploadProgress: (event) => {
+                setProgress(Math.round((event.loaded * 100) / event.total))
+            },
+        }).then((r) => {
+            setMsg(r.data);
+            setProfilePicPath(`/profilePic/${fileName}`)
+            // setErrMsg(null)
+        }).catch((err) => {
+            // setErrMsg(err.response.data)
+            console.log(err)
+        })
+    }
     return (
         <div>
             <Button variant="contained" color="success" onClick={handleClickOpen}>
@@ -108,6 +136,26 @@ export default function AddEmployee() {
                             }}
                         />
                     ))}
+                    {values.firstName && values.dealAyoId &&
+                        <Stack spacing={1} sx={{ mt: 2, border: '2px dashed gray', p: 1 }}>
+                            <input
+                                type="file"
+                                id=""
+                                onChange={handleFileChange}
+                                name="theFiles"
+                                accept="image/jpeg,image/gif,image/png"
+                            />
+                            {progress > 0 &&
+                                <Box>
+                                    <LinearProgress
+                                        sx={{ height: 10, }}
+                                        value={progress}
+                                        variant="determinate"
+                                    />
+                                </Box>
+                            }
+                        </Stack>
+                    }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>

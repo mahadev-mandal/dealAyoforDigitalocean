@@ -77,10 +77,7 @@ function AttendanceTable({
                                     title={row.details}
                                     sx={{
                                         ...returnAttendanceStyle(row),
-                                        transition: '0.3s',
-                                        '&:hover': {
-                                            background: 'rgba(190, 193, 196,0.8)'
-                                        }
+                                        
                                     }}
                                     key={item.dealAyoId}
                                 >

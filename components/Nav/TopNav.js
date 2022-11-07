@@ -1,7 +1,6 @@
 import { Autocomplete, Avatar, Button, Divider, Grid, IconButton, Paper, Stack, TextField, Tooltip, } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import logo from "../../assets/images/header-logo.png";
 import SearchIcon from "@mui/icons-material/Search";
 import { baseURL, containerPadding } from "../../helpers/constants";
@@ -9,7 +8,7 @@ import Cookies from "js-cookie";
 import parseJwt from "../../controllers/parseJwt";
 import { useRouter } from "next/router";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import useSWR from "swr";
 
@@ -27,17 +26,23 @@ function Logout() {
         throw new Error(err);
       })
   }
+  const handleMyProfile = () => {
+    router.push(`${baseURL}/user/${parseJwt(Cookies.get('token')).dealAyoId}`)
+  }
   return (
-    <Button onClick={handleLogout} variant="text" sx={{ height: 20, fontSize: 12, }}>
-      Logout
-    </Button>
+    <Stack spacing={0.5}>
+      <Button onClick={handleMyProfile} variant="text" sx={{ height: 20, fontSize: 12, }}>
+        My Profile
+      </Button>
+      <Button onClick={handleLogout} variant="text" sx={{ height: 20, fontSize: 12, }}>
+        Logout
+      </Button>
+    </Stack>
   )
 }
 
 function TopNav() {
   const router = useRouter()
-  const [avatarLetter, setAvatarLetter] = useState('')
-  const token = Cookies.get('token');
   const [searchText, setSearchText] = useState('');
   const [open, setOpen] = useState(true);
 
@@ -49,7 +54,7 @@ function TopNav() {
       })
   }
 
-  const { data } = useSWR(!(searchText == '') ? `${baseURL}/api/search?searchText=${searchText}` : null, fetchData)
+  const { data } = useSWR(!(searchText == '') ? `${baseURL}/api/search?searchText=${searchText}` : null, fetchData);
 
   const handleSearchClick = () => {
     router.push(`${baseURL}/search?searchText=${searchText}&pid`)
@@ -64,21 +69,6 @@ function TopNav() {
       }
     }
   }
-
-
-  const returnFirstLetter = () => {
-    if (token) {
-      let name = parseJwt(Cookies.get('token')).name;
-      name = name.replace(/\s+/g, '');
-      setAvatarLetter(name.charAt(0));
-    } else {
-      setAvatarLetter('')
-    }
-  }
-
-  useEffect(() => {
-    returnFirstLetter()
-  }, [token])
 
   return (
     <>
@@ -174,9 +164,10 @@ function TopNav() {
                 alignItems="center"
                 sx={{ color: 'white' }}
               >
-                <Avatar sx={{ textTransform: 'uppercase', width: 35, height: 35 }}>
+                {/* <Avatar sx={{ textTransform: 'uppercase', width: 35, height: 35 }}>
                   {avatarLetter}
-                </Avatar>
+                </Avatar> */}
+                <ReturnAvatar />
                 <ArrowDropDownIcon />
               </Stack>
             </Tooltip>
@@ -189,3 +180,18 @@ function TopNav() {
 
 export default TopNav;
 
+const ReturnAvatar = () => {
+  const token = Cookies.get('token');
+  const [user, setUser] = useState({})
+
+  useEffect(() => {
+    setUser(parseJwt(token))
+  }, [token])
+
+  if (user.profilePicPath) {
+    return <Avatar alt={user.firstName} src={user.profilePicPath} />
+  }
+  return <Avatar sx={{ textTransform: 'uppercase', width: 35, height: 35 }}>
+    {user.name && user.name.replace(/\s+/g, '').charAt(0)}
+  </Avatar>
+}

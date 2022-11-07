@@ -98,22 +98,6 @@ function Attendance() {
             totalAbsents: absent.length + half.length * 0.5
         }
     }
-    const getEmpDetails = () => {
-
-        const empDetails = attendances.data.filter((d) => d.employees[0].attendanceStatus == 'Normal')
-
-        if (empDetails.length > 0) {
-            return empDetails[0].employees[0];
-
-        } else {
-            return {
-                additionalDetails: {
-                    Shift: ''
-                }
-            }
-        }
-
-    }
     // var timeStart = new Date("01/05/2007 " + '10:5:6')
     // console.log(new Date(timeStart))
     return (
@@ -166,10 +150,35 @@ function Attendance() {
                 justifyContent="space-between"
             >
                 <Stack direction="row" spacing={2}>
-                    <Typography><span>Total Absents: </span><span style={{ fontWeight: 'bold' }}>{countData().totalAbsents} days</span></Typography>
-                    <Typography><span>Id: </span><span style={{ fontWeight: 'bold' }}>{emp.length > 0 && emp[0].dealAyoId}</span></Typography>
-                    <Typography><span>Name: </span><span style={{ fontWeight: 'bold' }}>{emp.length > 0 && emp[0].firstName}</span></Typography>
-                    <Typography><span>Shift: </span><span style={{ fontWeight: 'bold' }}>{getEmpDetails().additionalDetails.Shift}</span></Typography>
+                    {emp.length > 0 &&
+                        <>
+                            <Typography>
+                                <span>Total Absents: </span>
+                                <span style={{ fontWeight: 'bold' }}>
+                                    {countData().totalAbsents} days
+                                </span>
+                            </Typography>
+                            <Typography>
+                                <span>Id: </span>
+                                <span style={{ fontWeight: 'bold' }}>
+                                    {emp[0].dealAyoId}
+                                </span>
+                            </Typography>
+                            <Typography>
+                                <span>Name: </span>
+                                <span style={{ fontWeight: 'bold' }}>
+                                    {emp[0].firstName}
+                                </span>
+                            </Typography>
+                            <Typography>
+                                <span>Shift: </span>
+                                <span style={{ fontWeight: 'bold' }}>
+                                    {`${emp[0].startTime} To ${emp[0].endTime}`}
+                                </span>
+                            </Typography>
+                        </>
+
+                    }
                 </Stack>
                 <Stack direction="row" spacing={1.3}>
                     <ColorBox bgColor={satBg} label="Saturday" />
