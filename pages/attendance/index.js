@@ -76,12 +76,11 @@ function Attendance() {
     } else if (!attendances || !employees) {
         return <div>Please wait loading...</div>
     }
-    const emp = employees.data.filter((e) => e.dealAyoId == toEmp)
+    let emp;
     if (!(parseJwt(Cookies.get('token')).role == 'super-admin')) {
-        emp[0] = {
-            firstName: parseJwt(Cookies.get('token')).name,
-            dealAyoId: parseJwt(Cookies.get('token')).dealAyoId,
-        }
+        emp = employees.data.filter((e) => e.dealAyoId == parseJwt(Cookies.get('token')).dealAyoId)
+    } else {
+        emp = employees.data.filter((e) => e.dealAyoId == toEmp)
     }
     const countData = () => {
         const absent = attendances.data.filter((d) => {
@@ -173,7 +172,7 @@ function Attendance() {
                             <Typography>
                                 <span>Shift: </span>
                                 <span style={{ fontWeight: 'bold' }}>
-                                    {`${emp[0].startTime} To ${emp[0].endTime}`}
+                                    {emp[0].startTime} To {emp[0].endTime}
                                 </span>
                             </Typography>
                         </>
