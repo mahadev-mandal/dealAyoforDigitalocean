@@ -12,7 +12,7 @@ import SimpleTable from '../../components/Table/SimpleTable';
 import handleMutateData from '../../controllers/handleMutateData';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
-import ShowProfile from '../../components/ExtraCells/showProfile';
+import ShowProfile from '../../components/ExtraCells/ShowProfile';
 
 const tableHeading = ['DealAyoId', 'mobile', 'email', 'start time', 'end time', 'tasks decr', 'profile'];
 const dataHeading = ['dealAyoId', 'mobile', 'email', 'startTime', 'endTime', 'decreaseTask', '']
