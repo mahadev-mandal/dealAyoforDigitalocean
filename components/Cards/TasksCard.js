@@ -1,10 +1,8 @@
 import * as React from 'react';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 import Card from '@mui/material/Card';
 import styles from '../../styles/TasksCard.module.css';
-import parseJwt from '../../controllers/parseJwt';
 import { green } from '@mui/material/colors';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -14,6 +12,9 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
+import { useContext } from 'react';
+import { UserContext } from '../../context/UserProvider';
+
 // import moment from 'moment';
 
 // import { styled } from '@mui/material/styles';
@@ -33,6 +34,7 @@ import { useRouter } from 'next/router';
 const arr = [0, 20, 40, 60, 80, 100];
 
 export default function TasksCard({ tasks, workType, link }) {
+  const user = useContext(UserContext);
   const router = useRouter();
   const completedTasks = tasks.tasks.filter(t => t.entryStatus).length;
   const errorTasks = tasks.tasks.filter(t => t.errorTask).length;
@@ -75,7 +77,6 @@ export default function TasksCard({ tasks, workType, link }) {
             }}
             className={styles.card}
           >
-            {parseJwt}
             <CardContent>
               <Typography variant="body2" component="div" color="#FF00FF" sx={{ textDecoration: 'underline' }}>
                 {workType}
@@ -86,7 +87,7 @@ export default function TasksCard({ tasks, workType, link }) {
               <Typography sx={{ fontSize: 13.5, fontWeight: 'bold' }} color="text.secondary" gutterBottom>
                 {new Date(tasks.date).toDateString()}
               </Typography>
-              {parseJwt(Cookies.get('token')).role == 'super-admin' &&
+              {user.role == 'super-admin' &&
                 <IconButton
                   size="small"
                   sx={{
@@ -132,7 +133,7 @@ export default function TasksCard({ tasks, workType, link }) {
 TasksCard.propTypes = {
   tasks: PropTypes.object,
   workType: PropTypes.string,
-  link:PropTypes.string,
+  link: PropTypes.string,
 }
 
 // function TooltipComp() {

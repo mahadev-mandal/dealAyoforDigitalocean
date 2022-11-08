@@ -16,11 +16,11 @@ import { baseURL } from '../../helpers/constants';
 import FilterByEmp from '../Filter/FilterProducts/FilterByEmp';
 import useSWR from 'swr';
 import fetchData from '../../controllers/fetchData';
-import parseJwt from '../../controllers/parseJwt';
-import Cookies from 'js-cookie';
+import { useContext } from 'react';
+import { UserContext } from '../../context/UserProvider';
 
-export default function UploadFileDialog() {
-    let user = parseJwt(Cookies.get('token'));
+export default function CountTasks() {
+    const user = useContext(UserContext);
     const [open, setOpen] = React.useState(false);
     const [data, setData] = useState({});
     const [backdropOpen, setBackdropOpen] = useState(false);
@@ -62,6 +62,7 @@ export default function UploadFileDialog() {
     } else if (!employees) {
         return 'loading...'
     }
+
     return (
         <div>
             <Backdrop

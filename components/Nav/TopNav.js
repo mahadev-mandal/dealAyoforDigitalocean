@@ -5,16 +5,17 @@ import logo from "../../assets/images/header-logo.png";
 import SearchIcon from "@mui/icons-material/Search";
 import { baseURL, containerPadding } from "../../helpers/constants";
 import Cookies from "js-cookie";
-import parseJwt from "../../controllers/parseJwt";
 import { useRouter } from "next/router";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import useSWR from "swr";
+import { useContext } from "react";
+import { UserContext } from "../../context/UserProvider";
 
 function Logout() {
-  const router = useRouter()
-
+  const router = useRouter();
+  const user = useContext(UserContext);
   const handleLogout = async () => {
     await axios.post(`${baseURL}/api/logout`)
       .then((res) => {
@@ -27,7 +28,7 @@ function Logout() {
       })
   }
   const handleMyProfile = () => {
-    router.push(`${baseURL}/user/${parseJwt(Cookies.get('token')).dealAyoId}`)
+    router.push(`${baseURL}/user/${user.dealAyoId}`)
   }
   return (
     <Stack spacing={0.5}>
@@ -183,9 +184,9 @@ export default TopNav;
 const ReturnAvatar = () => {
   const token = Cookies.get('token');
   const [user, setUser] = useState({})
-
+  const usr = useContext(UserContext);
   useEffect(() => {
-    setUser(parseJwt(token))
+    setUser(usr)
   }, [token])
 
   if (user.profilePicPath) {

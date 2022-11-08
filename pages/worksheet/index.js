@@ -1,5 +1,4 @@
 import { Backdrop, CircularProgress, Stack, Typography } from '@mui/material'
-import Cookies from 'js-cookie'
 import Head from 'next/head'
 import React, { useState } from 'react'
 import useSWR from 'swr'
@@ -11,7 +10,6 @@ import AttendanceTable from '../../components/Table/AttendanceTable'
 import fetchData from '../../controllers/fetchData'
 import handleDateChangeClick from '../../controllers/handelDateChangeClick'
 import handleMutateData from '../../controllers/handleMutateData'
-import parseJwt from '../../controllers/parseJwt'
 import { baseURL } from '../../helpers/constants'
 
 const tableHeading = ['Nepali date', 'date', 'Id', 'comment', 'edit'];
@@ -81,7 +79,6 @@ function WorkSheet() {
     function sortAscFunc(a, b) {
         return new Date(b.date) - new Date(a.date);
     }
-    console.log((new Date()).getTimezoneOffset())
     return (
         <div>
             <Head>
@@ -102,14 +99,13 @@ function WorkSheet() {
                     activeBtn={activeBtn}
                     onClick={handleDateClick}
                 />
-                {parseJwt(Cookies.get('token')).role == 'super-admin' &&
-                    <FilterByEmp
-                        onChange={handleEmpChange}
-                        toEmp={toEmp}
-                        employees={employees.data}
-                        width="150px"
-                    />
-                }
+                <FilterByEmp
+                    onChange={handleEmpChange}
+                    toEmp={toEmp}
+                    employees={employees.data}
+                    width="150px"
+                    visibleFor={['super-admin']}
+                />
                 <CommentModal
                     collName="attendance"
                     mutate={mutate}

@@ -11,17 +11,18 @@ import handleMutateData from '../../controllers/handleMutateData';
 import { absenceBg, baseURL, halfBg, holidayBg, satBg } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 import FilterByEmp from '../../components/Filter/FilterProducts/FilterByEmp';
-import parseJwt from '../../controllers/parseJwt'
-import Cookies from 'js-cookie';
 import EditAttendance from '../../components/ExtraCells/Dialogs/EditAttendance';
 import AddHoliday from '../../components/Dialogs/AddHolidays';
 import attendanceDownload from '../../controllers/attendanceDownload';
 import ColorBox from '../../components/ColorBox';
+import { useContext } from 'react';
+import { UserContext } from '../../context/UserProvider';
 
 const tableHeading = ['Nepali date', 'Date', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
 const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
 
 function Attendance() {
+    const user = useContext(UserContext);
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
     const [backdropOpen, setBackdropOpen] = useState(false);
     const [activeBtn, setActiveBtn] = useState('today');
@@ -77,8 +78,8 @@ function Attendance() {
         return <div>Please wait loading...</div>
     }
     let emp;
-    if (!(parseJwt(Cookies.get('token')).role == 'super-admin')) {
-        emp = employees.data.filter((e) => e.dealAyoId == parseJwt(Cookies.get('token')).dealAyoId)
+    if (user.role == 'super-admin') {
+        emp = employees.data.filter((e) => e.dealAyoId == user.dealAyoId)
     } else {
         emp = employees.data.filter((e) => e.dealAyoId == toEmp)
     }
@@ -116,7 +117,7 @@ function Attendance() {
 
             <Stack spacing={1} direction="row" sx={{ mb: 0.5 }} justifyContent="space-between" >
                 <Stack direction="row" spacing={1}>
-                    {parseJwt(Cookies.get('token')).role == 'super-admin' && <>
+                    {user.role == 'super-admin' && <>
                         <Button
                             variant='outlined'
                             onClick={() => attendanceDownload(attendances.data, emp[0].firstName)}
@@ -132,12 +133,13 @@ function Attendance() {
                     />
                 </Stack>
                 <Stack>
-                    {parseJwt(Cookies.get('token')).role == 'super-admin' &&
+                    {user.role == 'super-admin' &&
                         <FilterByEmp
                             employees={employees.data}
                             toEmp={toEmp}
                             onChange={handleEmpChange}
                             width="150px"
+                            visibleFor={['super-admin']}
                         />
                     }
                 </Stack>

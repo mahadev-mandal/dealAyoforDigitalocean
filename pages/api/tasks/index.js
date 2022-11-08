@@ -30,7 +30,6 @@ const getAllAssignedTasks = async (req, res) => {
 
                 assignToDealAyoId: tokenPayload(req.cookies.token).dealAyoId,
             }
-
         }
         if (tokenPayload(req.cookies.token).role === 'super-admin') {
             if (!dealAyoId == '') {

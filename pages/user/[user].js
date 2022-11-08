@@ -18,6 +18,12 @@ function MyProfile() {
                 return 'Active'
             }
             return 'Disabled'
+        } else if (d == 'endTime' || d == 'startTime') {
+            const timeString12hr = new Date('1970-01-01T' + data[d] + 'Z')
+                .toLocaleTimeString('en-US',
+                    { timeZone: 'UTC', hour12: true, hour: 'numeric', minute: 'numeric' }
+                );
+            return timeString12hr
         } else {
             if (data[d] == '') {
                 return '...'
@@ -30,6 +36,10 @@ function MyProfile() {
     } else if (!data) {
         return <div>Loading...</div>
     }
+    // delete data['decreaseTask']
+    let emp = { ...data };
+    delete emp['profilePicPath']
+    delete emp['decreaseTask']
     return (
         <Box>
             <Stack direction="row"
@@ -55,12 +65,17 @@ function MyProfile() {
                 <Stack direction="row" spacing={4}>
 
                     <Stack spacing={2}>
-                        {Object.keys(data).map(d => (
-                            <Typography key={d}>{d}</Typography>
+                        {Object.keys(emp).map(d => (
+                            <Typography key={d} textTransform="capitalize">{d}</Typography>
                         ))}
                     </Stack>
                     <Stack spacing={2}>
-                        {Object.keys(data).map(d => (
+                        {Object.keys(emp).map(d => (
+                            <Typography key={d} textTransform="capitalize">:</Typography>
+                        ))}
+                    </Stack>
+                    <Stack spacing={2}>
+                        {Object.keys(emp).map(d => (
                             <Stack key={d} direction="row" spacing={1} color="#2196F3">
                                 <Typography >{returnField(d)}</Typography>
                             </Stack>

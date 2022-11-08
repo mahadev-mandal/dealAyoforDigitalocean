@@ -77,7 +77,6 @@ function Categories() {
     } else if (!categories) {
         return <div>Please wait Loading...</div>
     }
-    console.log(selected)
     return (
         <div>
             <Head>

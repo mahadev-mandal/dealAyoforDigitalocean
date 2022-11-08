@@ -6,8 +6,6 @@ import TasksCard from "../../components/Cards/TasksCard";
 import { Box, CircularProgress, Stack, Typography, Backdrop, Button, } from "@mui/material";
 import fetchData from "../../controllers/fetchData";
 import FilterByDate from "../../components/Filter/FilterByDate";
-import Cookies from "js-cookie";
-import parseJwt from "../../controllers/parseJwt";
 import Head from "next/head";
 import LinearProgressBar from "../../components/ProgressBar/LinearProgress";
 import handleDateChangeClick from "../../controllers/handelDateChangeClick";
@@ -16,9 +14,12 @@ import FilterByEmp from "../../components/Filter/FilterProducts/FilterByEmp";
 import { useRouter } from "next/router";
 import AddIcon from '@mui/icons-material/Add';
 import CountTasks from "../../components/Dialogs/CountTasks";
+import { useContext } from "react";
+import { UserContext } from "../../context/UserProvider";
 
 function Tasks() {
-    const router = useRouter()
+    const router = useRouter();
+    const user = useContext(UserContext);
     const [activeBtn, setActiveBtn] = useState('today');
     const [dateFrom, setDateFrom] = useState(new Date().setHours(0, 0, 0, 0));
     const [dateTo, setDateTo] = useState(new Date().setHours(24));
@@ -106,7 +107,7 @@ function Tasks() {
             </Backdrop>
             <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
                 <Stack>
-                    {parseJwt(Cookies.get('token')).role == 'super-admin' &&
+                    {user.role == 'super-admin' &&
                         <Stack direction="row" spacing={1}>
                             <Button variant="contained" color="success" onClick={handleAddExcelTasks}>
                                 <AddIcon /> Excel Tasks
@@ -136,6 +137,7 @@ function Tasks() {
                         toEmp={toEmp}
                         employees={employees.data}
                         width="150px"
+                        visibleFor={['super-admin']}
                     />
                 </Stack>
             </Stack>
