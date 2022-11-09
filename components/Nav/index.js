@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../../context/UserProvider";
 import Menu from "./Menu";
 import TopNav from "./TopNav"
@@ -14,4 +14,4 @@ function Nav() {
     )
 }
 
-export default Nav
+export default (Nav)

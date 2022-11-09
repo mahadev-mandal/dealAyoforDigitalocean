@@ -62,4 +62,6 @@ FilterByDate.propTypes = {
     onClick: PropTypes.func
 }
 
-export default FilterByDate
+const isEqual = (prevProps, nextProps) => prevProps.activeBtn == nextProps.activeBtn
+
+export default React.memo(FilterByDate, isEqual)

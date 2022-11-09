@@ -12,11 +12,11 @@ import { absenceBg, baseURL, halfBg, holidayBg, satBg } from '../../helpers/cons
 import { withAuth } from '../../HOC/withAuth';
 import FilterByEmp from '../../components/Filter/FilterProducts/FilterByEmp';
 import EditAttendance from '../../components/ExtraCells/Dialogs/EditAttendance';
-import AddHoliday from '../../components/Dialogs/AddHolidays';
 import attendanceDownload from '../../controllers/attendanceDownload';
 import ColorBox from '../../components/ColorBox';
 import { useContext } from 'react';
 import { UserContext } from '../../context/UserProvider';
+import AddHoliday from '../../components/Dialogs/AddHolidays';
 
 const tableHeading = ['Nepali date', 'Date', 'status', 'Entry Time', 'Exit Time', 'late', 'early leave', 'worked', 'break time', 'edit'];
 const dataHeading = ['attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime', ''];
@@ -79,9 +79,9 @@ function Attendance() {
     }
     let emp;
     if (user.role == 'super-admin') {
-        emp = employees.data.filter((e) => e.dealAyoId == user.dealAyoId)
-    } else {
         emp = employees.data.filter((e) => e.dealAyoId == toEmp)
+    } else {
+        emp = employees.data.filter((e) => e.dealAyoId == user.dealAyoId)
     }
     const countData = () => {
         const absent = attendances.data.filter((d) => {

@@ -29,7 +29,7 @@ function FilterByEmp({ onChange, toEmp, employees, disabled, width, visibleFor }
             </div>
         )
 
-    }else{
+    } else {
         return null
     }
 }
@@ -45,4 +45,8 @@ FilterByEmp.propTypes = {
 FilterByEmp.defaultProps = {
     visibleFor: [],
 }
-export default FilterByEmp
+const isEqual = (prevProps, nextProps) => {
+    return prevProps.toEmp == nextProps.toEmp &&
+        prevProps.disabled == nextProps.disabled
+}
+export default React.memo(FilterByEmp, isEqual)

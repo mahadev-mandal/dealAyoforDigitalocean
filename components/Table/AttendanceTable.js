@@ -54,7 +54,6 @@ function AttendanceTable({
     ExtraCells
 }) {
     const returnComp = (Comp, row, head) => <Comp row={row} head={head} />
-
     function sortByDateFunct(a, b) {
         return new Date(a.date) - new Date(b.date);
     }

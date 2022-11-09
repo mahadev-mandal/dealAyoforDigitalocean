@@ -71,7 +71,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AddAttendanceDialog({ collName }) {
+function AddAttendanceDialog({ collName }) {
     const [open, setOpen] = React.useState(false);
     const [file, setFile] = React.useState(null);
     const [data, setData] = React.useState([]);
@@ -163,7 +163,6 @@ export default function AddAttendanceDialog({ collName }) {
     // const a = abc.map((i,index)=>{
     //     return i === Object.keys(obj)[index]
     // })
-    // console.log(a)
     return (
         <div>
             <Button variant="contained" color="success" onClick={handleClickOpen}>
@@ -240,3 +239,5 @@ export default function AddAttendanceDialog({ collName }) {
 AddAttendanceDialog.propTypes = {
     collName: PropTypes.string,
 }
+
+export default React.memo(AddAttendanceDialog);

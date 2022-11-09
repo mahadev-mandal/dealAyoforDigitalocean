@@ -20,8 +20,12 @@ const loginUser = async (req, res) => {
         if (emp) {
             const passwordMatch = await bcrypt.compare(req.body.password, emp.password);
             if (passwordMatch) {
-                const token = await emp.generateAuthToken(req, res);
-                res.status(200).send(token)
+                if (emp.status) {
+                    const token = await emp.generateAuthToken(req, res);
+                    res.status(200).send(token)
+                }else{
+                    res.status(403).send('You are disabled')
+                }
             } else {
                 res.status(401).send('Password not matching')
             }

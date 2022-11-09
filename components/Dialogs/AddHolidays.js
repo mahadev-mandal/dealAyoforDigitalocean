@@ -23,7 +23,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AddHoliday() {
+function AddHoliday() {
     const [open, setOpen] = React.useState(false);
     const [type, setType] = useState('holiday');
     const [details, setDetails] = useState('');
@@ -68,7 +68,7 @@ export default function AddHoliday() {
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>Add Holidays or Saturday</DialogTitle>
-                <div style={{ color: 'green', textAlign:'center' }}>{msg}</div>
+                <div style={{ color: 'green', textAlign: 'center' }}>{msg}</div>
                 <DialogContent>
                     <Stack spacing={1} sx={{ m: 1, minWidth: 300 }}>
                         <TextField
@@ -115,3 +115,5 @@ AddHoliday.propTypes = {
     collName: PropTypes.string,
     handleClickYes: PropTypes.func,
 }
+
+export default React.memo(AddHoliday)
