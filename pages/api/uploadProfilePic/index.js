@@ -4,7 +4,7 @@ import multer from 'multer';
 
 const upload = multer({
     storage: multer.diskStorage({
-        destination: '/public/profilePic',
+        destination: '/profilePic',
         filename: (req, file, cb) => cb(null, `${file.originalname}`),
     }),
 });
