@@ -57,7 +57,7 @@ import uploadFileModel from '../../../models/uploadFileSchema';
 
 const upload = multer({
     storage: multer.diskStorage({
-        destination: './public/uploaded-tasks',
+        destination: '/public/uploaded-tasks',
         filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
     }),
 });

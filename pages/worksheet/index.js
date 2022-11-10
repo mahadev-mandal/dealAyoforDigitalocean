@@ -117,7 +117,7 @@ function WorkSheet() {
                 data={data.data.sort(sortAscFunc)}
                 page={page}
                 rowsPerPage={rowsPerPage}
-                totalCount={data.data.length}
+                totalCount={data.totalCount}
                 handleChangePage={handleChangePage}
                 handleChangeRowsPerPage={handleChangeRowsPerPage}
                 ExtraCells={{ edit: EditComment }}
