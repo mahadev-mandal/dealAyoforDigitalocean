@@ -37,6 +37,10 @@ const employeeSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    workingDays: {
+        type: Array,
+        default: ['sun', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri']
+    },
     decreaseTask: {
         type: Number,
         required: true,

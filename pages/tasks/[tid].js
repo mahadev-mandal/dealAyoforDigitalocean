@@ -1,6 +1,6 @@
-import { Backdrop, Button,  CircularProgress, Stack, Typography, } from '@mui/material';
+import { Backdrop, Button, CircularProgress, Stack, Typography, } from '@mui/material';
 import React, { useState } from 'react'
-import useSWR  from 'swr';
+import useSWR from 'swr';
 import { baseURL } from '../../helpers/constants';
 import CommentModal from '../../components/Dialogs/Comment';
 import { withAuth } from '../../HOC/withAuth';
@@ -65,6 +65,7 @@ function Tasks() {
             </Box>
         )
     }
+
     return (
         <div>
             <Head>
@@ -101,7 +102,7 @@ function Tasks() {
             <SimpleTable
                 tableHeading={tableHeading}
                 dataHeading={dataHeading}
-                data={tasks.data}
+                data={tasks.data.map((t) => ({ ...t, oldDate: tasks.oldAssignedDate }))}
                 totalCount={tasks.totalCount}
                 page={page}
                 rowsPerPage={rowsPerPage}

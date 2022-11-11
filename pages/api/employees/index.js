@@ -48,7 +48,7 @@ const addEmployee = async (req, res) => {
         endTime: req.body.endTime,
         decreaseTask: req.body.decreaseTask,
         password: req.body.password,
-        profilePicPath: req.body.profilePicPath
+        profilePicPath: req.body.profilePicPath,
     })
     await employee.save()
         .then(() => {

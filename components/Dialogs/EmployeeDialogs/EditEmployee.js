@@ -34,6 +34,7 @@ export default function EditEmployee({ empDetails, disabled }) {
     const [level, setLevel] = React.useState(1);
     const [role, setRole] = useState('data-entry')
     const [progress, setProgress] = useState(0);
+    const [workingDays, setWorkingDays] = useState([]);
     const [profilePicPath, setProfilePicPath] = useState();
     const handleClickOpen = () => {
         setOpen(true);
@@ -57,15 +58,16 @@ export default function EditEmployee({ empDetails, disabled }) {
         },
         validationSchema: employeeValidationEditSchema,
         async onSubmit() {
-            await axios.put(`${baseURL}/api/employees/${empDetails._id}`, { ...values, role, level, profilePicPath })
-                .then(() => {
-                    setOpen(false);
-                    setMsg('');
-                    resetForm();
-                    mutate(`${baseURL}/api/employees`)
-                }).catch((err) => {
-                    setMsg(err.response.data)
-                })
+            await axios.put(`${baseURL}/api/employees/${empDetails._id}`, {
+                ...values, role, level, profilePicPath, workingDays
+            }).then(() => {
+                setOpen(false);
+                setMsg('');
+                resetForm();
+                mutate(`${baseURL}/api/employees`)
+            }).catch((err) => {
+                setMsg(err.response.data)
+            })
         }
     })
     const handleFileChange = async (event) => {
@@ -91,7 +93,6 @@ export default function EditEmployee({ empDetails, disabled }) {
             console.log(err)
         })
     }
-
     return (
         <div>
             <Button
@@ -136,6 +137,30 @@ export default function EditEmployee({ empDetails, disabled }) {
                         <MenuItem value={3}>Three</MenuItem>
                         <MenuItem value={4}>Four</MenuItem>
                         <MenuItem value={5}>Five</MenuItem>
+                    </Select>
+                    <Select
+                        multiple
+                        displayEmpty
+                        sx={{ my: 1 }}
+                        fullWidth
+                        id='working'
+                        placeholder="Working days"
+                        defaultValue={empDetails.workingDays ? empDetails.workingDays : []}
+                        onChange={(e) => setWorkingDays(e.target.value)}
+                        renderValue={(selected) => {
+                            if (selected.length === 0) {
+                                return <em>Working days</em>;
+                            }
+
+                            return selected.join(', ');
+                        }}
+                    >
+                        <MenuItem value="sun">Sunday</MenuItem>
+                        <MenuItem value="mon">Monday</MenuItem>
+                        <MenuItem value="tue">Tuesday</MenuItem>
+                        <MenuItem value="wed">Wednesday</MenuItem>
+                        <MenuItem value="thu">Thursday</MenuItem>
+                        <MenuItem value="fri">Friday</MenuItem>
                     </Select>
                     {arr.map((item) => (
                         <TextField

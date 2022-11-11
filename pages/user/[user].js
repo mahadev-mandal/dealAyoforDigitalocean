@@ -42,6 +42,7 @@ function MyProfile() {
     delete emp['decreaseTask']
     return (
         <Box>
+            <Typography variant='h4' textAlign="center">My Profile</Typography>
             <Stack direction="row"
                 spacing={10}
                 alignItems="center"

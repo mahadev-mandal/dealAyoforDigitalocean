@@ -21,7 +21,8 @@ export default function attend(req, res) {
 
 async function getAttendance(req, res) {
     let DA;
-    const sunHolidayEmp = ['r11']
+    const sunHolidayEmp = ['r11'];
+    const friHolidayEmp = ['p11'];
     const { dealAyoId, dateFrom, dateTo } = req.query;
     if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
         DA = tokenPayload(req.cookies.token).dealAyoId
@@ -47,8 +48,11 @@ async function getAttendance(req, res) {
         if (sunHolidayEmp.includes(DA)) {
             holidays = holidays.filter(h => new Date(h.date).getDay() != 0)
         }
+        //remove friday holiday for employee not working friday   
+        if (friHolidayEmp.includes(DA)) {
+            holidays = holidays.filter(h => new Date(h.date).getDay() != 5)
+        }
 
-        let saturdays = getAllSat(dateFrom, dateTo, DA);
 
         var data = await attendaceModel.find(
             query,
@@ -57,7 +61,8 @@ async function getAttendance(req, res) {
                 'employees.$': 1
             }
         );
-
+        let saturdays = getAllSat(dateFrom, data[data.length-1].date, DA);
+        
         //push holiday to data
         holidays.forEach((item) => {
             data.push({
