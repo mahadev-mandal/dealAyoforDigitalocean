@@ -49,7 +49,7 @@ function Tasks() {
         const { dateFrom, dateTo, activeBtn } = handleDateChangeClick(d, df, dt)
         setDateFrom(dateFrom);
         setDateTo(dateTo);
-        await handleMutateData(`${baseURL}/api/attendance`, params)
+        await handleMutateData(`${baseURL}/api/tasks`, params)
         mutate();
         mutateUpdateTasks()
         setBackdropOpen(false);
@@ -58,7 +58,7 @@ function Tasks() {
     const handleEmpChange = async (e) => {
         setBackdropOpen(true);
         setToEmp(e.target.value);
-        await handleMutateData(`${baseURL}/api/attendance`, params,);
+        await handleMutateData(`${baseURL}/api/tasks`, params,);
         mutate();
         mutateUpdateTasks();
         setBackdropOpen(false);

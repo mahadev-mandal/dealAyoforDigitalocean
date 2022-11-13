@@ -61,8 +61,10 @@ async function getAttendance(req, res) {
                 'employees.$': 1
             }
         );
-        let saturdays = getAllSat(dateFrom, data[data.length-1].date, DA);
-        
+        console.log(data[data.length])
+        // data[data.length - 1].date ? data[data.length - 1].date
+        let saturdays = getAllSat(dateFrom, data.length > 0 ? data[data.length - 1].date : dateFrom, DA);
+
         //push holiday to data
         holidays.forEach((item) => {
             data.push({
