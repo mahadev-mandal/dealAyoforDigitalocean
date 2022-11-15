@@ -64,13 +64,19 @@ export default function SimpleTable({
             return false;
         }
     };
-    function toTitleCase(str) {
-        return str.replace(
-            /\w\S*/g,
-            function (txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            }
-        );
+    function returnText(row, head) {
+        if (head == 'title') {
+            return row[head].replace(
+                /\w\S*/g,
+                function (txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                }
+            );
+        } else if (head == 'model') {
+            return row[head].toLowerCase();
+        } else {
+            return row[head]
+        }
     }
     return (
         <>
@@ -118,12 +124,7 @@ export default function SimpleTable({
                                             onClick={(e) => copyToClipboard(e.target.innerText)}
                                             title={row[head]}
                                         >
-                                            {typeof (row[head]) == 'string' ?
-                                                head == 'title' ?
-                                                    toTitleCase(row[head])
-                                                    : row[head]
-                                                : JSON.stringify(row[head])
-                                            }
+                                            {returnText(row, head)}
                                         </StyledTableCell>
                                         : <StyledTableCell key={tableHeading[i]}>
                                             {returnComp(ExtraCells[tableHeading[i]], row, tableHeading[i])}

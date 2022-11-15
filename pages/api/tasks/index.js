@@ -18,7 +18,6 @@ export default function Tasks(req, res) {
 }
 
 const getAllAssignedTasks = async (req, res) => {
-    console.log('kjdjdj')
     const { dateFrom, dateTo, dealAyoId } = req.query;
     let query = {};
     try {

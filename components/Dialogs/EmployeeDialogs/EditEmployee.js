@@ -155,12 +155,12 @@ export default function EditEmployee({ empDetails, disabled }) {
                             return selected.join(', ');
                         }}
                     >
-                        <MenuItem value="sun">Sunday</MenuItem>
-                        <MenuItem value="mon">Monday</MenuItem>
-                        <MenuItem value="tue">Tuesday</MenuItem>
-                        <MenuItem value="wed">Wednesday</MenuItem>
-                        <MenuItem value="thu">Thursday</MenuItem>
-                        <MenuItem value="fri">Friday</MenuItem>
+                        <MenuItem value={0}>Sunday</MenuItem>
+                        <MenuItem value={1}>Monday</MenuItem>
+                        <MenuItem value={2}>Tuesday</MenuItem>
+                        <MenuItem value={3}>Wednesday</MenuItem>
+                        <MenuItem value={4}>Thursday</MenuItem>
+                        <MenuItem value={5}>Friday</MenuItem>
                     </Select>
                     {arr.map((item) => (
                         <TextField

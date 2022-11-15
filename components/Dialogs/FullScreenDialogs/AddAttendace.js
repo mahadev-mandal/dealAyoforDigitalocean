@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 
 const allFieldsArr = ['date', 'dealAyoId', 'name', 'attendanceStatus', 'entryTime', 'exitTime', 'late', 'earlyLeave', 'worked', 'breakTime']
 const reqFieldsArr = ['date', 'dealAyoId', 'name'];
-const id = ['', '', 'e11', 'v11', 'd17', 'p11', 'g11', 'c12', 'd14', 'v12', 'd16', 'd15', 'r11', '', 'd20', 'd22', 'd21', '', '18', 'd24','g12'];
+const id = ['', '', 'e11', 'v11', 'd17', 'p11', 'g11', 'c12', 'd14', 'v12', 'd16', 'd15', 'r11', '', 'd20', 'd22', 'd21', '', '18', 'd24','','g12','d26','d25'];
 
 const checkReqFields = (dataArr, reqArr) => {
     return reqArr.every(field => dataArr.includes(field))

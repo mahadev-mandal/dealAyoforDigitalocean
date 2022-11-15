@@ -1,6 +1,7 @@
 import db_conn from "../../../helpers/db_conn";
 import attendaceModel from '../../../models/attendanceSchema';
 import holidayModel from '../../../models/holidaysSchema';
+// import employeeModel from '../../../models/employeeSchema';
 import tokenPayload from '../../../controllers/tokenPayload'
 import getAllSat from "../../../controllers/getAllSat";
 
@@ -44,6 +45,7 @@ async function getAttendance(req, res) {
                 "$lt": new Date(dateTo)
             },
         });
+        
         //remove sunday holiday for employee not working sunday    
         if (sunHolidayEmp.includes(DA)) {
             holidays = holidays.filter(h => new Date(h.date).getDay() != 0)
@@ -53,6 +55,7 @@ async function getAttendance(req, res) {
             holidays = holidays.filter(h => new Date(h.date).getDay() != 5)
         }
 
+        // const emp = await employeeModel.findOne({ dealAyoId }, { workingDays: 1 });
 
         var data = await attendaceModel.find(
             query,
@@ -61,7 +64,6 @@ async function getAttendance(req, res) {
                 'employees.$': 1
             }
         );
-        console.log(data[data.length])
         // data[data.length - 1].date ? data[data.length - 1].date
         let saturdays = getAllSat(dateFrom, data.length > 0 ? data[data.length - 1].date : dateFrom, DA);
 
