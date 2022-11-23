@@ -51,7 +51,7 @@ function FilterByDate({ onClick, activeBtn, }) {
             <CustomDate
                 open={open}
                 handleClose={handleClose}
-                handleApply={(cd, df, dt) => onClick(cd, df, dt).then((r) => setOpen(r))}
+                handleApply={(cd, df, dt) => onClick(cd, df, dt).then((r) => setOpen(r ? true : false))}
             />
         </>
     )

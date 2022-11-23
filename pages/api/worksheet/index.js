@@ -3,6 +3,8 @@ import worksheetModel from '../../../models/worksheetSchema';
 // import jwt from 'jsonwebtoken';
 import tokenPayload from '../../../controllers/tokenPayload';
 import holidayModel from '../../../models/holidaysSchema';
+import employeeModel from '../../../models/employeeSchema';
+import getAllSatAndHoliday from '../../../controllers/getAllSatAndHoliday';
 
 db_conn();
 
@@ -90,14 +92,16 @@ const saveOrUpdateWorksheet = async (req, res) => {
 
 
 const getWorkSheet = async (req, res) => {
-    let DA;
     const { dateFrom, dateTo, dealAyoId, } = req.query;
+    let DA;
     if (!(tokenPayload(req.cookies.token).role == 'super-admin')) {
         DA = tokenPayload(req.cookies.token).dealAyoId
     } else {
         DA = dealAyoId
     }
     try {
+        let emp = await employeeModel.findOne({ dealAyoId: DA }, { workingDays: 1, dealAyoId: 1 });
+        
         let query = {
             date: {
                 "$gte": new Date(dateFrom),
@@ -120,75 +124,16 @@ const getWorkSheet = async (req, res) => {
                 date: 1,
                 'employees.$': 1
             }
-        ).sort({ date: -1 })
+        ).sort({ date: -1 });
 
-        holidays.forEach((item) => {
-            var index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date(item.date).toLocaleDateString());
-            if (index != -1) {
-                data.splice(index, 1);
-
-            }
-            data.push({
-                date: item.date,
-                type: item.type,
-                details: item.details,
-                employees: [
-                    {
-                        dealAyoId: DA
-                    }
-                ]
-
-            })
-        })
-
-        let l = new Date(dateFrom);
-        const sunHolidayEmp = ['r11']
-        while (l <= new Date(dateTo)) {
-            if (sunHolidayEmp.includes(DA)) {
-                if (new Date(l).getDay() == 5) {
-                    data.push({
-                        date: l,
-                        type: 'saturday',
-                        details: 'Sunday',
-                        employees: [
-                            {
-                                dealAyoId: ''
-                            }
-                        ]
-                    })
-                }
-            }
-            if (new Date(l).getDay() == 6) {
-                data.push({
-                    date: new Date(l).toLocaleDateString(),
-                    type: 'saturday',
-                    details: 'Saturday',
-                    employees: [
-                        {
-                            dealAyoId: ''
-                        }
-                    ]
-                })
-            } else {
-                const index = data.findIndex(obj => new Date(obj.date).toLocaleDateString() == new Date(l).toLocaleDateString());
-                if (index === -1) {
-                    data.push({
-                        date: new Date(l).toLocaleDateString(),
-                        employees: [
-                            {
-                                dealAyoId: DA
-                            }
-                        ]
-                    })
-                }
-            }
-            let nd = l.setDate(l.getDate() + 1);
-            l = new Date(nd)
-        }
-        if (DA == '') {
+        let extraDays = [];
+        if (emp) {
+            extraDays = getAllSatAndHoliday(data, holidays, emp, dateFrom, dateTo);
+        } else {
             data = []
         }
-        res.json({ data: data.filter((d) => new Date(d.date) <= new Date()) });
+
+        res.json({ data: [...data, ...extraDays], totalCount: data.length });
     } catch (err) {
         console.log(err)
         res.status(500).send('Error while fetching worksheet')

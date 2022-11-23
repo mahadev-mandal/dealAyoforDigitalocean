@@ -137,6 +137,7 @@ function AddAttendanceDialog({ collName }) {
             alert('Please select file to verify')
         }
     }
+    console.log(data)
     const handleSave = async () => {
         setSaving(true)
         setData([])

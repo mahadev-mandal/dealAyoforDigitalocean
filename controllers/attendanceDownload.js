@@ -2,7 +2,6 @@ import * as XLSX from 'xlsx';
 import NepaliDate from 'nepali-date-converter'
 
 const attendanceDownload = (data, name) => {
-    console.log('kjdjkd')
     let da = data.map((d) => {
         if (d.type == 'holiday' || d.type == 'saturday') {
             return {

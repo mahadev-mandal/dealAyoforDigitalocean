@@ -119,7 +119,6 @@ function AddExcelTask() {
     mutate()
     setBackdropOpen(false);
   }
-
   const handleAssignClick = async () => {
     setBackdropOpen(true)
     await axios.post(`${baseURL}/api/tasks/assign`, {
@@ -128,6 +127,7 @@ function AddExcelTask() {
       assignToEmp
     }).then(() => {
       mutate();
+      alert(`${selected.length} tasks assigned to ${assignToEmp}`)
       setSelected([])
       setBackdropOpen(false)
     }).catch((err) => {
@@ -141,8 +141,9 @@ function AddExcelTask() {
       await axios
         .post(`${baseURL}/api/tasks`, { selected })
         .then(() => {
-          setSelected([]);
           mutate();
+          alert(`${selected.length} tasks Unassigned`)
+          setSelected([]);
           setBackdropOpen(false);
         })
         .catch((err) => {

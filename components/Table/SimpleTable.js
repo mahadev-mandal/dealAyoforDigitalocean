@@ -75,6 +75,9 @@ export default function SimpleTable({
         } else if (head == 'model') {
             return row[head].toLowerCase();
         } else {
+            if (typeof (row[head]) == 'object') {
+                return JSON.stringify(row[head])
+            }
             return row[head]
         }
     }

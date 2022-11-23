@@ -13,7 +13,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function CustomDate({ open, handleClose, handleApply }) {
+function CustomDate({ open, handleClose, handleApply }) {
     const date = new Date();
     const year = date.getFullYear();
     let month = date.getMonth() + 1;
@@ -81,3 +81,6 @@ CustomDate.propTypes = {
     handleClose: PropTypes.func,
     open: PropTypes.bool,
 }
+
+const isEqual = (prevProps, nextProps) => prevProps.open == nextProps.open;
+export default React.memo(CustomDate, isEqual)

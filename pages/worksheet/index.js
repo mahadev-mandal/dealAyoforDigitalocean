@@ -79,6 +79,7 @@ function WorkSheet() {
     function sortAscFunc(a, b) {
         return new Date(b.date) - new Date(a.date);
     }
+    console.log(data.data)
     return (
         <div>
             <Head>
