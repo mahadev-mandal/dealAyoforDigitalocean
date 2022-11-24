@@ -14,7 +14,7 @@ const getAllSatAndHoliday = (data, holidays, emp, dateFrom, dateTo) => {
     //get all non working and empty days of employee except holidays
     let l = new Date(dateFrom);
     while (l <= new Date(dateTo)) {
-        if (new Date(l) > new Date()) {
+        if (new Date(l).toLocaleDateString() > new Date().toLocaleDateString()) {
             break;
         }
         if (dataDates.includes(new Date(l).toLocaleDateString()) ||
