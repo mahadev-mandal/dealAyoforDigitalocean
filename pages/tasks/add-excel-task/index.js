@@ -170,6 +170,7 @@ function AddExcelTask() {
   const handleResetFilter = async () => {
     setBackdropOpen(true)
     setPage(0);
+    setSelected([]);
     setSearchObj({});
     setEmpfilter('');
     setStatusFilter('unassigned');
@@ -258,7 +259,7 @@ function AddExcelTask() {
               disabled={statusFilter == 'unassigned'}
               width="150px"
             />
-            <Button onClick={handleResetFilter}>
+            <Button onClick={handleResetFilter} variant="outlined">
               Reset
             </Button>
           </Stack>
