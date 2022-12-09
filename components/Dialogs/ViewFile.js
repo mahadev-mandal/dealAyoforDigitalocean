@@ -60,7 +60,7 @@ function ViewFile({ data, open, onClose, }) {
                         </Document> :
                         <Box>
                             <Image
-                                src={'https://res.cloudinary.com/dtmamfjwg/image/upload/v1670586428/dealAyoFiles/clgbfgtglournxxx7mf8.jpg'}
+                                src={data.file_url}
                                 alt={data.fileName}
                                 width="100%"
                                 height="100%"
