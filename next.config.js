@@ -33,6 +33,11 @@ module.exports = withPWA({
   eslint: {
     dirs: ['pages', 'utils'],
   },
+  images: {
+    domains: [
+      'res.cloudinary.com'
+    ],
+  },
   pwa: {
     dest: "public",
     register: true,
@@ -40,3 +45,4 @@ module.exports = withPWA({
     skipWaiting: true,
   },
 });
+

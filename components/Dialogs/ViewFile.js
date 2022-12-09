@@ -23,7 +23,7 @@ function ViewFile({ data, open, onClose, }) {
     if (!data) {
         return ''
     }
-    
+
     const fileType = data.fileName.substr(data.fileName.lastIndexOf('.'))
     return (
         <div>
@@ -40,7 +40,7 @@ function ViewFile({ data, open, onClose, }) {
                 }}
             >
                 <DialogTitle id="alert-dialog-title">
-                    {data.fileName} 
+                    {data.fileName}
                 </DialogTitle>
                 <Stack alignItems="center" sx={{ mb: 1 }} >
                     <Pagination
@@ -53,14 +53,14 @@ function ViewFile({ data, open, onClose, }) {
                 <DialogContent>
                     {fileType == '.pdf' ?
                         <Document
-                            file={`/uploaded-tasks/${data.fileName}`}
+                            file={data.file_url}
                             onLoadSuccess={onDocumentLoadSuccess}
                         >
                             <Page pageNumber={pageNumber} />
                         </Document> :
                         <Box>
                             <Image
-                                src={`/uploaded-tasks/${data.fileName}`}
+                                src={'https://res.cloudinary.com/dtmamfjwg/image/upload/v1670586428/dealAyoFiles/clgbfgtglournxxx7mf8.jpg'}
                                 alt={data.fileName}
                                 width="100%"
                                 height="100%"
