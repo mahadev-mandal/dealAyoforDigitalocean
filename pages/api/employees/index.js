@@ -34,6 +34,7 @@ const getEmployees = async (req, res) => {
         { password: 0 })
         .skip(parseInt(rowsPerPage) * parseInt(page))
         .limit(parseInt(rowsPerPage)).sort({ firstName: 1 })
+        .sort({ firstName: 1 })
         .then((employees) => {
             res.status(200).json({ data: employees, totalCount });
         }).catch(() => {
