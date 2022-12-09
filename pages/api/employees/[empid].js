@@ -20,34 +20,45 @@ export default function employee(req, res) {
 const updateEmployee = async (req, res) => {
     const { empid } = req.query;
     try {
-        const emp = await employeeModel.findById(empid);
+        if (req.body.enableOrDisable) {
+            console.log(req.body.status)
+            await employeeModel.findByIdAndUpdate(empid,
+                {
+                    $set: {
+                        status: req.body.status
+                    }
+                }
+            )
+        } else {
+            const emp = await employeeModel.findById(empid);
+            emp.firstName = req.body.firstName;
+            emp.lastName = req.body.lastName;
+            emp.mobile = req.body.mobile;
+            emp.email = req.body.email;
+            if (emp.role != req.body.role) {
+                emp.role = req.body.role;
+                emp.tokens = [];
+            }
+            emp.startTime = req.body.startTime;
+            emp.endTime = req.body.endTime;
+            emp.decreaseTask = req.body.decreaseTask;
+            if (req.body.profilePicPath) {
+                emp.profilePicPath = req.body.profilePicPath
+            }
+            emp.workingDays = req.body.workingDays;
+            const passwordMatch = await bcrypt.compare(req.body.password, emp.password);
+            if (req.body.password != '' && !passwordMatch) {
+                emp.password = req.body.password;
+                emp.tokens = [];
+            }
+            emp.staus = req.body.status;
+            emp.level = req.body.level,
 
-        emp.firstName = req.body.firstName;
-        emp.lastName = req.body.lastName;
-        emp.mobile = req.body.mobile;
-        emp.email = req.body.email;
-        if (emp.role != req.body.role) {
-            emp.role = req.body.role;
-            emp.tokens = [];
+                await emp.save();
         }
-        emp.startTime = req.body.startTime;
-        emp.endTime = req.body.endTime;
-        emp.decreaseTask = req.body.decreaseTask;
-        if (req.body.profilePicPath) {
-            emp.profilePicPath = req.body.profilePicPath
-        }
-        emp.workingDays = req.body.workingDays;
-        const passwordMatch = await bcrypt.compare(req.body.password, emp.password);
-        if (req.body.password != '' && !passwordMatch) {
-            emp.password = req.body.password;
-            emp.tokens = [];
-        }
-        emp.staus = req.body.status;
-        emp.level = req.body.level,
-
-            await emp.save();
         res.send('Employee updated sucessfully')
     } catch (err) {
+        console.log(err)
         res.status(500).send('Employee updation failed')
     }
 

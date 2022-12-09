@@ -127,6 +127,7 @@ function Products() {
     if (e.key == 'Enter') {
       setBackdropOpen(true);
       e.preventDefault()
+      console.log(inputRef.current)
       let obj = {};
       Object.keys(inputRef.current).forEach((da) => {
         obj[da] = inputRef.current[da].value

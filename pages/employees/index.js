@@ -4,7 +4,6 @@ import Head from 'next/head';
 import React from 'react'
 import { useState } from 'react';
 import useSWR from 'swr';
-import BlockIcon from "@mui/icons-material/Block";
 import AddEmployee from '../../components/Dialogs/EmployeeDialogs/AddEmployee';
 import EditEmployee from '../../components/Dialogs/EmployeeDialogs/EditEmployee';
 import AreYouSureModal from '../../components/Dialogs/AreYouSure';
@@ -13,9 +12,10 @@ import handleMutateData from '../../controllers/handleMutateData';
 import { baseURL } from '../../helpers/constants';
 import { withAuth } from '../../HOC/withAuth';
 import ShowProfile from '../../components/ExtraCells/ShowProfile';
+import ReturnStatus from '../../components/ExtraCells/ReturnStatus';
 
-const tableHeading = ['DealAyoId', 'mobile', 'email', 'start time', 'end time', 'tasks decr', 'profile'];
-const dataHeading = ['dealAyoId', 'mobile', 'email', 'startTime', 'endTime', 'decreaseTask', '']
+const tableHeading = ['DealAyoId', 'mobile', 'email', 'start time', 'end time', 'role', 'status', 'profile'];
+const dataHeading = ['dealAyoId', 'mobile', 'email', 'startTime', 'endTime', 'role', '', '']
 
 
 function Employees() {
@@ -23,7 +23,7 @@ function Employees() {
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [selected, setSelected] = useState([]);
 
-  const params = { page, rowsPerPage }
+  const params = { page, rowsPerPage, type: 'all' }
 
   const fetchData = async (url) => {
     return await axios.get(url, { params })
@@ -73,6 +73,15 @@ function Employees() {
         });
     }
   };
+  const handleEmployeeDisable = async () => {
+    await axios.put(`${baseURL}/api/employees/${selected[0]._id}`, { status: !selected[0].status, enableOrDisable: true })
+      .then(() => {
+        console.log(selected[0].dealAyoId)
+        alert(`${selected[0].firstName} ${selected[0].status ? 'Disabled' : 'Enabled'}`)
+      }).catch((err) => {
+        throw new Error(err);
+      })
+  }
 
   if (error) {
     return <div>Failed to load Employees details</div>
@@ -86,15 +95,16 @@ function Employees() {
         <title>Tasks By DealAyo</title>
       </Head>
       <Stack direction="row" spacing={1} sx={{ mb: 0.5 }}>
-        <Button
-          size="small"
-          variant="contained"
-          color="warning"
-          disabled={selected.length >= 1 ? false : true}
-        >
-          <BlockIcon />
-          Disable {selected.length}
-        </Button>
+        {selected.length > 0 &&
+          <Button
+            size="small"
+            variant="contained"
+            color="warning"
+            disabled={selected.length > 1}
+            onClick={handleEmployeeDisable}
+          >
+            {selected[0].status ? 'Disable' : 'Enable'} {selected.length}
+          </Button>}
         <AreYouSureModal
           title={`Are you sure want to delete ${selected.length} employees`}
           selected={selected}
@@ -119,7 +129,7 @@ function Employees() {
         onSelectChange={handleSelectChange}
         onAllSelectChange={handleAllSelectChange}
         selected={selected}
-        ExtraCells={{ profile: ShowProfile }}
+        ExtraCells={{ profile: ShowProfile, status: ReturnStatus }}
       />
     </div>
   )

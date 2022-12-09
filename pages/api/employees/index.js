@@ -17,15 +17,20 @@ export default function SwitchMethod(req, res) {
 }
 
 const getEmployees = async (req, res) => {
-    const { page, rowsPerPage } = req.query;
+    const { page, rowsPerPage, type } = req.query;
 
     const totalCount = await employeeModel.countDocuments();
 
+    let query = {
+        role: { $ne: 'super-admin' },
+        status: true,
+    };
+    if (type == 'all') {
+        query = {}
+    }
+
     await employeeModel.find(
-        {
-            role: { $ne: 'super-admin' },
-            status: true,
-        },
+        query,
         { password: 0 })
         .skip(parseInt(rowsPerPage) * parseInt(page))
         .limit(parseInt(rowsPerPage)).sort({ firstName: 1 })

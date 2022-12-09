@@ -6,6 +6,7 @@ import styles from '../../styles/TasksCard.module.css';
 import { green } from '@mui/material/colors';
 import EditIcon from '@mui/icons-material/Edit';
 import {
+  Box,
   ButtonBase,
   CardContent,
   IconButton,
@@ -56,77 +57,77 @@ export default function TasksCard({ tasks, workType, link }) {
     router.push(`/tasks/edit/${tasks.taskId}`)
   }
   return (
-    // <CustomWidthTooltip arrow title={<TooltipComp />}>
-    <Link href={link}>
-      <a>
-        <ButtonBase>
-          <Card elevation={2}
+    <ButtonBase>
+      <Card elevation={2}
+        sx={{
+          width: 200,
+          "&::before": {
+            width: '100%',
+            height: getPercent().comp,
+            background: green[returnColorNum()],
+            transition: '0.3s',
+          },
+          "&::after": {
+            width: '100%',
+            height: getPercent().err,
+          },
+
+        }}
+        className={styles.card}
+      >
+        {user.role == 'super-admin' &&
+          <IconButton
+            size="small"
             sx={{
-              width: 200,
-              "&::before": {
-                width: '100%',
-                height: getPercent().comp,
-                background: green[returnColorNum()],
-                transition: '0.3s',
-              },
-              "&::after": {
-                width: '100%',
-                height: getPercent().err,
-              },
+              position: 'absolute',
+              right: 0,
+              top: 0
 
             }}
-            className={styles.card}
+            onClick={handleEditClick}
           >
-            <CardContent>
-              <Typography variant="body2" component="div" color="#FF00FF" sx={{ textDecoration: 'underline' }}>
-                {workType}
-              </Typography>
-              <Typography variant="body2" component="div">
-                Task-{`${tasks.taskId}`}
-              </Typography>
-              <Typography sx={{ fontSize: 13.5, fontWeight: 'bold' }} color="text.secondary" gutterBottom>
-                {new Date(tasks.date).toDateString()}
-              </Typography>
-              {user.role == 'super-admin' &&
-                <IconButton
-                  size="small"
+            <EditIcon />
+          </IconButton>
+        }
+        <CardContent>
+          <Typography variant="body2" component="div" color="#FF00FF" sx={{ textDecoration: 'underline' }}>
+            {workType}
+          </Typography>
+          <Box>
+            <Link href={link}>
+              <a>
+                <Typography variant="body2" component="div">
+                  Task-{`${tasks.taskId}`}
+                </Typography>
+                <Typography sx={{ fontSize: 13.5, fontWeight: 'bold' }} color="text.secondary" gutterBottom>
+                  {new Date(tasks.date).toDateString()}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  component="div"
                   sx={{
-                    position: 'absolute',
-                    right: 0,
-                    top: 0
-
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden'
                   }}
-                  onClick={handleEditClick}
                 >
-                  <EditIcon />
-                </IconButton>
-              }
-              <Typography
-                variant="body2"
-                component="div"
-                sx={{
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden'
-                }}
-              >
-                Employee: <span style={{ fontWeight: 'bold' }}>{tasks.assignToName}</span>
-              </Typography>
-              <Typography variant="body2" component="div">
-                Total Task: <span style={{ fontWeight: 'bold' }}>{tasks.tasks.length}</span>
-              </Typography>
-              <Typography variant="body2" component="div">
-                Completed: <span style={{ fontWeight: 'bold' }}>{completedTasks}</span>
-              </Typography>
-              <Typography variant="body2" component="div">
-                Errors: <span style={{ fontWeight: 'bold' }}>{errorTasks}</span>
-              </Typography>
-            </CardContent>
-          </Card>
-        </ButtonBase >
-      </a>
-    </Link>
-    // </CustomWidthTooltip>
+                  Employee: <span style={{ fontWeight: 'bold' }}>{tasks.assignToName}</span>
+                </Typography>
+                <Typography variant="body2" component="div">
+                  Total Task: <span style={{ fontWeight: 'bold' }}>{tasks.tasks.length}</span>
+                </Typography>
+                <Typography variant="body2" component="div">
+                  Completed: <span style={{ fontWeight: 'bold' }}>{completedTasks}</span>
+                </Typography>
+                <Typography variant="body2" component="div">
+                  Errors: <span style={{ fontWeight: 'bold' }}>{errorTasks}</span>
+                </Typography>
+              </a>
+            </Link>
+          </Box>
+        </CardContent>
+      </Card>
+    </ButtonBase >
   );
 }
 

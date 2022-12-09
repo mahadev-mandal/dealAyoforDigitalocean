@@ -1,5 +1,5 @@
-import db_conn from "../../../helpers/db_conn";
 import uploadFileModel from '../../../models/uploadFileSchema';
+import db_conn from '../../../helpers/db_conn';
 
 db_conn();
 export default async function getFiles(req, res) {
