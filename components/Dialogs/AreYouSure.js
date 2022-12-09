@@ -13,24 +13,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AreYourSure({ title, selected, handleClickYes }) {
-    const [open, setOpen] = React.useState(false);
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
+export default function AreYourSure({ title, selected, handleClickYes, open, onOpen, onClose }) {
     return (
         <div>
             <Button
                 variant="contained"
                 color="error"
                 disabled={selected.length >= 1 ? false : true}
-                onClick={handleClickOpen}
+                onClick={onOpen}
             >
                 <DeleteForeverIcon />Delete {selected.length}
             </Button>
@@ -38,12 +28,12 @@ export default function AreYourSure({ title, selected, handleClickYes }) {
                 open={open && selected.length > 0}
                 TransitionComponent={Transition}
                 keepMounted
-                onClose={handleClose}
+                onClose={onClose}
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle>{title}</DialogTitle>
                 <DialogActions>
-                    <Button onClick={handleClose}>No</Button>
+                    <Button onClick={onClose}>No</Button>
                     <Button onClick={handleClickYes}>Yes</Button>
                 </DialogActions>
             </Dialog>
@@ -56,4 +46,7 @@ AreYourSure.propTypes = {
     selected: PropTypes.array,
     collName: PropTypes.string,
     handleClickYes: PropTypes.func,
+    onClose: PropTypes.func,
+    onOpen: PropTypes.func,
+    open: PropTypes.bool
 }

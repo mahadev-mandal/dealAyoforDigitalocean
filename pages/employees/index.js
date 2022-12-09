@@ -14,14 +14,15 @@ import { withAuth } from '../../HOC/withAuth';
 import ShowProfile from '../../components/ExtraCells/ShowProfile';
 import ReturnStatus from '../../components/ExtraCells/ReturnStatus';
 
-const tableHeading = ['DealAyoId', 'mobile', 'email', 'start time', 'end time', 'role', 'status', 'profile'];
-const dataHeading = ['dealAyoId', 'mobile', 'email', 'startTime', 'endTime', 'role', '', '']
+const tableHeading = ['DealAyoId', 'name', 'mobile', 'email', 'start time', 'end time', 'role', 'status', 'profile'];
+const dataHeading = ['dealAyoId', 'firstName', 'mobile', 'email', 'startTime', 'endTime', 'role', '', '']
 
 
 function Employees() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
   const [selected, setSelected] = useState([]);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const params = { page, rowsPerPage, type: 'all' }
 
@@ -69,6 +70,8 @@ function Employees() {
           data: { _ids: selected },
         })
         .then(() => {
+          setSelected([])
+          setDeleteOpen(false);
           mutate();
         });
     }
@@ -109,6 +112,9 @@ function Employees() {
           title={`Are you sure want to delete ${selected.length} employees`}
           selected={selected}
           handleClickYes={() => handleClickYes("delete")}
+          open={deleteOpen}
+          onOpen={() => setDeleteOpen(true)}
+          onClose={() => setDeleteOpen(false)}
         />
         <EditEmployee
           empDetails={selected.length === 1 ? selected[0] : {}}

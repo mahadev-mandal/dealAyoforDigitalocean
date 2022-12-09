@@ -50,6 +50,7 @@ function Products() {
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [searchObj, setSearchObj] = useState({});
   const inputRef = React.useRef({});
+  const [deleteOpen, setDeleteOpen] = useState(false)
   let params = { ...searchObj, page, rowsPerPage, empFilter: toEmp, statusFilter };
 
   const {
@@ -101,6 +102,8 @@ function Products() {
       })
         .then(() => {
           mutate();
+          setSelected([])
+          setDeleteOpen(false)
           return true
         });
     }
@@ -145,6 +148,7 @@ function Products() {
     setSearchObj({});
     setToEmp('');
     setStatusFilter('');
+    setSelected([]);
     await handleMutateData(`${baseURL}/api/products`, { params });
     mutate();
     Object.keys(inputRef.current).forEach((da) => {
@@ -181,6 +185,9 @@ function Products() {
               title={`Are you sure want to delete ${selected.length} products`}
               selected={selected}
               handleClickYes={() => handleClickYes("delete")}
+              open={deleteOpen}
+              onOpen={() => setDeleteOpen(true)}
+              onClose={() => setDeleteOpen(false)}
             />
 
           </>
