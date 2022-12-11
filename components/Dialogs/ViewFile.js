@@ -60,7 +60,7 @@ function ViewFile({ data, open, onClose, }) {
                         </Document> :
                         <Box>
                             <Image
-                                src={data.file_url}
+                                src={'/uploaded-tasks/'+data.fileName}
                                 alt={data.fileName}
                                 width="100%"
                                 height="100%"
