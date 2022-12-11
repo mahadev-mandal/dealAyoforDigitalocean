@@ -74,6 +74,7 @@ const apiRoute = nextConnect({
 apiRoute.use(upload.array('theFiles'));
 
 apiRoute.post(async (req, res) => {
+  console.log(req.files)
     try {
         let newFile = new uploadFileModel({
             fileName: req.files[0].filename,
