@@ -51,112 +51,130 @@
 // }
 
 
-import nextConnect from 'next-connect';
-import multer from 'multer';
-import uploadFileModel from '../../../models/uploadFileSchema';
-
-const upload = multer({
-    storage: multer.diskStorage({
-        destination: './public/uploaded-tasks',
-        filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
-    }),
-});
-
-const apiRoute = nextConnect({
-    onError(error, req, res) {
-        res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
-    },
-    onNoMatch(req, res) {
-        res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-    },
-});
-
-apiRoute.use(upload.array('theFiles'));
-
-apiRoute.post(async (req, res) => {
-  console.log(req.files)
-    try {
-        let newFile = new uploadFileModel({
-            fileName: req.files[0].filename,
-            file_url: req.files[0].path,
-            workType: 'update',
-            supplier: req.body.supplier,
-            additionalDetails: req.body.additionalDetails,
-        });
-        await newFile.save();
-        res.send('file uploaded');
-    } catch (err) {
-        console.log(err);
-        res.status(500).send('Error occured while uplaoding file');
-    }
-});
-
-export default apiRoute;
-
-export const config = {
-    api: {
-        bodyParser: false, // Disallow body parsing, consume as stream
-    },
-};
-
-
+// import nextConnect from 'next-connect';
+// import multer from 'multer';
 // import uploadFileModel from '../../../models/uploadFileSchema';
-// import multer from "multer";
+
+// const upload = multer({
+//   storage: multer.diskStorage({
+//     destination: './public/uploaded-tasks',
+//     filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+//   }),
+// });
+
+// const apiRoute = nextConnect({
+//   onError(error, req, res) {
+//     res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
+//   },
+//   onNoMatch(req, res) {
+//     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+//   },
+// });
+
+// apiRoute.use(upload.array('theFiles'));
+
+// apiRoute.post(async (req, res) => {
+//   console.log(req.files)
+//   try {
+//     let newFile = new uploadFileModel({
+//       fileName: req.files[0].filename,
+//       file_url: req.files[0].path,
+//       workType: 'update',
+//       supplier: req.body.supplier,
+//       additionalDetails: req.body.additionalDetails,
+//     });
+//     await newFile.save();
+//     res.send('file uploaded');
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).send('Error occured while uplaoding file');
+//   }
+// });
+
+// export default apiRoute;
+
+// export const config = {
+//   api: {
+//     bodyParser: false, // Disallow body parsing, consume as stream
+//   },
+// };
+
+
+
+
+
+import AWS from 'aws-sdk';
+import uploadFileModel from '../../../models/uploadFileSchema';
+import multer from "multer";
 // import { v2 as cloudinary } from "cloudinary";
 // // import dotenv from "dotenv";
-// import streamifier from "streamifier";
+import streamifier from "streamifier";
 // // dotenv.config();
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage });
-// const uploadMiddleware = upload.single("theFiles");
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const uploadMiddleware = upload.single("theFiles");
+
+const s3client = new AWS.S3({
+  endpoint: "https://cloud.digitalocean.com", // Find your endpoint in the control panel, under Settings. Prepend "https://".
+  region: "fra1", // Must be "us-east-1" when creating new Spaces. Otherwise, use the region in your endpoint (e.g. nyc3).
+  credentials: {
+    accessKeyId: "DO00F3M4XMPYQA6LBD27", // Access key pair. You can create access key pairs using the control panel or API.
+    secretAccessKey: process.env.SPACES_SECRET // Secret access key defined through an environment variable.
+  }
+})
+
 // cloudinary.config({
 //   cloud_name: process.env.CLOUDINARY_NAME,
 //   api_key: process.env.CLOUDINARY_API_KEY,
 //   api_secret: process.env.CLOUDINARY_API_SECRET,
 //   secure: true,
 // });
-// function runMiddleware(req, res, fn) {
-//   return new Promise((resolve, reject) => {
-//     fn(req, res, (result) => {
-//       if (result instanceof Error) {
-//         return reject(result);
-//       }
-//       return resolve(result);
-//     });
-//   });
-// }
-// export default async function handler(req, res) {
-//   await runMiddleware(req, res, uploadMiddleware);
-//   //   console.log(req.file.buffer);
-//   const stream = await cloudinary.uploader.upload_stream(
-//     {
-//       folder: "dealAyoFiles",
-//     },
-//     async (error, result) => {
-//       console.log(req.file.originalname)
-//       if (error) return console.error(error);
-//       let newFile = new uploadFileModel({
-//         fileName: req.file.originalname,
-//         file_url: result.secure_url,
-//         workType: req.body.workType,
-//         supplier: req.body.supplier,
-//         additionalDetails: req.body.additionalDetails,
-//       });
-//       await newFile.save().then(() => {
-//         res.status(200).send('File uploaded and informations saved');
-//       }).catch((err) => {
-//         if (err.keyPattern.fileName) {
-//           res.status(500).send('Same file name already exists, to upload change filename')
-//         } else {
-//           res.status(500).send('Error occured while saving information')
-//         }
-//       })
-//     }
-//   );
-//   streamifier.createReadStream(req.file.buffer).pipe(stream);
-// }
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
+
+
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+      return resolve(result);
+    });
+  });
+}
+export default async function handler(req, res) {
+  await runMiddleware(req, res, uploadMiddleware);
+
+  const params = {Bucket: 'bucket_name', Key:'file_name', Body: data };
+
+  const stream = await cloudinary.uploader.upload_stream(
+    {
+      folder: "dealAyoFiles",
+    },
+    async (error, result) => {
+      console.log(req.file.originalname)
+      if (error) return console.error(error);
+      let newFile = new uploadFileModel({
+        fileName: req.file.originalname,
+        file_url: result.secure_url,
+        workType: req.body.workType,
+        supplier: req.body.supplier,
+        additionalDetails: req.body.additionalDetails,
+      });
+      await newFile.save().then(() => {
+        res.status(200).send('File uploaded and informations saved');
+      }).catch((err) => {
+        if (err.keyPattern.fileName) {
+          res.status(500).send('Same file name already exists, to upload change filename')
+        } else {
+          res.status(500).send('Error occured while saving information')
+        }
+      })
+    }
+  );
+  streamifier.createReadStream(req.file.buffer).pipe(stream);
+}
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
