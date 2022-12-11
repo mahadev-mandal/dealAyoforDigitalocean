@@ -16,13 +16,14 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { baseURL } from '../../helpers/constants';
+import { mutate } from 'swr';
 
 export default function UploadFileDialog() {
     const [open, setOpen] = React.useState(false);
     const [files, setFile] = React.useState({});
     const [progress, setProgress] = React.useState(0);
-    const [errMsg, setErrMsg] = React.useState(null);
-    const [msg, setMsg] = React.useState('');
+    const [saving, setSaving] = useState(false);
+    const [msg, setMsg] = React.useState({});
     const [workType, setWorkType] = useState('update');
     const [supplier, setSupplier] = useState('');
     const [additionalDetails, setAddtionalDetails] = useState('');
@@ -35,13 +36,13 @@ export default function UploadFileDialog() {
     const handleClose = () => {
         setOpen(false);
         setFile({});
-        setMsg('')
+        setMsg({});
+        setSaving(false)
     };
 
     const handleFileChange = (event) => {
-        setErrMsg(null)
+        setMsg({})
         setProgress(0);
-        setMsg('')
         const files = event.target.files;
         const a = Object.keys(files).map((key) => {
             if (files[key].name.length > 30) {
@@ -51,31 +52,33 @@ export default function UploadFileDialog() {
             }
         })
         if (a.every(v => v == true)) {
-            setErrMsg(null)
+            setMsg({})
             setFile(event.target.files);
         } else {
-            setErrMsg('Some file name length is so long max:30 char')
+            setMsg({ type: 'error', title: 'file name length is so long max:30 char' })
         }
     }
 
     const handleUploadClick = async () => {
-        setErrMsg(null)
-        setMsg('')
+        setMsg({})
+        setSaving(true);
         const formData = new FormData();
         formData.append('theFiles', files[0]);
         formData.append('supplier', supplier);
         formData.append('workType', workType);
         formData.append('additionalDetails', additionalDetails);
-        await axios.post(`${baseURL}/api/product-update/upload`, formData, {
+        await axios.post(`${baseURL}/api/files/upload`, formData, {
             headers: { 'content-type': 'multipart/form-data' },
             onUploadProgress: (event) => {
                 setProgress(Math.round((event.loaded * 100) / event.total))
             },
         }).then((r) => {
-            setMsg(r.data);
-            setErrMsg(null)
+            setMsg({ type: 'sucess', title: r.data });
+            mutate(`${baseURL}/api/files`)
+            setSaving(false);
         }).catch((err) => {
-            setErrMsg(err.response.data)
+            setSaving(false);
+            setMsg({ type: 'error', title: err.response.data })
             console.log(err)
         })
     }
@@ -93,7 +96,10 @@ export default function UploadFileDialog() {
             >
                 <DialogTitle id="alert-dialog-title">
                     {"Upload Singe file"}
-                    <Typography variant="body2" textAlign="center" color='red'>{errMsg}{msg}</Typography>
+                    <Typography variant="body2" textAlign="center"
+                        color={msg.type == 'error' ? 'red' : 'green'}>
+                        {saving ? 'Saving...' : msg.title}
+                    </Typography>
                 </DialogTitle>
                 <DialogContent sx={{ minWidth: 460 }}>
                     <Stack spacing={1}>
@@ -153,6 +159,6 @@ export default function UploadFileDialog() {
                     <Button onClick={handleClose}>Close</Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </div >
     );
 }

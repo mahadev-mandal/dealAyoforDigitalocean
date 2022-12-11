@@ -42,8 +42,8 @@ const updateEmployee = async (req, res) => {
             emp.startTime = req.body.startTime;
             emp.endTime = req.body.endTime;
             emp.decreaseTask = req.body.decreaseTask;
-            if (req.body.profilePicPath) {
-                emp.profilePicPath = req.body.profilePicPath
+            if (req.body.profilePicUrl) {
+                emp.profilePicUrl = req.body.profilePicUrl
             }
             emp.workingDays = req.body.workingDays;
             const passwordMatch = await bcrypt.compare(req.body.password, emp.password);

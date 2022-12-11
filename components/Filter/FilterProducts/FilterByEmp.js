@@ -5,7 +5,6 @@ import { useContext } from 'react';
 import { UserContext } from '../../../context/UserProvider';
 
 function FilterByEmp({ onChange, toEmp, employees, disabled, width, visibleFor }) {
-    console.log(employees)
     const user = useContext(UserContext);
     if (visibleFor.length == 0 || visibleFor.includes(user.role)) {
         return (

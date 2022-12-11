@@ -23,7 +23,7 @@ function UpdateProduct() {
         data,
         error,
         mutate
-    } = useSWR(`${baseURL}/api/product-update/getFiles`, url => fetchData(url, params))
+    } = useSWR(`${baseURL}/api/files`, url => fetchData(url, params))
     const {
         data: employees,
         error: error1
@@ -32,7 +32,7 @@ function UpdateProduct() {
     const handleChangePage = async (event, newPage) => {
         setBackdropOpen(true);
         setPage(parseInt(newPage));
-        await mutateData(`${baseURL}/api/product-update/getFiles`, params);
+        await mutateData(`${baseURL}/api/files`, params);
         mutate();
         setBackdropOpen(false);
     }
@@ -40,7 +40,7 @@ function UpdateProduct() {
         setBackdropOpen(true);
         setRowsPerPage(parseInt(event.target.value, 10))
         setPage(parseInt(0))
-        await mutateData(`${baseURL}/api/product-update/getFiles`, params);
+        await mutateData(`${baseURL}/api/files`, params);
         mutate();
         setBackdropOpen(false);
     }

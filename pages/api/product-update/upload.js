@@ -141,8 +141,15 @@ export default async function handler(req, res) {
                 supplier: req.body.supplier,
                 additionalDetails: req.body.additionalDetails,
             });
-            await newFile.save();
-            res.status(200).send('File uploaded and informations saved');
+            await newFile.save().then(() => {
+                res.status(200).send('File uploaded and informations saved');
+            }).catch((err) => {
+                if (err.keyPattern.fileName) {
+                    res.status(500).send('Same file name already exists, to upload change filename')
+                } else {
+                    res.status(500).send('Error occured while saving information')
+                }
+            })
         }
     );
     streamifier.createReadStream(req.file.buffer).pipe(stream);

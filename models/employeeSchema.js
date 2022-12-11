@@ -60,7 +60,7 @@ const employeeSchema = new mongoose.Schema({
         required: true,
         default: 1
     },
-    profilePicPath: {
+    profilePicUrl: {
         type: String
     },
     tokens: [
@@ -91,7 +91,7 @@ employeeSchema.methods.generateAuthToken = async function (req, res) {
             dealAyoId: this.dealAyoId,
             name: this.firstName,
             role: this.role,
-            profilePicPath: this.profilePicPath
+            profilePicUrl: this.profilePicUrl
         },
             process.env.SECRET_KEY
         );

@@ -1,6 +1,5 @@
 import { Stack } from '@mui/material'
 import React, { useState } from 'react'
-import FullScreenDialog from '../../components/Dialogs/FullScreenDialogs/AddProducts'
 import UploadFileDialog from '../../components/Dialogs/UploadFile'
 import useSWR from 'swr';
 import { baseURL } from '../../helpers/constants';
@@ -21,17 +20,17 @@ function UpdateProduct() {
         data,
         error,
         mutate
-    } = useSWR(`${baseURL}/api/product-update/getFiles`, url => fetchData(url, params))
+    } = useSWR(`${baseURL}/api/files`, url => fetchData(url, params))
 
     const handleChangePage = async (event, newPage) => {
         setPage(parseInt(newPage));
-        await mutateData(`${baseURL}/api/product-update/getFiles`, params);
+        await mutateData(`${baseURL}/api/files`, params);
         mutate();
     }
     const handleChangeRowsPerPage = async (event) => {
         setRowsPerPage(parseInt(event.target.value, 10))
         setPage(parseInt(0))
-        await mutateData(`${baseURL}/api/product-update/getFiles`, params);
+        await mutateData(`${baseURL}/api/files`, params);
         mutate();
     }
 
@@ -43,9 +42,6 @@ function UpdateProduct() {
     return (
         <div>
             <Stack direction="row" spacing={1.5} sx={{ mb: 1 }}>
-                <FullScreenDialog
-                    collName="product-update"
-                />
                 <UploadFileDialog />
             </Stack>
             <SimpleTable

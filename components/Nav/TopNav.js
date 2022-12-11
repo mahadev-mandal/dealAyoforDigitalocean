@@ -189,8 +189,8 @@ const ReturnAvatar = () => {
     setUser(usr)
   }, [token])
 
-  if (user.profilePicPath) {
-    return <Avatar alt={user.firstName} src={user.profilePicPath} />
+  if (user.profilePicUrl) {
+    return <Avatar alt={user.firstName} src={user.profilePicUrl} />
   }
   return <Avatar sx={{ textTransform: 'uppercase', width: 35, height: 35 }}>
     {user.name && user.name.replace(/\s+/g, '').charAt(0)}

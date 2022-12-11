@@ -9,7 +9,7 @@ import Cookies from 'js-cookie'
 import { useEffect } from 'react'
 import { useState } from 'react'
 
-const categories = ['tasks', 'attendance', 'worksheet', 'employees', 'products', 'product-update', 'categories'];
+const categories = ['tasks', 'attendance', 'worksheet', 'employees', 'products', 'files', 'categories'];
 
 function Menu() {
     const router = useRouter();

@@ -55,7 +55,7 @@ function MyProfile() {
                 <Stack alignItems="center" spacing={2}>
                     <Box sx={{ border: '2px solid green' }}>
                         <Image
-                            src={data.profilePicPath} alt={data.firstName}
+                            src={data.profilePicUrl} alt={data.firstName}
                             width={300}
                             height={350}
                             objectFit="cover"

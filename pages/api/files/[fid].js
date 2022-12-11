@@ -74,3 +74,4 @@ const deleteProduct = async (req, res) => {
             res.status(500).send('product deletion failed')
         })
 }
+

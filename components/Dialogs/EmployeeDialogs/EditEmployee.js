@@ -31,11 +31,8 @@ export default function EditEmployee({ empDetails, disabled }) {
 
     const [open, setOpen] = React.useState(false);
     const [msg, setMsg] = React.useState('');
-    const [level, setLevel] = React.useState(1);
-    const [role, setRole] = useState('data-entry')
     const [progress, setProgress] = useState(0);
-    const [workingDays, setWorkingDays] = useState([]);
-    const [profilePicPath, setProfilePicPath] = useState();
+    const [profilePicUrl, setProfilePicUrl] = useState();
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -43,7 +40,7 @@ export default function EditEmployee({ empDetails, disabled }) {
         setOpen(false);
     };
 
-    let { handleSubmit, handleChange, handleBlur, touched, errors, values, resetForm } = useFormik({
+    let { handleSubmit, handleChange, handleBlur, touched, errors, values, resetForm, setFieldValue } = useFormik({
         enableReinitialize: true,
         initialValues: {
             dealAyoId: empDetails.dealAyoId,
@@ -54,12 +51,15 @@ export default function EditEmployee({ empDetails, disabled }) {
             startTime: empDetails.startTime,
             endTime: empDetails.endTime,
             password: '',
-            decreaseTask: empDetails.decreaseTask
+            decreaseTask: empDetails.decreaseTask,
+            role: empDetails.role,
+            level: empDetails.level,
+            workingDays: empDetails.workingDays,
         },
         validationSchema: employeeValidationEditSchema,
         async onSubmit() {
             await axios.put(`${baseURL}/api/employees/${empDetails._id}`, {
-                ...values, role, level, profilePicPath, workingDays
+                ...values, profilePicUrl,
             }).then(() => {
                 setOpen(false);
                 setMsg('');
@@ -85,14 +85,18 @@ export default function EditEmployee({ empDetails, disabled }) {
                 setProgress(Math.round((event.loaded * 100) / event.total))
             },
         }).then((r) => {
-            setMsg(r.data);
-            setProfilePicPath(`/profilePic/${fileName}`)
+            setMsg("Picture uploaded sucessfully");
+            setProfilePicUrl(r.data.picUrl);
             // setErrMsg(null)
         }).catch((err) => {
             // setErrMsg(err.response.data)
             console.log(err)
         })
     }
+    const handleChangeWorkingDay = (e) => {
+        setFieldValue('workingDays', e.target.value)
+    }
+    console.log(profilePicUrl)
     return (
         <div>
             <Button
@@ -117,8 +121,8 @@ export default function EditEmployee({ empDetails, disabled }) {
                     <Select
                         fullWidth
                         id='level'
-                        defaultValue={empDetails.role}
-                        onChange={(e) => setRole(e.target.value)}
+                        value={values.role}
+                        onChange={(e) => setFieldValue('role', e.target.value)}
                     >
                         <MenuItem value="data-entry">Data entry</MenuItem>
                         <MenuItem value="other">Other</MenuItem>
@@ -129,8 +133,8 @@ export default function EditEmployee({ empDetails, disabled }) {
                         sx={{ my: 1 }}
                         fullWidth
                         id='level'
-                        defaultValue={empDetails.level}
-                        onChange={(e) => setLevel(e.target.value)}
+                        value={values.level}
+                        onChange={(e) => setFieldValue('level', e.target.value)}
                     >
                         <MenuItem value={1}>One</MenuItem>
                         <MenuItem value={2}>Two</MenuItem>
@@ -145,8 +149,8 @@ export default function EditEmployee({ empDetails, disabled }) {
                         fullWidth
                         id='working'
                         placeholder="Working days"
-                        defaultValue={empDetails.workingDays ? empDetails.workingDays : []}
-                        onChange={(e) => setWorkingDays(e.target.value)}
+                        value={empDetails.workingDays ? values.workingDays : []}
+                        onChange={handleChangeWorkingDay}
                         renderValue={(selected) => {
                             if (selected.length === 0) {
                                 return <em>Working days</em>;
