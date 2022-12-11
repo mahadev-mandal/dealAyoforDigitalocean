@@ -1,4 +1,6 @@
-export const baseURL = process.env.NODE_ENV === 'production' ? "https://deal-ayo.vercel.app" : "http://localhost:3000";
+export const baseURL = process.env.NODE_ENV === 'production' ? "https://coral-app-ndpib.ondigitalocean.app/" : "http://localhost:3000";
+// "https://deal-ayo.vercel.app"
+
 export const mongoDbUri = 'mongodb+srv://dealAyo:Dealayo123@cluster0.kqwi8q2.mongodb.net/dealAyo?retryWrites=true&w=majority'
 export const containerPadding = '0 20px';
 export const containerMargin = '0 20px';
